@@ -404,3 +404,68 @@ function triggerConfetti() {
     }
     render();
 }
+
+/**
+ * Responsive Mobile Drawer Navigation
+ */
+function initMobileDrawer() {
+    const toggleBtn = document.getElementById('menuToggle');
+    const drawer = document.getElementById('mobileDrawer');
+    const backdrop = document.getElementById('drawerBackdrop');
+    const closeBtn = document.getElementById('drawerClose');
+
+    if (!toggleBtn || !drawer || !backdrop) return;
+
+    function openDrawer() {
+        if (typeof SoundFX !== 'undefined') SoundFX.click();
+        drawer.classList.add('open');
+        backdrop.classList.add('open');
+        document.body.classList.add('drawer-open');
+    }
+
+    function closeDrawer() {
+        drawer.classList.remove('open');
+        backdrop.classList.remove('open');
+        document.body.classList.remove('drawer-open');
+    }
+
+    toggleBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        openDrawer();
+    });
+
+    if (closeBtn) {
+        closeBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            if (typeof SoundFX !== 'undefined') SoundFX.click();
+            closeDrawer();
+        });
+    }
+
+    backdrop.addEventListener('click', () => {
+        if (typeof SoundFX !== 'undefined') SoundFX.click();
+        closeDrawer();
+    });
+
+    // Close on escape key
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && drawer.classList.contains('open')) {
+            closeDrawer();
+        }
+    });
+
+    // Close when clicking any link inside drawer
+    const links = drawer.querySelectorAll('a');
+    links.forEach(link => {
+        link.addEventListener('click', () => {
+            closeDrawer();
+        });
+    });
+}
+
+// Auto-initialize when DOM is ready
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initMobileDrawer);
+} else {
+    initMobileDrawer();
+}

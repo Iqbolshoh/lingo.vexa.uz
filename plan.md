@@ -62,6 +62,12 @@ Ushbu hujjat **LingoUz** platformasini AQShda yashovchi 7–11 yoshli o‘zbek b
 - [x] Diasporadagi ota-onalarga 5 ta oltin tavsiya (`/parent-tips`).
 - [x] COPPA standartlari bo‘yicha maxfiylik siyosati (`/privacy`).
 
+### 6-BOSQICH: Moslashuvchan Header & Mobil Drawer Menyusi [BAJARILDI ✅]
+- [x] Desktop va mobil qurilmalar uchun moslashuvchan (responsive) boshqaruv paneli yaratildi.
+- [x] Admin yoki o‘quvchi hisobiga kirganda (masalan, "Gulomov Admin") menyu elementlari sig‘may qolishi to‘liq bartaraf etildi.
+- [x] 1100px dan kichik ekranlar uchun qulay o‘ng tomondan ochiluvchi Off-canvas Drawer menyusi va fonni xiralashtiruvchi backdrop qo‘shildi.
+- [x] Esc tugmasi yoki fonni bosganda yopilish hamda foydalanuvchi ismining qisqarishi (ellipsis) kiritildi.
+
 ---
 
 ## 📌 Server va Texnik Holat

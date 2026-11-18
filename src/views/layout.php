@@ -17,6 +17,7 @@ $user = auth_user();
     <link rel="stylesheet" href="/assets/style.css?v=<?= time() ?>">
 </head>
 <body class="registon-theme">
+    <!-- Site Header -->
     <header class="site-header">
         <div class="container header-inner">
             <a href="/" class="brand-logo">
@@ -27,44 +28,165 @@ $user = auth_user();
                 </span>
             </a>
 
-            <nav class="main-nav" id="mainNav">
-                <a href="/">Bosh sahifa</a>
-                <a href="/#metodika">Metodika</a>
-                <a href="/#darslar">Darslar</a>
-                <a href="/parent-tips">Ota-onalarga</a>
-                <a href="/#ariza" class="nav-highlight">Pilotga ariza</a>
+            <!-- Desktop Navigation -->
+            <nav class="main-nav desktop-nav">
                 <?php if ($user): ?>
-                    <a href="/dashboard" class="nav-pill"><?= icon('layers', '', 16) ?> O‘quvchi Paneli</a>
+                    <!-- Logged in (Student / Admin): Priority app navigation -->
+                    <a href="/dashboard" class="nav-pill"><?= icon('layers', '', 16) ?> Darslar Xaritasi</a>
                     <a href="/live"><?= icon('video', '', 16) ?> Jonli Muloqot</a>
                     <a href="/certificate" class="nav-cert"><?= icon('award', '', 16) ?> Diplom</a>
                     <?php if (is_admin()): ?>
                         <a href="/admin" class="nav-admin"><?= icon('shield-check', '', 16) ?> Admin</a>
                     <?php endif; ?>
+                    <a href="/parent-tips"><?= icon('book-open', '', 16) ?> Qo‘llanma</a>
+                    <a href="/">Bosh sahifa</a>
+                <?php else: ?>
+                    <!-- Guest Navigation -->
+                    <a href="/">Bosh sahifa</a>
+                    <a href="/#metodika">Metodika</a>
+                    <a href="/#darslar">Darslar</a>
+                    <a href="/parent-tips">Ota-onalarga</a>
+                    <a href="/#ariza" class="nav-highlight">Pilotga ariza</a>
                 <?php endif; ?>
             </nav>
 
+            <!-- Header Actions -->
             <div class="header-actions">
                 <?php if ($user): ?>
-                    <div class="user-chip">
+                    <div class="user-chip desktop-only">
                         <a href="/profile" class="user-profile-link" title="Profil sozlamalari">
                             <span class="user-avatar-icon"><?= icon('user', '', 16) ?></span>
                             <span class="user-name"><?= e($user['display_name']) ?></span>
                         </a>
-                        <form action="/logout" method="POST" style="display:inline; margin-left:8px;">
+                        <form action="/logout" method="POST" style="display:inline; margin-left:6px;">
                             <?= csrf_field() ?>
                             <button type="submit" class="btn-logout" title="Chiqish"><?= icon('log-out', '', 14) ?></button>
                         </form>
                     </div>
                 <?php else: ?>
-                    <a href="/login" class="btn btn-outline btn-sm">Kirish</a>
-                    <a href="/register" class="btn btn-primary btn-sm">Ro‘yxatdan o‘tish</a>
+                    <a href="/login" class="btn btn-outline btn-sm desktop-only">Kirish</a>
+                    <a href="/register" class="btn btn-primary btn-sm desktop-only">Ro‘yxatdan o‘tish</a>
                 <?php endif; ?>
-                <button class="menu-toggle" id="menuToggle" aria-label="Menyu">
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+
+                <!-- Responsive Menu Toggle Button -->
+                <button class="menu-toggle" id="menuToggle" aria-label="Menyuni ochish" type="button">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="3" y1="12" x2="21" y2="12"></line>
+                        <line x1="3" y1="6" x2="21" y2="6"></line>
+                        <line x1="3" y1="18" x2="21" y2="18"></line>
+                    </svg>
                 </button>
             </div>
         </div>
     </header>
+
+    <!-- Mobile Slide-out Drawer Navigation Backdrop -->
+    <div class="nav-drawer-backdrop" id="drawerBackdrop"></div>
+
+    <!-- Mobile Off-Canvas Drawer -->
+    <div class="nav-drawer" id="mobileDrawer">
+        <div class="drawer-header">
+            <div class="drawer-brand">
+                <img src="/assets/mascot-lingo.svg" alt="Lingo" width="36" height="36">
+                <div>
+                    <div class="brand-name" style="font-size:20px;">Lingo<span class="highlight">Uz</span></div>
+                    <div class="brand-sub">Gulomov’s Academy</div>
+                </div>
+            </div>
+            <button class="drawer-close-btn" id="drawerClose" type="button" aria-label="Yopish">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+            </button>
+        </div>
+
+        <?php if ($user): ?>
+            <!-- User Info Inside Drawer -->
+            <div class="drawer-user-box">
+                <div class="drawer-user-avatar">
+                    <?= icon('user', '', 20) ?>
+                </div>
+                <div class="drawer-user-details">
+                    <div class="drawer-user-name"><?= e($user['display_name']) ?></div>
+                    <div class="drawer-user-role"><?= strtoupper(e($user['role'])) ?> • <a href="/profile">Sozlamalar</a></div>
+                </div>
+            </div>
+        <?php endif; ?>
+
+        <div class="drawer-nav-list">
+            <?php if ($user): ?>
+                <div class="drawer-section-label">O‘quv Xonasi</div>
+                <a href="/dashboard" class="drawer-link active">
+                    <span class="drawer-icon"><?= icon('layers', '', 18) ?></span>
+                    <span>O‘quvchi Paneli (Darslar)</span>
+                </a>
+                <a href="/live" class="drawer-link">
+                    <span class="drawer-icon"><?= icon('video', '', 18) ?></span>
+                    <span>Zoom Jonli Muloqot</span>
+                </a>
+                <a href="/certificate" class="drawer-link">
+                    <span class="drawer-icon"><?= icon('award', '', 18) ?></span>
+                    <span>O‘zbek Tili Diplomi</span>
+                </a>
+                <?php if (is_admin()): ?>
+                    <a href="/admin" class="drawer-link admin-link">
+                        <span class="drawer-icon"><?= icon('shield-check', '', 18) ?></span>
+                        <span>Admin Boshqaruv Markazi</span>
+                    </a>
+                <?php endif; ?>
+                <a href="/profile" class="drawer-link">
+                    <span class="drawer-icon"><?= icon('settings', '', 18) ?></span>
+                    <span>Profil Sozlamalari</span>
+                </a>
+
+                <div class="drawer-section-label" style="margin-top:16px;">Akademiya</div>
+                <a href="/" class="drawer-link">
+                    <span class="drawer-icon"><?= icon('registon', '', 18) ?></span>
+                    <span>Bosh sahifa</span>
+                </a>
+                <a href="/parent-tips" class="drawer-link">
+                    <span class="drawer-icon"><?= icon('book-open', '', 18) ?></span>
+                    <span>Ota-onalar Qo‘llanmasi</span>
+                </a>
+            <?php else: ?>
+                <div class="drawer-section-label">Menyu</div>
+                <a href="/" class="drawer-link">
+                    <span class="drawer-icon"><?= icon('registon', '', 18) ?></span>
+                    <span>Bosh sahifa</span>
+                </a>
+                <a href="/#metodika" class="drawer-link">
+                    <span class="drawer-icon"><?= icon('sparkles', '', 18) ?></span>
+                    <span>Ta’lim Metodikasi</span>
+                </a>
+                <a href="/#darslar" class="drawer-link">
+                    <span class="drawer-icon"><?= icon('book-open', '', 18) ?></span>
+                    <span>5 ta MVP Darsi</span>
+                </a>
+                <a href="/parent-tips" class="drawer-link">
+                    <span class="drawer-icon"><?= icon('users', '', 18) ?></span>
+                    <span>Ota-onalar Qo‘llanmasi</span>
+                </a>
+                <a href="/#ariza" class="drawer-link highlight-link">
+                    <span class="drawer-icon"><?= icon('arrow-right', '', 18) ?></span>
+                    <span>Bepul Pilotga Ariza</span>
+                </a>
+            <?php endif; ?>
+        </div>
+
+        <div class="drawer-footer">
+            <?php if ($user): ?>
+                <form action="/logout" method="POST">
+                    <?= csrf_field() ?>
+                    <button type="submit" class="btn btn-outline btn-block">
+                        <?= icon('log-out', '', 16) ?> Tizimdan chiqish
+                    </button>
+                </form>
+            <?php else: ?>
+                <div class="drawer-auth-buttons">
+                    <a href="/login" class="btn btn-outline btn-block">Kirish</a>
+                    <a href="/register" class="btn btn-primary btn-block">Ro‘yxatdan o‘tish</a>
+                </div>
+            <?php endif; ?>
+        </div>
+    </div>
 
     <?php if (has_flash('success') || has_flash('error') || has_flash('info')): ?>
         <div class="container flash-container">
