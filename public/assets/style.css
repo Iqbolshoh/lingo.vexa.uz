@@ -2667,3 +2667,172 @@ a:hover {
         text-align: center;
     }
 }
+
+/* ==========================================================================
+   Uzbek National Elements, Mascot & 3D Flip Card Styling
+   ========================================================================== */
+
+/* Mascot in Hero */
+.mascot-hero-wrap {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: -15px;
+    position: relative;
+    z-index: 2;
+}
+
+.mascot-floating-img {
+    filter: drop-shadow(0 8px 16px rgba(0, 0, 0, 0.15));
+    animation: floatZukko 3s ease-in-out infinite;
+}
+
+@keyframes floatZukko {
+    0%, 100% { transform: translateY(0) rotate(0deg); }
+    50% { transform: translateY(-8px) rotate(2deg); }
+}
+
+.mascot-speech-bubble {
+    background: #ffffff;
+    border: 2px solid #059669;
+    padding: 10px 18px;
+    border-radius: 18px;
+    border-bottom-left-radius: 2px;
+    font-size: 14.5px;
+    color: #064e3b;
+    box-shadow: var(--shadow-md);
+    position: relative;
+    max-width: 280px;
+}
+
+.mascot-speech-bubble strong {
+    color: #059669;
+}
+
+/* Mascot tip card in Dashboard */
+.mascot-tip-card {
+    background: linear-gradient(135deg, #f0fdf4 0%, #ecfdf5 100%);
+    border: 2px solid #a7f3d0;
+}
+
+.mascot-tip-inner {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+}
+
+.mascot-tip-title {
+    font-family: var(--font-heading);
+    font-size: 15px;
+    font-weight: 700;
+    color: #065f46;
+    margin-bottom: 2px;
+}
+
+.mascot-tip-text {
+    font-size: 12.5px;
+    color: #047857;
+    line-height: 1.4;
+}
+
+/* 3D Flip Cards for Vocabulary */
+.vocab-card-flipper {
+    perspective: 1000px;
+    cursor: pointer;
+    min-height: 220px;
+}
+
+.flipper-inner {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    min-height: 220px;
+    transition: transform 0.6s cubic-bezier(0.4, 0.2, 0.2, 1);
+    transform-style: preserve-3d;
+}
+
+.vocab-card-flipper.flipped .flipper-inner {
+    transform: rotateY(180deg);
+}
+
+.flipper-front, .flipper-back {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    -webkit-backface-visibility: hidden;
+    backface-visibility: hidden;
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-sm);
+    padding: 24px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.flipper-front {
+    background: #ffffff;
+    border: 2px solid var(--border);
+    border-top: 4px solid var(--primary);
+}
+
+.flipper-front:hover {
+    border-color: var(--primary);
+    box-shadow: var(--shadow-md);
+}
+
+.flipper-back {
+    background: linear-gradient(135deg, #065f46 0%, #047857 100%);
+    color: #ffffff;
+    transform: rotateY(180deg);
+    border: 2px solid #059669;
+}
+
+.flip-hint-badge {
+    font-size: 11px;
+    color: #94a3b8;
+    background: #f8fafc;
+    padding: 3px 8px;
+    border-radius: 999px;
+    align-self: flex-start;
+    margin-top: 8px;
+}
+
+.back-title {
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: #a7f3d0;
+}
+
+.back-meaning {
+    font-family: var(--font-heading);
+    font-size: 24px;
+    font-weight: 700;
+    color: #ffffff;
+    margin: 4px 0 10px;
+}
+
+.back-example {
+    font-size: 13.5px;
+    font-style: italic;
+    color: #f0fdf4;
+    line-height: 1.4;
+    padding-top: 8px;
+    border-top: 1px dashed rgba(255, 255, 255, 0.3);
+}
+
+.coin-reward-pill {
+    background: #fef3c7;
+    color: #b45309;
+    font-size: 13px;
+    font-weight: 700;
+    padding: 4px 10px;
+    border-radius: 999px;
+    border: 1px solid #fde68a;
+}
+
+.nav-cert {
+    background: #fef3c7 !important;
+    color: #92400e !important;
+    border: 1px solid #fde68a;
+}

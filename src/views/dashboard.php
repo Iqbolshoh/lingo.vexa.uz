@@ -18,6 +18,9 @@
                     <a href="/live" class="btn btn-secondary btn-lg">
                         🎙️ Jonli Zoom Xonasi
                     </a>
+                    <a href="/certificate" class="btn btn-accent btn-lg">
+                        🎓 Diplomingizni ko‘rish
+                    </a>
                 </div>
             </div>
 
@@ -116,6 +119,19 @@
 
             <!-- Right: Badges & Live Session -->
             <div class="dashboard-side-col">
+                <!-- Mascot Zukko Daily Tip -->
+                <div class="side-card mascot-tip-card">
+                    <div class="mascot-tip-inner">
+                        <img src="/assets/mascot-zukko.svg" alt="Zukko" width="68" height="68">
+                        <div>
+                            <div class="mascot-tip-title">Zukko maslahati 💡</div>
+                            <p class="mascot-tip-text">
+                                «Har kuni 1 marta yangi so‘zni ovozini eshitib, baland ovozda qaytarsang, xotirang yanada mustahkam bo‘ladi!»
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
                 <!-- Badges Box -->
                 <div class="side-card badges-card">
                     <div class="side-card-header">

@@ -47,6 +47,8 @@ $routes = [
     'GET /admin/export' => 'action_admin_export',
     'GET /privacy' => 'page_privacy',
     'GET /terms' => 'page_privacy',
+    'GET /certificate' => 'page_certificate',
+    'GET /parent-tips' => 'page_parent_tips',
 ];
 
 try {

@@ -655,3 +655,25 @@ function page_privacy(): void
         'title' => 'Bolalar Maxfiyligi va Xavfsizlik Siyosati (COPPA) — LingoUz',
     ]);
 }
+
+function page_certificate(): void
+{
+    if (!auth_check()) {
+        flash('info', 'Sertifikatni ko‘rish uchun avval tizimga kiring.');
+        redirect('/login');
+    }
+
+    $user = auth_user();
+    render('certificate', [
+        'title' => 'O‘zbek Tili Bilimdoni Diplomi — ' . e($user['display_name']),
+        'student' => $user,
+    ]);
+}
+
+function page_parent_tips(): void
+{
+    render('parent_tips', [
+        'title' => 'Ota-onalar uchun 5 ta Oltin Qoida — LingoUz',
+    ]);
+}
+

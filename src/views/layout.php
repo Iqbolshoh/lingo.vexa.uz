@@ -17,7 +17,7 @@ $user = auth_user();
     <header class="site-header">
         <div class="container header-inner">
             <a href="/" class="brand-logo">
-                <span class="logo-mark">🇺🇿</span>
+                <span class="logo-mark"><img src="/assets/mascot-zukko.svg" alt="Zukko Mascot" width="38" height="38" style="vertical-align:middle; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.15));"></span>
                 <span class="logo-text">
                     <span class="brand-name">Lingo<span class="highlight">Uz</span></span>
                     <span class="brand-sub">by Gulomov’s Academy</span>
@@ -28,10 +28,12 @@ $user = auth_user();
                 <a href="/">Bosh sahifa</a>
                 <a href="/#metodika">Qanday ishlaydi?</a>
                 <a href="/#darslar">Darslar</a>
+                <a href="/parent-tips">📖 Ota-onalarga</a>
                 <a href="/#ariza" class="nav-highlight">Pilotga ariza</a>
                 <?php if ($user): ?>
                     <a href="/dashboard" class="nav-pill">🎒 O‘quvchi Paneli</a>
                     <a href="/live">🎙️ Jonli Muloqot</a>
+                    <a href="/certificate" class="nav-cert">🎓 Diplom</a>
                     <?php if (is_admin()): ?>
                         <a href="/admin" class="nav-admin">⚙️ Admin</a>
                     <?php endif; ?>

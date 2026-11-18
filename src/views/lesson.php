@@ -67,33 +67,45 @@
             </div>
         </section>
 
-        <!-- Step 2: Visual Vocabulary with Audio Pronunciation -->
+        <!-- Step 2: Visual Vocabulary with Audio Pronunciation & 3D Flip -->
         <section class="lesson-section" id="lugat">
             <div class="section-title-wrap">
                 <span class="step-badge">2-BOSQICH</span>
-                <h2>📚 Vizual Lug‘at (Yangi so‘zlar)</h2>
-                <p>Har bir kartochkadagi karnaychani (🔊) bosib, o‘zbekcha talaffuzni tinglang va eslab qoling:</p>
+                <h2>📚 Vizual Lug‘at (Ag‘dariluvchi Fleshkartalar)</h2>
+                <p>Kartochkani bosing — u ag‘darilib (flip) inglizcha ma’nosi va misol jumlani ko‘rsatadi. 🔊 belgisini bosib talaffuzni tinglang:</p>
             </div>
 
             <div class="vocab-cards-grid">
                 <?php foreach ($vocabulary as $idx => $v): ?>
-                    <div class="vocab-card" id="vocabCard_<?= $v['id'] ?>">
-                        <div class="vocab-card-header">
-                            <span class="vocab-emoji"><?= $v['icon'] ?></span>
-                            <button class="btn-audio-circle" type="button" onclick="speakUzbek('<?= e($v['word_uz']) ?>')" title="Ovozli eshitish">
-                                🔊
-                            </button>
-                        </div>
-
-                        <h3 class="vocab-title-uz"><?= e($v['word_uz']) ?></h3>
-                        <div class="vocab-phonetic-badge">[<?= e($v['pronunciation']) ?>]</div>
-                        <div class="vocab-meaning-en">English: <strong><?= e($v['word_en']) ?></strong></div>
-
-                        <?php if (!empty($v['example'])): ?>
-                            <div class="vocab-example-sentence">
-                                💬 «<?= e($v['example']) ?>»
+                    <div class="vocab-card-flipper" id="vocabCard_<?= $v['id'] ?>" title="Kartochkani ag‘darish uchun bosing">
+                        <div class="flipper-inner">
+                            <!-- Front Side (Uzbek) -->
+                            <div class="flipper-front">
+                                <div class="vocab-card-header">
+                                    <span class="vocab-emoji"><?= $v['icon'] ?></span>
+                                    <button class="btn-audio-circle" type="button" onclick="speakUzbek('<?= e($v['word_uz']) ?>'); event.stopPropagation();" title="Ovozli eshitish">
+                                        🔊
+                                    </button>
+                                </div>
+                                <h3 class="vocab-title-uz"><?= e($v['word_uz']) ?></h3>
+                                <div class="vocab-phonetic-badge">[<?= e($v['pronunciation']) ?>]</div>
+                                <div class="flip-hint-badge">🔄 Ag‘darish uchun bosing</div>
                             </div>
-                        <?php endif; ?>
+
+                            <!-- Back Side (English & Example) -->
+                            <div class="flipper-back">
+                                <div class="back-title">English:</div>
+                                <div class="back-meaning"><?= e($v['word_en']) ?></div>
+                                <?php if (!empty($v['example'])): ?>
+                                    <div class="back-example">
+                                        💬 «<?= e($v['example']) ?>»
+                                    </div>
+                                <?php endif; ?>
+                                <button class="btn btn-sm btn-light" type="button" onclick="speakUzbek('<?= e($v['word_uz']) ?>'); event.stopPropagation();" style="margin-top:10px;">
+                                    🔊 Qaytadan eshitish
+                                </button>
+                            </div>
+                        </div>
                     </div>
                 <?php endforeach; ?>
             </div>
@@ -109,7 +121,10 @@
 
             <div class="game-box-card">
                 <div class="game-score-row">
-                    <span>Topilgan juftliklar: <strong id="matchedPairsCount">0</strong> / <span id="totalPairsCount">0</span></span>
+                    <div>
+                        <span>Topilgan juftliklar: <strong id="matchedPairsCount">0</strong> / <span id="totalPairsCount">0</span></span>
+                        <span class="coin-reward-pill" style="margin-left: 14px;">🪙 Tangalar: <strong id="gameCoinCount">0</strong></span>
+                    </div>
                     <button class="btn btn-outline btn-sm" onclick="initMatchGame()">🔄 Qayta boshlash</button>
                 </div>
 
