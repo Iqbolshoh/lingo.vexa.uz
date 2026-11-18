@@ -8,12 +8,12 @@
 
         <div class="admin-card">
             <div class="profile-header-row" style="display:flex; align-items:center; gap:16px; margin-bottom:24px; padding-bottom:18px; border-bottom:1px solid var(--border);">
-                <div style="width:64px; height:64px; border-radius:50%; background:var(--primary-light); color:var(--primary); display:flex; align-items:center; justify-content:center; font-size:28px;">
+                <div style="width:64px; height:64px; border-radius:50%; background:var(--registon-light); color:var(--registon-blue); display:flex; align-items:center; justify-content:center; font-size:28px; box-shadow:var(--shadow-sm);">
                     <?= icon('user', '', 32) ?>
                 </div>
                 <div>
-                    <h2 style="font-family:var(--font-heading); font-size:24px; margin-bottom:2px;"><?= e($user['display_name']) ?></h2>
-                    <span style="font-size:13px; color:var(--text-muted);"><?= e($user['email']) ?> • <strong style="text-transform:uppercase; color:var(--primary);"><?= e($user['role']) ?></strong></span>
+                    <h2 style="font-family:var(--font-heading); font-size:24px; margin-bottom:2px; color:var(--registon-dark);"><?= e($user['display_name']) ?></h2>
+                    <span style="font-size:13px; color:#475569; font-weight:600;"><?= e($user['email']) ?> • <strong style="text-transform:uppercase; color:var(--registon-blue);"><?= e($user['role']) ?></strong></span>
                 </div>
             </div>
 

@@ -68,6 +68,14 @@ Ushbu hujjat **LingoUz** platformasini AQShda yashovchi 7–11 yoshli o‘zbek b
 - [x] 1100px dan kichik ekranlar uchun qulay o‘ng tomondan ochiluvchi Off-canvas Drawer menyusi va fonni xiralashtiruvchi backdrop qo‘shildi.
 - [x] Esc tugmasi yoki fonni bosganda yopilish hamda foydalanuvchi ismining qisqarishi (ellipsis) kiritildi.
 
+### 7-BOSQICH: Ranglar Kontrasti, Ko‘rinuvchanlik & Kengaytirilgan Responsivlik [BAJARILDI ✅]
+- [x] Oq kartochkalardagi och kulrang `#e2e8f0` form labellaridan kelib chiqqan ko‘rinmas matn muammosi to‘liq tuzatildi (`#1e293b` ga almashtirildi).
+- [x] Dashboard moviy banneridagi ko‘rinmay qolgan ko‘k tugma (`.btn-primary`) o‘rniga kontrastli oq va oltin tugmalar joriy qilindi.
+- [x] Ta’lim video pleyeridagi va lug‘at flip kartochkalarining orqa tomonidagi barcha matn va tugmalar yuqori kontrastga (`#ffffff`, `#e0f2fe`, `#fde68a`) keltirildi.
+- [x] Yetishmayotgan `.btn-light` klassi to‘liq stilizatsiya qilindi.
+- [x] Diplom, Darslar xaritasi, 404 sahifasi va qo‘llanmadagi qolib ketgan emojilar rasmiy SVG vektor ikonkalariga almashtirildi.
+- [x] Kichik smartfonlar (320px - 520px) uchun darslar kartochkalari, o‘yin katakchalari, sertifikat va ro‘yxatdan o‘tish formalarining responsivligi mukammallashtirildi.
+
 ---
 
 ## 📌 Server va Texnik Holat

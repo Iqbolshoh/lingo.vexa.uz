@@ -2,18 +2,18 @@
     <div class="container text-center print-hide" style="margin-bottom: 24px;">
         <a href="/dashboard" class="btn btn-outline btn-sm">← O‘quvchi paneliga qaytish</a>
         <button onclick="window.print()" class="btn btn-primary btn-sm" style="margin-left: 10px;">
-            🖨️ Sertifikatni Chop Etish / PDF Saqlash
+            <?= icon('download', '', 16) ?> Sertifikatni Chop Etish / PDF Saqlash
         </button>
     </div>
 
     <div class="certificate-sheet">
         <div class="cert-outer-border">
             <div class="cert-inner-border">
-                <!-- National Ornament Corners -->
-                <div class="cert-corner corner-tl">⚜️</div>
-                <div class="cert-corner corner-tr">⚜️</div>
-                <div class="cert-corner corner-bl">⚜️</div>
-                <div class="cert-corner corner-br">⚜️</div>
+                <!-- National Ornament Corners (SVG) -->
+                <div class="cert-corner corner-tl"><?= icon('corner-ornament', '', 22) ?></div>
+                <div class="cert-corner corner-tr"><?= icon('corner-ornament', '', 22) ?></div>
+                <div class="cert-corner corner-bl"><?= icon('corner-ornament', '', 22) ?></div>
+                <div class="cert-corner corner-br"><?= icon('corner-ornament', '', 22) ?></div>
 
                 <div class="cert-header">
                     <div class="cert-institution">GULOMOV’S ACADEMY • LINGOUZ</div>
@@ -22,7 +22,7 @@
 
                 <div class="cert-title-wrap">
                     <h1 class="cert-main-title">DIPLOM</h1>
-                    <div class="cert-award-tag">O‘ZBEK TILI BILIMDONI 🌟</div>
+                    <div class="cert-award-tag"><?= icon('award', '', 16) ?> O‘ZBEK TILI BILIMDONI</div>
                 </div>
 
                 <div class="cert-body">
@@ -41,7 +41,7 @@
 
                     <div class="cert-col cert-seal-col">
                         <div class="cert-gold-seal">
-                            <span class="seal-icon">🇺🇿</span>
+                            <span class="seal-icon"><?= icon('registon', '', 24) ?></span>
                             <span class="seal-text">LINGOUZ<br>RASMIY MUHR</span>
                         </div>
                     </div>
@@ -81,13 +81,12 @@
 }
 .cert-corner {
     position: absolute;
-    font-size: 22px;
     color: #d97706;
 }
 .corner-tl { top: 8px; left: 8px; }
-.corner-tr { top: 8px; right: 8px; }
-.corner-bl { bottom: 8px; left: 8px; }
-.corner-br { bottom: 8px; right: 8px; }
+.corner-tr { top: 8px; right: 8px; transform: scaleX(-1); }
+.corner-bl { bottom: 8px; left: 8px; transform: scaleY(-1); }
+.corner-br { bottom: 8px; right: 8px; transform: scale(-1); }
 
 .cert-institution {
     font-family: var(--font-heading);
@@ -112,7 +111,9 @@
     margin: 16px 0 6px;
 }
 .cert-award-tag {
-    display: inline-block;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
     background: #fef3c7;
     color: #92400e;
     font-weight: 800;
@@ -124,7 +125,7 @@
 }
 .cert-presentation {
     font-size: 15px;
-    color: #64748b;
+    color: #475569;
     margin-top: 24px;
 }
 .cert-student-name {
@@ -149,6 +150,7 @@
     justify-content: space-around;
     align-items: flex-end;
     margin-top: 20px;
+    gap: 16px;
 }
 .cert-line {
     border-top: 1px solid #94a3b8;
@@ -175,7 +177,10 @@
     border: 3px dashed #ffffff;
 }
 .seal-icon {
-    font-size: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 2px;
 }
 .seal-text {
     font-size: 8.5px;
@@ -192,8 +197,18 @@
 .cert-code {
     margin-top: 28px;
     font-size: 11px;
-    color: #94a3b8;
+    color: #64748b;
     font-family: monospace;
+}
+
+@media (max-width: 650px) {
+    .certificate-sheet { padding: 8px; }
+    .cert-inner-border { padding: 24px 12px; }
+    .cert-main-title { font-size: 34px; letter-spacing: 2px; }
+    .cert-student-name { font-size: 24px; padding: 4px 14px; }
+    .cert-description { font-size: 13.5px; }
+    .cert-footer-row { flex-direction: column; align-items: center; gap: 24px; }
+    .cert-line { min-width: 180px; }
 }
 
 @media print {

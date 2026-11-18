@@ -2,7 +2,7 @@
     <div class="container">
         <div class="legal-card">
             <span class="legal-tag">OTA-ONALAR UCHUN QO‘LLANMA</span>
-            <h1>AQShda Farzandga Ona Tilini Saqlab Qolish: 5 Ta Oltin Qoida 🇺🇿</h1>
+            <h1>AQShda Farzandga Ona Tilini Saqlab Qolish: 5 Ta Oltin Qoida</h1>
             <p class="legal-meta">Gulomov’s Academy metodikasi asosida tayyorlandi</p>
 
             <div class="legal-content">
@@ -32,9 +32,9 @@
                 </div>
             </div>
 
-            <div style="margin-top: 32px; display:flex; gap:12px;">
-                <a href="/dashboard" class="btn btn-primary">🎒 O‘quvchi paneliga qaytish</a>
-                <a href="/" class="btn btn-outline">Bosh sahifa</a>
+            <div style="margin-top: 32px; display:flex; gap:12px; flex-wrap:wrap;">
+                <a href="/dashboard" class="btn btn-primary"><?= icon('arrow-left', '', 16) ?> O‘quvchi paneliga qaytish</a>
+                <a href="/" class="btn btn-outline"><?= icon('registon', '', 16) ?> Bosh sahifa</a>
             </div>
         </div>
     </div>

@@ -255,7 +255,7 @@ function action_register(): void
     $user = ['id' => $userId, 'role' => 'student', 'display_name' => $displayName, 'email' => $email];
     login_user($user);
 
-    flash('success', 'Xush kelibsiz! Siz LingoUz akademiyasining ilk darsini boshlashga tayyorsiz! 🚀');
+    flash('success', 'Xush kelibsiz! Siz LingoUz akademiyasining ilk darsini boshlashga tayyorsiz!');
     redirect('/dashboard');
 }
 
@@ -385,7 +385,7 @@ function page_lesson(int $lessonId): void
         $prevPassed = $prevProg && $prevProg['status'] === 'completed' && $prevProg['best_score'] >= 80;
 
         if (!$prevPassed && !$hasOverride) {
-            flash('error', "🔒 Ushbu dars qulflangan! Darsni ochish uchun avval {$prevId}-dars testidan kamida 80% to‘plashingiz kerak.");
+            flash('error', "Ushbu dars qulflangan! Darsni ochish uchun avval {$prevId}-dars testidan kamida 80% to‘plashingiz kerak.");
             redirect('/dashboard');
             return;
         }

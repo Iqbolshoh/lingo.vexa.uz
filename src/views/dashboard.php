@@ -91,7 +91,7 @@
 
                                 <h3 class="track-lesson-title"><?= e($l['title']) ?></h3>
                                 <p class="track-lesson-en"><?= e($l['title_en']) ?></p>
-                                <p class="track-lesson-obj">🎯 <?= e($l['objective']) ?></p>
+                                <p class="track-lesson-obj"><?= icon('target', '', 14) ?> <?= e($l['objective']) ?></p>
 
                                 <div class="card-actions">
                                     <?php if ($isCompleted): ?>
@@ -152,7 +152,7 @@
                                     <div class="badge-title">
                                         <?= e($b['title']) ?>
                                         <?php if ($isEarned): ?>
-                                            <span class="check-mark">✓</span>
+                                            <span class="check-mark"><?= icon('check-circle', '', 14) ?></span>
                                         <?php endif; ?>
                                     </div>
                                     <div class="badge-desc"><?= e($b['description']) ?></div>
