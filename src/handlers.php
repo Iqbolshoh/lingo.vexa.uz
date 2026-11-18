@@ -89,20 +89,22 @@ function page_login(): void
 
 function action_login(): void
 {
-    $email = trim($_POST['email'] ?? '');
+    $identifier = trim($_POST['email'] ?? '');
     $password = trim($_POST['password'] ?? '');
 
-    if ($email === '' || $password === '') {
-        flash('error', 'Email va parolni kiriting.');
+    if ($identifier === '' || $password === '') {
+        flash('error', 'Email yoki login va parolni kiriting.');
         redirect('/login');
     }
 
-    $stmt = db()->prepare('SELECT * FROM users WHERE email = ?');
-    $stmt->execute([$email]);
+    $altEmail = str_contains($identifier, '@') ? $identifier : $identifier . '@lingo.uz';
+
+    $stmt = db()->prepare('SELECT * FROM users WHERE email = ? OR email = ?');
+    $stmt->execute([$identifier, $altEmail]);
     $user = $stmt->fetch();
 
     if (!$user || !password_verify($password, $user['password_hash'])) {
-        flash('error', 'Email yoki parol noto‘g‘ri kiritildi.');
+        flash('error', 'Login yoki parol noto‘g‘ri kiritildi.');
         redirect('/login');
     }
 

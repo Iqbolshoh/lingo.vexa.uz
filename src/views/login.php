@@ -9,25 +9,12 @@
                 <p>LingoUz ta’lim paneliga xush kelibsiz!</p>
             </div>
 
-            <!-- Credentials Hint Card for Testers (Fills the form directly) -->
-            <div class="login-hint-card">
-                <span class="hint-title"><?= icon('shield-check', '', 14) ?> Sinov hisoblari ma’lumotlari:</span>
-                <div class="hint-creds-row">
-                    <button type="button" class="btn-fill-creds" onclick="fillCreds('ali@lingo.uz', 'ali123')">
-                        <strong>O‘quvchi:</strong> ali@lingo.uz
-                    </button>
-                    <button type="button" class="btn-fill-creds" onclick="fillCreds('admin@lingo.uz', 'admin123')">
-                        <strong>Admin:</strong> admin@lingo.uz
-                    </button>
-                </div>
-            </div>
-
             <form action="/login" method="POST" class="auth-form" id="loginForm">
                 <?= csrf_field() ?>
 
                 <div class="form-group">
-                    <label for="email">Elektron pochta (Email)</label>
-                    <input type="email" id="email" name="email" required placeholder="ali@lingo.uz yoki otaona@gmail.com">
+                    <label for="email">Elektron pochta yoki Login</label>
+                    <input type="text" id="email" name="email" required placeholder="demo@lingo.uz yoki demo">
                 </div>
 
                 <div class="form-group">
@@ -47,11 +34,3 @@
         </div>
     </div>
 </div>
-
-<script>
-function fillCreds(email, pass) {
-    document.getElementById('email').value = email;
-    document.getElementById('password').value = pass;
-    SoundFX.click();
-}
-</script>

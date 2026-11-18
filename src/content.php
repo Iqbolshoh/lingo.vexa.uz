@@ -24,17 +24,17 @@ function seed_initial_data(PDO $pdo): void
     }
 
     // 3. Demo Users
-    // Admin user: admin@lingo.uz / admin123
-    // Student demo: ali@lingo.uz / ali123
+    // Admin user: admin@lingo.uz (or 'admin') / admin123
+    // Student demo: demo@lingo.uz (or 'demo') / demo123
     $adminHash = password_hash('admin123', PASSWORD_DEFAULT);
-    $studentHash = password_hash('ali123', PASSWORD_DEFAULT);
+    $demoHash = password_hash('demo123', PASSWORD_DEFAULT);
 
     $stmtUser = $pdo->prepare('
         INSERT OR IGNORE INTO users (id, role, display_name, email, password_hash, age_band, language_level, timezone, consent_status)
         VALUES (?, ?, ?, ?, ?, ?, ?, ?, 1)
     ');
-    $stmtUser->execute([1, 'admin', 'Gulomov Admin', 'admin@lingo.uz', $adminHash, '11', 'A2', 'America/New_York']);
-    $stmtUser->execute([2, 'student', 'Alijon', 'ali@lingo.uz', $studentHash, '9-10', 'A1', 'America/New_York']);
+    $stmtUser->execute([1, 'admin', 'Admin', 'admin@lingo.uz', $adminHash, '11', 'A2', 'America/New_York']);
+    $stmtUser->execute([2, 'student', 'Demo', 'demo@lingo.uz', $demoHash, '9-10', 'A1', 'America/New_York']);
 
     // 4. 5 MVP Lessons
     $lessonsData = [

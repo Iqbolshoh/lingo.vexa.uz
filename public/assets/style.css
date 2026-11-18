@@ -1555,17 +1555,6 @@ a:hover {
 .auth-header h1 { font-family: var(--font-heading); font-size: 26px; margin-bottom: 6px; }
 .auth-header p { font-size: 14px; color: #64748b; }
 
-.login-hint-card {
-    background: #f0f9ff; border: 1px solid #bae6fd; padding: 14px; border-radius: var(--radius-md); margin-bottom: 20px;
-}
-.hint-title { display: flex; align-items: center; gap: 4px; font-size: 12px; font-weight: 700; color: var(--registon-dark); margin-bottom: 8px; }
-.hint-creds-row { display: flex; flex-direction: column; gap: 6px; }
-.btn-fill-creds {
-    background: #ffffff; border: 1px solid #bae6fd; padding: 6px 10px; border-radius: 6px; text-align: left;
-    font-size: 12.5px; color: #0c4a6e; cursor: pointer; transition: all 0.2s;
-}
-.btn-fill-creds:hover { background: var(--registon-light); border-color: var(--registon-blue); }
-
 .auth-form { display: flex; flex-direction: column; gap: 16px; }
 .auth-footer { text-align: center; margin-top: 24px; padding-top: 18px; border-top: 1px solid var(--border); font-size: 13.5px; color: #64748b; }
 

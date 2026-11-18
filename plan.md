@@ -76,6 +76,11 @@ Ushbu hujjat **LingoUz** platformasini AQShda yashovchi 7–11 yoshli o‘zbek b
 - [x] Diplom, Darslar xaritasi, 404 sahifasi va qo‘llanmadagi qolib ketgan emojilar rasmiy SVG vektor ikonkalariga almashtirildi.
 - [x] Kichik smartfonlar (320px - 520px) uchun darslar kartochkalari, o‘yin katakchalari, sertifikat va ro‘yxatdan o‘tish formalarining responsivligi mukammallashtirildi.
 
+### 8-BOSQICH: Login Sahifasini Tozalash & Demo/Admin Hisoblarini Standartlashtirish [BAJARILDI ✅]
+- [x] `/login` sahifasidagi ochiq "Sinov hisoblari ma’lumotlari" bloki butunlay olib tashlandi, forma toza va professional ko‘rinishga keltirildi.
+- [x] Akkauntlar standartlashtirildi: O‘quvchi demo hisobi `demo@lingo.uz` (login: `demo`), Administrator `admin@lingo.uz` (login: `admin`).
+- [x] Har ikkala hisob uchun login ham to‘liq email (`demo@lingo.uz`), ham qisqa nom (`demo`) orqali xavfsiz POST bilan kirishga moslashtirildi.
+
 ---
 
 ## 📌 Server va Texnik Holat
