@@ -58,10 +58,9 @@ $user = auth_user();
                             <span class="user-avatar-icon"><?= icon('user', '', 16) ?></span>
                             <span class="user-name"><?= e($user['display_name']) ?></span>
                         </a>
-                        <form action="/logout" method="POST" style="display:inline; margin-left:6px;">
-                            <?= csrf_field() ?>
-                            <button type="submit" class="btn-logout" title="Chiqish"><?= icon('log-out', '', 14) ?></button>
-                        </form>
+                        <a href="/logout" class="btn-header-logout" title="Tizimdan chiqish">
+                            <?= icon('log-out', '', 13) ?> <span>Chiqish</span>
+                        </a>
                     </div>
                 <?php else: ?>
                     <a href="/login" class="btn btn-outline btn-sm desktop-only">Kirish</a>
@@ -106,7 +105,7 @@ $user = auth_user();
                 </div>
                 <div class="drawer-user-details">
                     <div class="drawer-user-name"><?= e($user['display_name']) ?></div>
-                    <div class="drawer-user-role"><?= strtoupper(e($user['role'])) ?> • <a href="/profile">Sozlamalar</a></div>
+                    <div class="drawer-user-role"><?= strtoupper(e($user['role'])) ?> • <a href="/profile">Sozlamalar</a> • <a href="/logout" style="color:var(--ruby); font-weight:700;">Chiqish</a></div>
                 </div>
             </div>
         <?php endif; ?>
@@ -135,6 +134,10 @@ $user = auth_user();
                 <a href="/profile" class="drawer-link">
                     <span class="drawer-icon"><?= icon('settings', '', 18) ?></span>
                     <span>Profil Sozlamalari</span>
+                </a>
+                <a href="/logout" class="drawer-link drawer-logout-link" style="color:var(--ruby);">
+                    <span class="drawer-icon" style="color:var(--ruby);"><?= icon('log-out', '', 18) ?></span>
+                    <span style="font-weight:700;">Tizimdan Chiqish</span>
                 </a>
 
                 <div class="drawer-section-label" style="margin-top:16px;">Akademiya</div>
@@ -173,12 +176,9 @@ $user = auth_user();
 
         <div class="drawer-footer">
             <?php if ($user): ?>
-                <form action="/logout" method="POST">
-                    <?= csrf_field() ?>
-                    <button type="submit" class="btn btn-outline btn-block">
-                        <?= icon('log-out', '', 16) ?> Tizimdan chiqish
-                    </button>
-                </form>
+                <a href="/logout" class="btn btn-outline btn-block" style="color:var(--ruby); border-color:#fecaca; background:#fff1f2; font-weight:700;">
+                    <?= icon('log-out', '', 16) ?> Tizimdan Chiqish (Log out)
+                </a>
             <?php else: ?>
                 <div class="drawer-auth-buttons">
                     <a href="/login" class="btn btn-outline btn-block">Kirish</a>

@@ -79,11 +79,9 @@ function action_enroll(): void
 
 function page_login(): void
 {
-    if (auth_check()) {
-        redirect('/dashboard');
-    }
     render('login', [
         'title' => 'Tizimga kirish — LingoUz',
+        'currentUser' => auth_user(),
     ]);
 }
 
@@ -203,7 +201,7 @@ function action_logout(): void
 {
     logout_user();
     flash('info', 'Tizimdan muvaffaqiyatli chiqdingiz.');
-    redirect('/');
+    redirect('/login');
 }
 
 function page_register(): void

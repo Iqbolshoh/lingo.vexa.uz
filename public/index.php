@@ -28,7 +28,7 @@ if ($method === 'HEAD') {
 }
 $path = '/' . trim(parse_url($_SERVER['REQUEST_URI'] ?? '/', PHP_URL_PATH) ?: '', '/');
 
-if ($method === 'POST') {
+if ($method === 'POST' && $path !== '/logout') {
     verify_csrf();
 }
 
@@ -39,6 +39,7 @@ $routes = [
     'POST /enroll' => 'action_enroll',
     'GET /login' => 'page_login',
     'POST /login' => 'action_login',
+    'GET /logout' => 'action_logout',
     'POST /logout' => 'action_logout',
     'GET /register' => 'page_register',
     'POST /register' => 'action_register',

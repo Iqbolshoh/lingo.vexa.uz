@@ -229,6 +229,28 @@ a:hover {
     color: var(--ruby);
 }
 
+.btn-header-logout {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--ruby);
+    background: #fff1f2;
+    border: 1px solid #fecaca;
+    padding: 3px 10px;
+    border-radius: 999px;
+    margin-left: 8px;
+    transition: all 0.2s;
+    text-decoration: none;
+}
+
+.btn-header-logout:hover {
+    background: var(--ruby);
+    color: #ffffff;
+    border-color: var(--ruby);
+}
+
 .user-name {
     max-width: 130px;
     overflow: hidden;
@@ -1783,6 +1805,19 @@ body.drawer-open {
     flex-direction: column;
     gap: 10px;
     background: #f8fafc;
+}
+
+.drawer-footer {
+    padding: 18px 20px 24px;
+    border-top: 1px solid var(--border);
+    background: #f8fafc;
+    margin-top: auto;
+}
+
+.drawer-auth-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
 }
 
 .drawer-footer-note {

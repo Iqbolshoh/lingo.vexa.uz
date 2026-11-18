@@ -81,6 +81,12 @@ Ushbu hujjat **LingoUz** platformasini AQShda yashovchi 7–11 yoshli o‘zbek b
 - [x] Akkauntlar standartlashtirildi: O‘quvchi demo hisobi `demo@lingo.uz` (login: `demo`), Administrator `admin@lingo.uz` (login: `admin`).
 - [x] Har ikkala hisob uchun login ham to‘liq email (`demo@lingo.uz`), ham qisqa nom (`demo`) orqali xavfsiz POST bilan kirishga moslashtirildi.
 
+### 9-BOSQICH: Chiqish (Logout) va Akkaunt O‘rtasida O‘tishni Mukammallashtirish [BAJARILDI ✅]
+- [x] `GET /logout` va `POST /logout` ikkalasi ham to‘liq qo‘llab-quvvatlandi (havolalar, brauzer satri yoki tugma orqali chiqish bir zumda ishlaydi).
+- [x] Mobil drawer menyusida va desktop headerda yaqqol ko‘rinadigan qizil "Chiqish" tugmasi joylashtirildi.
+- [x] Tizimga kirilgan holatda `/login` sahifasiga kirilganda bloklanib qolish o‘rniga, joriy hisob holati va bir zumda boshqa akkauntga o‘tish/chiqish imkoniyati berildi.
+- [x] Chiqishda sessiyaning xavfsiz regeneratsiyasi va xabar beruvchi flash xabarlar saqlanishi ta’minlandi.
+
 ---
 
 ## 📌 Server va Texnik Holat
