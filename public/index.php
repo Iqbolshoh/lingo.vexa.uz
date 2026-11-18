@@ -23,6 +23,9 @@ header('X-Frame-Options: SAMEORIGIN');
 header('Referrer-Policy: strict-origin-when-cross-origin');
 
 $method = $_SERVER['REQUEST_METHOD'] ?? 'GET';
+if ($method === 'HEAD') {
+    $method = 'GET';
+}
 $path = '/' . trim(parse_url($_SERVER['REQUEST_URI'] ?? '/', PHP_URL_PATH) ?: '', '/');
 
 if ($method === 'POST') {
