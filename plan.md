@@ -13,8 +13,8 @@ Ushbu hujjat **LingoUz** platformasini AQShda yashovchi 7–11 yoshli o‘zbek b
 2. **Professional Vektorli SVG Ikonkalar (No Emojis):**
    - Barcha sahifalardagi nomutanosib emojilar butunlay chiqarib tashlandi.
    - O‘rniga aniq, zamonaviy, professional SVG vektor ikonkalar tizimi (`src/icons.php` -> `icon(...)`) joriy qilindi.
-3. **Milliy Maskot — «Zukko»:**
-   - Chust do‘ppisini kiygan yoqimli do‘st SVG formatida platformaga integratsiya qilindi.
+3. **Milliy Maskot — «Lingo»:**
+   - Chust do‘ppisini kiygan yoqimli do‘st SVG formatida platformaga integratsiya qilindi. Bolaga darslarda hamrohlik qiladi: *«Salom do‘stim! Men Lingoman. Birga o‘zbekcha o‘rganamiz!»*
 
 ---
 

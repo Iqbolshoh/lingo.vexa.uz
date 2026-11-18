@@ -41,9 +41,9 @@
         <div class="hero-visual">
             <div class="hero-card-stack">
                 <div class="mascot-hero-wrap">
-                    <img src="/assets/mascot-zukko.svg" alt="Zukko" class="mascot-floating-img" width="120" height="120">
+                    <img src="/assets/mascot-lingo.svg" alt="Lingo" class="mascot-floating-img" width="120" height="120">
                     <div class="mascot-speech-bubble">
-                        «Salom do‘stim! Men <strong>Zukko</strong>man. Birga o‘zbekcha o‘rganamiz!»
+                        «Salom do‘stim! Men <strong>Lingo</strong>man. Birga o‘zbekcha o‘rganamiz!»
                     </div>
                 </div>
 

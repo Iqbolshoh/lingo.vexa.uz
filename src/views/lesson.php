@@ -47,7 +47,7 @@
                     <div class="player-canvas" id="playerCanvas">
                         <div class="player-scene">
                             <div class="scene-avatar" id="avatarEmoji">
-                                <img src="/assets/mascot-zukko.svg" alt="Zukko" width="80" height="80">
+                                <img src="/assets/mascot-lingo.svg" alt="Lingo" width="80" height="80">
                             </div>
                             <h3 class="scene-phrase" id="scenePhrase">«Salom, xush kelibsiz!»</h3>
                             <p class="scene-sub" id="sceneSub">Hello, welcome!</p>

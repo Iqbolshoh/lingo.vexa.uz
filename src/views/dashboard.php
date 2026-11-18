@@ -119,12 +119,12 @@
 
             <!-- Right: Badges & Live Session -->
             <div class="dashboard-side-col">
-                <!-- Mascot Zukko Daily Tip -->
+                <!-- Mascot Lingo Daily Tip -->
                 <div class="side-card mascot-tip-card">
                     <div class="mascot-tip-inner">
-                        <img src="/assets/mascot-zukko.svg" alt="Zukko" width="68" height="68">
+                        <img src="/assets/mascot-lingo.svg" alt="Lingo" width="68" height="68">
                         <div>
-                            <div class="mascot-tip-title">Zukko maslahati <?= icon('sparkles', '', 14) ?></div>
+                            <div class="mascot-tip-title">Lingo maslahati <?= icon('sparkles', '', 14) ?></div>
                             <p class="mascot-tip-text">
                                 «Har kuni 1 marta yangi so‘zning ovozini eshitib, baland ovozda qaytarsang, xotirang yanada mustahkam bo‘ladi!»
                             </p>

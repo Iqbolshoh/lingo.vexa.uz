@@ -1,0 +1,106 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 240" width="100%" height="100%">
+  <defs>
+    <radialGradient id="faceGrad" cx="45%" cy="40%" r="60%">
+      <stop offset="0%" stop-color="#fed7aa"/>
+      <stop offset="100%" stop-color="#fba868"/>
+    </radialGradient>
+    <linearGradient id="chapanGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0284c7"/>
+      <stop offset="50%" stop-color="#059669"/>
+      <stop offset="100%" stop-color="#f59e0b"/>
+    </linearGradient>
+    <linearGradient id="goldTrim" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#f59e0b"/>
+      <stop offset="50%" stop-color="#fde047"/>
+      <stop offset="100%" stop-color="#d97706"/>
+    </linearGradient>
+    <filter id="shadow" x="-10%" y="-10%" width="130%" height="130%">
+      <feDropShadow dx="0" dy="6" stdDeviation="6" flood-opacity="0.15"/>
+    </filter>
+  </defs>
+
+  <!-- Body / Chapan with Uzbek embroidery trim -->
+  <g id="body">
+    <!-- Traditional Chapan robe -->
+    <path d="M 60 190 C 60 145, 80 135, 120 135 C 160 135, 180 145, 180 190 C 180 220, 60 220, 60 190 Z" fill="url(#chapanGrad)" filter="url(#shadow)"/>
+    <!-- Gold Embroidered Collar / Zarchopon Yoqa -->
+    <path d="M 95 135 L 120 175 L 145 135" fill="none" stroke="url(#goldTrim)" stroke-width="8" stroke-linecap="round"/>
+    <circle cx="120" cy="188" r="4" fill="#fbbf24"/>
+    <circle cx="120" cy="204" r="4" fill="#fbbf24"/>
+  </g>
+
+  <!-- Hands / Waving Hand -->
+  <g id="hands">
+    <ellipse cx="62" cy="175" rx="14" ry="12" fill="#fed7aa"/>
+    <!-- Left waving hand -->
+    <g transform="rotate(-15 185 155)">
+      <ellipse cx="185" cy="155" rx="14" ry="16" fill="#fed7aa"/>
+      <circle cx="196" cy="150" r="5" fill="#fed7aa"/>
+      <circle cx="194" cy="142" r="4.5" fill="#fed7aa"/>
+      <circle cx="188" cy="138" r="4.5" fill="#fed7aa"/>
+      <circle cx="181" cy="137" r="4.5" fill="#fed7aa"/>
+    </g>
+  </g>
+
+  <!-- Head -->
+  <g id="head" filter="url(#shadow)">
+    <!-- Ears -->
+    <circle cx="68" cy="100" r="14" fill="#fba868"/>
+    <circle cx="68" cy="100" r="8" fill="#fed7aa"/>
+    <circle cx="172" cy="100" r="14" fill="#fba868"/>
+    <circle cx="172" cy="100" r="8" fill="#fed7aa"/>
+
+    <!-- Face -->
+    <ellipse cx="120" cy="102" rx="54" ry="52" fill="url(#faceGrad)"/>
+
+    <!-- Cheeks (Warm rosy blush) -->
+    <ellipse cx="86" cy="116" rx="9" ry="6" fill="#f43f5e" opacity="0.4"/>
+    <ellipse cx="154" cy="116" rx="9" ry="6" fill="#f43f5e" opacity="0.4"/>
+
+    <!-- Big Sparkly Eyes -->
+    <ellipse cx="96" cy="98" rx="10" ry="13" fill="#1e293b"/>
+    <ellipse cx="144" cy="98" rx="10" ry="13" fill="#1e293b"/>
+    <!-- Eye Sparkles -->
+    <circle cx="93" cy="93" r="4" fill="#ffffff"/>
+    <circle cx="99" cy="102" r="1.5" fill="#ffffff"/>
+    <circle cx="141" cy="93" r="4" fill="#ffffff"/>
+    <circle cx="147" cy="102" r="1.5" fill="#ffffff"/>
+
+    <!-- Friendly Eyebrows -->
+    <path d="M 85 82 Q 96 76 107 83" fill="none" stroke="#451a03" stroke-width="3.5" stroke-linecap="round"/>
+    <path d="M 133 83 Q 144 76 155 82" fill="none" stroke="#451a03" stroke-width="3.5" stroke-linecap="round"/>
+
+    <!-- Cute Nose -->
+    <path d="M 118 106 Q 120 110 123 107" fill="none" stroke="#c2410c" stroke-width="2.5" stroke-linecap="round"/>
+
+    <!-- Warm Open Smile with teeth -->
+    <path d="M 104 116 Q 120 134 136 116 Z" fill="#991b1b"/>
+    <path d="M 106 116 Q 120 124 134 116 Z" fill="#ffffff"/>
+    <path d="M 111 126 Q 120 134 129 126" fill="#f43f5e"/>
+  </g>
+
+  <!-- Traditional Chust Do'ppi (National Cap) -->
+  <g id="doppi" filter="url(#shadow)">
+    <!-- Base black shape of Do'ppi -->
+    <path d="M 68 64 C 68 36, 120 22, 120 22 C 120 22, 172 36, 172 64 C 172 74, 154 78, 120 78 C 86 78, 68 74, 68 64 Z" fill="#09090b"/>
+    <!-- 4-fold top ridge -->
+    <path d="M 120 22 L 120 78" stroke="#27272a" stroke-width="1.5"/>
+    <path d="M 68 64 Q 120 54 172 64" fill="none" stroke="#27272a" stroke-width="1.5"/>
+
+    <!-- Bodomgul (Traditional White Almond Embroidery) Patterns -->
+    <g transform="translate(90, 42) scale(0.65)">
+      <path d="M 18 36 C 4 30, -2 16, 8 6 C 16 -2, 28 6, 26 22 C 28 8, 42 12, 38 24 C 36 34, 28 36, 18 36 Z" fill="#ffffff"/>
+      <circle cx="16" cy="18" r="2.5" fill="#09090b"/>
+      <circle cx="26" cy="22" r="2" fill="#09090b"/>
+    </g>
+
+    <g transform="translate(132, 42) scale(-0.65, 0.65)">
+      <path d="M 18 36 C 4 30, -2 16, 8 6 C 16 -2, 28 6, 26 22 C 28 8, 42 12, 38 24 C 36 34, 28 36, 18 36 Z" fill="#ffffff"/>
+      <circle cx="16" cy="18" r="2.5" fill="#09090b"/>
+      <circle cx="26" cy="22" r="2" fill="#09090b"/>
+    </g>
+
+    <!-- Edge Zanjira (Zigzag / Wave Border at the rim) -->
+    <path d="M 72 68 Q 80 62 88 68 Q 96 62 104 68 Q 112 62 120 68 Q 128 62 136 68 Q 144 62 152 68 Q 160 62 168 68" fill="none" stroke="#ffffff" stroke-width="2.5" stroke-linecap="round"/>
+  </g>
+</svg>

@@ -8,6 +8,9 @@ $user = auth_user();
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?= e($title ?? 'LingoUz by Gulomov’s Academy') ?></title>
     <meta name="description" content="AQShda yashovchi 7–11 yoshli o‘zbek bolalari uchun o‘yinlashtirilgan, interaktiv o‘zbek tili maktabi.">
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg?v=1">
+    <link rel="icon" type="image/x-icon" href="/favicon.ico?v=1">
+    <link rel="apple-touch-icon" href="/favicon.svg?v=1">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -17,7 +20,7 @@ $user = auth_user();
     <header class="site-header">
         <div class="container header-inner">
             <a href="/" class="brand-logo">
-                <span class="logo-mark"><img src="/assets/mascot-zukko.svg" alt="Zukko" width="40" height="40" class="brand-mascot-img"></span>
+                <span class="logo-mark"><img src="/assets/mascot-lingo.svg" alt="Lingo" width="40" height="40" class="brand-mascot-img"></span>
                 <span class="logo-text">
                     <span class="brand-name">Lingo<span class="highlight">Uz</span></span>
                     <span class="brand-sub">by Gulomov’s Academy</span>
@@ -94,7 +97,7 @@ $user = auth_user();
         <div class="container footer-inner">
             <div class="footer-col brand-col">
                 <div class="footer-logo">
-                    <img src="/assets/mascot-zukko.svg" alt="Zukko" width="34" height="34" style="vertical-align:middle;">
+                    <img src="/assets/mascot-lingo.svg" alt="Lingo" width="34" height="34" style="vertical-align:middle;">
                     <span class="brand-name">Lingo<span class="highlight">Uz</span></span>
                 </div>
                 <p class="footer-desc">
