@@ -1,23 +1,24 @@
-<section class="hero-section">
+<section class="hero-section registon-hero">
+    <div class="registon-pattern-overlay"></div>
     <div class="container hero-inner">
         <div class="hero-content">
             <div class="hero-badge">
-                <span class="pulse-dot"></span>
+                <span class="badge-icon-wrap"><?= icon('registon', 'icon-registon-svg', 18) ?></span>
                 <span>AQShdagi 7–11 yoshli o‘zbek bolalari uchun</span>
             </div>
             <h1 class="hero-title">
-                O‘zbek tili — <span class="text-gradient">sehrli sarguzashtga</span> aylanadi! 🇺🇿✨
+                O‘zbek tili — <span class="text-gradient-registon">sehrli sarguzashtga</span> aylanadi!
             </h1>
             <p class="hero-subtitle">
-                Farzandingiz xorijda ona tilini unutyaptimi? Qisqa 3–5 daqiqalik qiziqarli darslar, interaktiv o‘yinlar, yutuqlar tizimi va haftalik jonli Zoom muloqotlari bilan o‘zbek tilida gapirishni odatga aylantiramiz.
+                Samarqand va Buxoro qadimiy madaniyati ruhida yaratilgan zamonaviy maktab. 3–5 daqiqalik qiziqarli darslar, interaktiv o‘yinlar, 80% testlar va haftalik jonli Zoom muloqotlari bilan o‘zbek tilida gapirishni odatga aylantiramiz.
             </p>
 
             <div class="hero-cta-group">
                 <a href="#ariza" class="btn btn-primary btn-lg pulse-hover">
-                    🚀 9 haftalik pilotga ariza berish
+                    <?= icon('sparkles', '', 20) ?> Pilot dasturiga yozilish
                 </a>
-                <a href="/login?as=student" class="btn btn-secondary btn-lg">
-                    🎮 Bolalar darsini sinab ko‘rish
+                <a href="/login" class="btn btn-secondary btn-lg">
+                    <?= icon('play', '', 18) ?> Darslarni boshlash
                 </a>
             </div>
 
@@ -28,7 +29,7 @@
                 </div>
                 <div class="stat-item">
                     <span class="stat-number">80% qoidasi</span>
-                    <span class="stat-label">Interaktiv test locking</span>
+                    <span class="stat-label">Interaktiv test nazorati</span>
                 </div>
                 <div class="stat-item">
                     <span class="stat-number">Zoom Live</span>
@@ -42,22 +43,24 @@
                 <div class="mascot-hero-wrap">
                     <img src="/assets/mascot-zukko.svg" alt="Zukko" class="mascot-floating-img" width="120" height="120">
                     <div class="mascot-speech-bubble">
-                        «Salom do‘stim! Men <strong>Zukko</strong>man. Birga o‘zbekcha o‘rganamiz!» 👋✨
+                        «Salom do‘stim! Men <strong>Zukko</strong>man. Birga o‘zbekcha o‘rganamiz!»
                     </div>
                 </div>
 
-                <div class="hero-interactive-card">
+                <div class="hero-interactive-card registon-arch-card">
+                    <div class="arch-top-ornament">
+                        <?= icon('registon', 'arch-icon', 28) ?>
+                    </div>
                     <div class="card-top-bar">
                         <span class="card-chip">NAMUNAVIY SO‘Z</span>
                         <span class="card-level">A0 / Boshlang‘ich</span>
                     </div>
-                    <div class="card-illustration">👋</div>
                     <h3 class="card-uz-word" id="heroWord">Salom!</h3>
                     <p class="card-pronounce">Talaffuz: <em>[Sah-lom]</em></p>
                     <p class="card-en-meaning">English: <strong>Hello / Hi</strong></p>
                     <div class="card-audio-action">
                         <button class="btn-voice" onclick="speakUzbek('Salom, xush kelibsiz!')" title="Ovozni eshitish">
-                            🔊 Ovozli eshitish
+                            <?= icon('volume-2', '', 16) ?> Ovozli eshitish
                         </button>
                     </div>
                     <div class="card-example">
@@ -66,10 +69,10 @@
                 </div>
 
                 <div class="floating-badge badge-trophy">
-                    🏆 <span>80%+ ball — keyingi dars ochildi!</span>
+                    <?= icon('trophy', '', 18) ?> <span>80%+ ball — keyingi dars ochildi!</span>
                 </div>
                 <div class="floating-badge badge-zoom">
-                    🎙️ <span>Shanba 11:00 AM EST • Zoom Live</span>
+                    <?= icon('video', '', 18) ?> <span>Shanba 11:00 AM EST • Zoom Live</span>
                 </div>
             </div>
         </div>
@@ -82,12 +85,14 @@
         <div class="section-header text-center">
             <span class="section-tag">MUAMMO VA YECHIM</span>
             <h2 class="section-title">Nega an’anaviy darslar xorijdagi bolalarga to‘g‘ri kelmaydi?</h2>
-            <p class="section-desc">AQShda ulg‘ayayotgan bolalar uchun maxsus ishlab chiqilgan yondashuv</p>
+            <p class="section-desc">AQShda ulg‘ayayotgan bolalar uchun maxsus ishlab chiqilgan ta’lim modeli</p>
         </div>
 
         <div class="problem-solution-grid">
             <div class="card-problem">
-                <div class="card-icon red-icon">❌</div>
+                <div class="card-icon red-icon">
+                    <?= icon('shield-check', '', 32) ?>
+                </div>
                 <h3>Eski an’anaviy usul</h3>
                 <ul class="comparison-list">
                     <li>40–60 daqiqalik zerikarli grammatika qoidalari</li>
@@ -98,11 +103,13 @@
             </div>
 
             <div class="card-solution">
-                <div class="card-icon green-icon">✅</div>
+                <div class="card-icon green-icon">
+                    <?= icon('check-circle', '', 32) ?>
+                </div>
                 <h3>LingoUz zamonaviy yechimi</h3>
                 <ul class="comparison-list">
                     <li><strong>3–5 daqiqalik mikro-darslar:</strong> animatsiya va rangli tasvirlar</li>
-                    <li><strong>O‘yinlashtirilgan mashqlar:</strong> Wordwall, Quizizz va kartochkalar</li>
+                    <li><strong>O‘yinlashtirilgan mashqlar:</strong> so‘zlarni moslashtirish va flesh-kartalar</li>
                     <li><strong>80% Content Locking:</strong> mavzuni o‘zlashtirmay keyingi darsga o‘tmaydi</li>
                     <li><strong>Haftalik Zoom Speaking Room:</strong> tengdoshlar bilan jonli suhbat</li>
                 </ul>
@@ -121,30 +128,30 @@
         </div>
 
         <div class="steps-grid">
-            <div class="step-card">
+            <div class="step-card registon-peshtaq-step">
                 <div class="step-num">1</div>
-                <div class="step-emoji">🎬</div>
+                <div class="step-icon-svg"><?= icon('video', 'step-svg', 36) ?></div>
                 <h4>Mikro-Video</h4>
                 <p>3–5 daqiqalik professional ovozli video. Qisqa, lo‘nda va vizual tasvirlarga boy.</p>
             </div>
 
-            <div class="step-card">
+            <div class="step-card registon-peshtaq-step">
                 <div class="step-num">2</div>
-                <div class="step-emoji">📚</div>
+                <div class="step-icon-svg"><?= icon('book-open', 'step-svg', 36) ?></div>
                 <h4>Vizual Lug‘at</h4>
                 <p>5–10 ta yangi so‘z: rasm, inglizcha tarjimasi va to‘g‘ri ovozli talaffuzi bilan.</p>
             </div>
 
-            <div class="step-card">
+            <div class="step-card registon-peshtaq-step">
                 <div class="step-num">3</div>
-                <div class="step-emoji">🎮</div>
+                <div class="step-icon-svg"><?= icon('sparkles', 'step-svg', 36) ?></div>
                 <h4>Interaktiv O‘yin</h4>
                 <p>So‘zlarni moslashtirish va flesh-kartalar orqali bilimni o‘yin bilan mustahkamlash.</p>
             </div>
 
-            <div class="step-card">
+            <div class="step-card registon-peshtaq-step">
                 <div class="step-num">4</div>
-                <div class="step-emoji">🏆</div>
+                <div class="step-icon-svg"><?= icon('trophy', 'step-svg', 36) ?></div>
                 <h4>80% Test & Zoom</h4>
                 <p>Yakuniy testdan 80%+ to‘planganda keyingi dars ochiladi va haftalik Zoomda suhbatlashiladi.</p>
             </div>
@@ -163,10 +170,10 @@
 
         <div class="lessons-grid">
             <?php foreach ($lessons as $l): ?>
-                <div class="lesson-preview-card">
+                <div class="lesson-preview-card registon-border-top">
                     <div class="lesson-card-header">
                         <span class="lesson-num"><?= $l['sequence_number'] ?>-Dars</span>
-                        <span class="lesson-duration">⏱️ <?= $l['duration_min'] ?> daqiqa</span>
+                        <span class="lesson-duration"><?= icon('clock', '', 14) ?> <?= $l['duration_min'] ?> daqiqa</span>
                     </div>
                     <h3 class="lesson-title"><?= e($l['title']) ?></h3>
                     <p class="lesson-en-title"><?= e($l['title_en']) ?></p>
@@ -174,9 +181,9 @@
 
                     <div class="lesson-footer">
                         <?php if ($l['sequence_number'] == 1): ?>
-                            <span class="badge-status open">🟢 Hamma uchun ochiq</span>
+                            <span class="badge-status open"><?= icon('check-circle', '', 14) ?> Boshlash uchun ochiq</span>
                         <?php else: ?>
-                            <span class="badge-status locked">🔒 Oldingi testdan 80%+ talab etiladi</span>
+                            <span class="badge-status locked"><?= icon('lock', '', 14) ?> Testdan 80%+ talab etiladi</span>
                         <?php endif; ?>
                     </div>
                 </div>
@@ -184,8 +191,8 @@
         </div>
 
         <div class="text-center" style="margin-top: 32px;">
-            <a href="/login?as=student" class="btn btn-secondary btn-lg">
-                Alijon (O‘quvchi) paneli orqali darslarni ko‘rish →
+            <a href="/login" class="btn btn-secondary btn-lg">
+                <?= icon('layers', '', 18) ?> O‘quvchi kabineti orqali darslarni boshlash
             </a>
         </div>
     </div>
@@ -194,21 +201,20 @@
 <!-- Interaktiv namunaviy lug'at -->
 <section class="section section-demo-interactive">
     <div class="container">
-        <div class="demo-box">
+        <div class="demo-box registon-mosaic-box">
             <div class="demo-header">
-                <span class="badge-pill">INTERAKTIV TALAFUZ SINOVI</span>
-                <h2>So‘zlarni ovozli eshitib ko‘ring! 🔊</h2>
+                <span class="badge-pill"><?= icon('volume-2', '', 14) ?> TALAFUZ SINOVI</span>
+                <h2>So‘zlarni ovozli eshitib ko‘ring!</h2>
                 <p>Quyidagi kartochkalarni bosing va o‘zbekcha talaffuzni tinglang:</p>
             </div>
 
             <div class="vocab-interactive-grid">
                 <?php foreach ($sampleVocab as $v): ?>
                     <div class="vocab-demo-card" onclick="speakUzbek('<?= e($v['word_uz']) ?>')">
-                        <div class="vocab-icon"><?= $v['icon'] ?></div>
                         <div class="vocab-word"><?= e($v['word_uz']) ?></div>
                         <div class="vocab-phonetic">[<?= e($v['pronunciation']) ?>]</div>
                         <div class="vocab-en"><?= e($v['word_en']) ?></div>
-                        <button class="btn-play-voice" type="button">🔊 Tinglash</button>
+                        <button class="btn-play-voice" type="button"><?= icon('volume-2', '', 14) ?> Tinglash</button>
                     </div>
                 <?php endforeach; ?>
             </div>
@@ -226,7 +232,7 @@
                     <h2 class="section-title">9 Haftalik Sinov Bosqichi (0 so‘m)</h2>
                 </div>
                 <div class="pilot-badge-target">
-                    🎯 5–10 nafar o‘quvchi (AQSh)
+                    <?= icon('users', '', 16) ?> 5–10 nafar o‘quvchi (AQSh)
                 </div>
             </div>
 
@@ -270,7 +276,7 @@
 <section class="section section-faq" id="faq">
     <div class="container">
         <div class="section-header text-center">
-            <span class="section-tag">KO‘P BERILADIGAN SAVOLLAR</span>
+            <span class="section-tag">SAVOL-JAVOBLAR</span>
             <h2 class="section-title">Ota-onalar nimalarni bilishi kerak?</h2>
         </div>
 
@@ -291,7 +297,7 @@
                     <span class="faq-toggle">+</span>
                 </summary>
                 <div class="faq-answer">
-                    <p>Har bir dars oxirida 5 ta qiziqarli test savoli bo‘ladi. Bola kamida 4 tasiga (80%) to‘g‘ri javob bermaguncha, keyingi dars ochilmaydi. Agar bola 80% dan kam to‘plasa, tizim xafa qilmasdan: «Yana bir bor urinib ko‘r!» deb darsni qayta o‘rganishni taklif qiladi.</p>
+                    <p>Har bir dars oxirida 5 ta qiziqarli test savoli bo‘ladi. Bola kamida 4 tasiga (80%) to‘g‘ri javob bermaguncha, keyingi dars ochilmaydi. Agar bola 80% dan kam to‘plasa, tizim: «Yana bir bor urinib ko‘r!» deb darsni qayta o‘rganishni taklif qiladi.</p>
                 </div>
             </details>
 
@@ -331,7 +337,7 @@
 <!-- Ariza topshirish formasi -->
 <section class="section section-enrollment" id="ariza">
     <div class="container">
-        <div class="enrollment-card">
+        <div class="enrollment-card registon-portal-card">
             <div class="enrollment-header text-center">
                 <span class="section-tag tag-white">BEPUL PILOTGA QO‘SHILISH</span>
                 <h2 class="title-white">Farzandingizni LingoUz Pilotiga yozing!</h2>
@@ -420,18 +426,9 @@
                 </div>
 
                 <button type="submit" class="btn btn-accent btn-xl btn-block">
-                    ✍️ Bepul Pilotga Yozilish va Boshlash
+                    <?= icon('arrow-right', '', 20) ?> Bepul Pilotga Yozilish va Boshlash
                 </button>
             </form>
         </div>
     </div>
 </section>
-
-<!-- Demo Test Quick Bar for Evaluators -->
-<div class="evaluator-bar">
-    <div class="container evaluator-inner">
-        <span>🚀 <strong>Tezkor sinov (PRD va Rahbariyat uchun):</strong></span>
-        <a href="/login?as=student" class="btn btn-sm btn-light">👦 Alijon (O‘quvchi) sifatida kirish</a>
-        <a href="/login?as=admin" class="btn btn-sm btn-dark">👑 Admin paneliga kirish</a>
-    </div>
-</div>

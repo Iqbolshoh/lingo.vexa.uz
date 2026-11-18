@@ -13,11 +13,11 @@ $user = auth_user();
     <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="/assets/style.css?v=<?= time() ?>">
 </head>
-<body>
+<body class="registon-theme">
     <header class="site-header">
         <div class="container header-inner">
             <a href="/" class="brand-logo">
-                <span class="logo-mark"><img src="/assets/mascot-zukko.svg" alt="Zukko Mascot" width="38" height="38" style="vertical-align:middle; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.15));"></span>
+                <span class="logo-mark"><img src="/assets/mascot-zukko.svg" alt="Zukko" width="40" height="40" class="brand-mascot-img"></span>
                 <span class="logo-text">
                     <span class="brand-name">Lingo<span class="highlight">Uz</span></span>
                     <span class="brand-sub">by Gulomov’s Academy</span>
@@ -26,16 +26,16 @@ $user = auth_user();
 
             <nav class="main-nav" id="mainNav">
                 <a href="/">Bosh sahifa</a>
-                <a href="/#metodika">Qanday ishlaydi?</a>
+                <a href="/#metodika">Metodika</a>
                 <a href="/#darslar">Darslar</a>
-                <a href="/parent-tips">📖 Ota-onalarga</a>
+                <a href="/parent-tips">Ota-onalarga</a>
                 <a href="/#ariza" class="nav-highlight">Pilotga ariza</a>
                 <?php if ($user): ?>
-                    <a href="/dashboard" class="nav-pill">🎒 O‘quvchi Paneli</a>
-                    <a href="/live">🎙️ Jonli Muloqot</a>
-                    <a href="/certificate" class="nav-cert">🎓 Diplom</a>
+                    <a href="/dashboard" class="nav-pill"><?= icon('layers', '', 16) ?> O‘quvchi Paneli</a>
+                    <a href="/live"><?= icon('video', '', 16) ?> Jonli Muloqot</a>
+                    <a href="/certificate" class="nav-cert"><?= icon('award', '', 16) ?> Diplom</a>
                     <?php if (is_admin()): ?>
-                        <a href="/admin" class="nav-admin">⚙️ Admin</a>
+                        <a href="/admin" class="nav-admin"><?= icon('shield-check', '', 16) ?> Admin</a>
                     <?php endif; ?>
                 <?php endif; ?>
             </nav>
@@ -43,18 +43,22 @@ $user = auth_user();
             <div class="header-actions">
                 <?php if ($user): ?>
                     <div class="user-chip">
-                        <span class="user-avatar"><?= $user['role'] === 'admin' ? '👑' : '👦' ?></span>
-                        <span class="user-name"><?= e($user['display_name']) ?></span>
+                        <a href="/profile" class="user-profile-link" title="Profil sozlamalari">
+                            <span class="user-avatar-icon"><?= icon('user', '', 16) ?></span>
+                            <span class="user-name"><?= e($user['display_name']) ?></span>
+                        </a>
                         <form action="/logout" method="POST" style="display:inline; margin-left:8px;">
                             <?= csrf_field() ?>
-                            <button type="submit" class="btn-logout" title="Chiqish">✕</button>
+                            <button type="submit" class="btn-logout" title="Chiqish"><?= icon('log-out', '', 14) ?></button>
                         </form>
                     </div>
                 <?php else: ?>
                     <a href="/login" class="btn btn-outline btn-sm">Kirish</a>
                     <a href="/register" class="btn btn-primary btn-sm">Ro‘yxatdan o‘tish</a>
                 <?php endif; ?>
-                <button class="menu-toggle" id="menuToggle" aria-label="Menyu">☰</button>
+                <button class="menu-toggle" id="menuToggle" aria-label="Menyu">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+                </button>
             </div>
         </div>
     </header>
@@ -63,19 +67,19 @@ $user = auth_user();
         <div class="container flash-container">
             <?php if ($msg = get_flash('success')): ?>
                 <div class="flash-alert flash-success">
-                    <span class="flash-icon">🎉</span>
+                    <span class="flash-icon"><?= icon('check-circle', '', 20) ?></span>
                     <span><?= e($msg) ?></span>
                 </div>
             <?php endif; ?>
             <?php if ($msg = get_flash('error')): ?>
                 <div class="flash-alert flash-error">
-                    <span class="flash-icon">⚠️</span>
+                    <span class="flash-icon"><?= icon('shield-check', '', 20) ?></span>
                     <span><?= e($msg) ?></span>
                 </div>
             <?php endif; ?>
             <?php if ($msg = get_flash('info')): ?>
                 <div class="flash-alert flash-info">
-                    <span class="flash-icon">ℹ️</span>
+                    <span class="flash-icon"><?= icon('sparkles', '', 20) ?></span>
                     <span><?= e($msg) ?></span>
                 </div>
             <?php endif; ?>
@@ -90,41 +94,41 @@ $user = auth_user();
         <div class="container footer-inner">
             <div class="footer-col brand-col">
                 <div class="footer-logo">
-                    <span class="logo-mark">🇺🇿</span>
+                    <img src="/assets/mascot-zukko.svg" alt="Zukko" width="34" height="34" style="vertical-align:middle;">
                     <span class="brand-name">Lingo<span class="highlight">Uz</span></span>
                 </div>
                 <p class="footer-desc">
                     Gulomov’s Academy tashabbusi bilan AQShda yashovchi 7–11 yoshli o‘zbek bolalari uchun yaratilgan zamonaviy, interaktiv o‘zbek tili akademiyasi.
                 </p>
-                <div class="badge-safe">🛡️ Bolalar xavfsizligi va COPPA standartlariga mos</div>
+                <div class="badge-safe"><?= icon('shield-check', '', 16) ?> COPPA va bolalar xavfsizligi talablariga mos</div>
             </div>
 
             <div class="footer-col">
-                <h4>Tezkor havolalar</h4>
+                <h4>Tezkor sahifalar</h4>
                 <ul>
                     <li><a href="/">Bosh sahifa</a></li>
-                    <li><a href="/#metodika">Metodika va qoidalar</a></li>
-                    <li><a href="/#darslar">5 ta MVP darslari</a></li>
-                    <li><a href="/#ariza">Bepul pilotga ariza</a></li>
+                    <li><a href="/#metodika">Ta’lim metodikasi</a></li>
+                    <li><a href="/#darslar">5 ta darslik MVP rejasi</a></li>
+                    <li><a href="/#ariza">Pilot dasturiga yozilish</a></li>
                     <li><a href="/live">Zoom Speaking Room</a></li>
                 </ul>
             </div>
 
             <div class="footer-col">
-                <h4>Xavfsizlik va Shartlar</h4>
+                <h4>Ota-onalar va Qoidalar</h4>
                 <ul>
+                    <li><a href="/parent-tips">Ota-onalar uchun qo‘llanma</a></li>
                     <li><a href="/privacy">Maxfiylik siyosati (COPPA)</a></li>
-                    <li><a href="/#faq">Ota-onalar uchun FAQ</a></li>
-                    <li><a href="/login?as=admin">Admin Demo</a></li>
-                    <li><a href="/login?as=student">O‘quvchi Demo (Alijon)</a></li>
+                    <li><a href="/#faq">Ko‘p beriladigan savollar</a></li>
+                    <li><a href="/login">Tizimga kirish</a></li>
                 </ul>
             </div>
 
             <div class="footer-col contact-col">
                 <h4>Aloqa va Pilot</h4>
-                <p>📍 Toshkent — Nyu-York</p>
-                <p>📧 gulomov@vexa.uz</p>
-                <p>💬 Telegram: @gulomovs_academy</p>
+                <p><?= icon('map-pin', '', 14) ?> Toshkent — Nyu-York</p>
+                <p>gulomov@vexa.uz</p>
+                <p>Telegram: @gulomovs_academy</p>
                 <div class="timezones-pill">🇺🇸 EST • CST • MST • PST</div>
             </div>
         </div>
@@ -132,7 +136,7 @@ $user = auth_user();
         <div class="footer-bottom">
             <div class="container footer-bottom-inner">
                 <p>© 2026 LingoUz by Gulomov’s Academy. Barcha huquqlar himoyalangan.</p>
-                <p class="tech-tag">Laravel + SQLite | Versiya 1.0 MVP</p>
+                <p class="tech-tag">Registon Heritage Edition | Laravel + SQLite</p>
             </div>
         </div>
     </footer>

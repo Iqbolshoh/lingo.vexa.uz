@@ -1,62 +1,71 @@
 # 🇺🇿 LingoUz by Gulomov’s Academy — Mukammallashtirish va Rivojlantirish Rejasi (plan.md)
 
-Ushbu reja **LingoUz** platformasini AQShda yashovchi 7–11 yoshli o‘zbek bolalari uchun jahon darajasidagi (Duolingo / Khan Academy Kids uslubidagi), ammo to‘liq **o‘zbekona milliy ruhda va «chotkiy» dizaynda** rivojlantirishning bosqichma-bosqich yo‘l xaritasidir.
+Ushbu hujjat **LingoUz** platformasini AQShda yashovchi 7–11 yoshli o‘zbek bolalari uchun jahon darajasidagi, **Registon va qadimiy O‘zbekiston me’morchiligi ruhidagi nufuzli milliy dizayn** hamda to‘liq **haqiqiy backend (Laravel + SQLite)** asosida rivojlantirishning bosqichma-bosqich yo‘l xaritasidir.
 
 ---
 
-## 🎨 Asosiy G‘oya va Vizual Konseptsiya: «O‘zbekona Sarguzasht»
+## 🏛️ 1. Dizayn Falsafasi: «Qadimiy Registon & Zamonamiy Ta’lim»
 
-1. **Milliy Maskot — «Zukko» (Do‘ppili do‘st):**
-   - Chust do‘ppisini kiygan yoqimli, aqlli maskot. Bolaga har bir darsda hamrohlik qiladi, yutuqlarda quvonadi, xato qilganda qo‘llab-quvvatlaydi.
-2. **Milliy Vizual Kolorit:**
-   - **Zumrad Yashil & Moviy Osmon:** O‘zbekiston tabiati va Registon moviy koshinlari ranglari.
-   - **Tillarang Zarchopon (Oltin sariq):** Yutuqlar, tangalar va nishonlar uchun.
-   - **Anor Qizili (Ruby Red):** Jonli muloqot va e’tibor qaratiladigan elementlar.
-   - **Bodomgul va Atlas Naqshlari:** Orqa fonlarda nozik milliy geometrik ornamentlar.
-3. **Jonli Ovoz va Tovush Effektlari (Sound Effects):**
-   - Web Audio API orqali sintez qilingan bolalarga yoqadigan tovushlar:
-     - 🪙 Tanga yig‘ish ovozi (*Coin pickup*)
-     - ✨ Kartochka to‘g‘ri topilganda jarangdor zang (*Success chime*)
-     - 🎺 Testni 80%+ bilan topshirganda tantanali g‘alaba sadosi (*Fanfare*)
-   - Har bir so‘zning tiniq o‘zbekcha talaffuzi (Audio + Web Speech).
+1. **Registon va Samarqand Koshinlari (Majolica Azure & Gold):**
+   - Moviy gumbazlar va Registon maydonining lojuvard/feruza koshinlari (`#0284c7`, `#0c4a6e`, `#0ea5e9`).
+   - Tillakori madrasasining tillarang-oltin va Buxoro g‘ishtin qadimiy minoralari koloritlari (`#d97706`, `#b45309`, `#f59e0b`).
+   - Peshtaq va gumbazli arkali kartochkalar (`border-radius: 32px 32px 16px 16px` va moviy arkali hoshiyalar).
+2. **Professional Vektorli SVG Ikonkalar (No Emojis):**
+   - Barcha sahifalardagi nomutanosib emojilar butunlay chiqarib tashlandi.
+   - O‘rniga aniq, zamonaviy, professional SVG vektor ikonkalar tizimi (`src/icons.php` -> `icon(...)`) joriy qilindi.
+3. **Milliy Maskot — «Zukko»:**
+   - Chust do‘ppisini kiygan yoqimli do‘st SVG formatida platformaga integratsiya qilindi.
 
 ---
 
-## 🚀 Bosqichma-Bosqich Amalga Oshirish Rejasi
+## ⚙️ 2. Haqiqiy Backend Arxitekturasi (No GET Hacks)
 
-### ✅ 1-BOSQICH: O‘zbekona «Chotkiy» Dizayn Tizimi va Milliy Maskot
-- [x] Saytning umumiy CSS/UI dizaynini yangilash (Do‘ppi, Atlas to‘lqinlari, milliy bayroq va naqshlar uyg‘unligi).
-- [x] Bosh sahifa (Hero), Navbar va Footer’ni boyitilgan milliy koloritga o‘tkazish.
-- [x] «Zukko» maskotini SVG formatida sahifalarga integratsiya qilish (Salomlashayotgan, kitob o‘qiyotgan, g‘alaba qozongan holatlar).
-- [x] Foydalanuvchi interfeysiga yumshoq 3D kartochkalar, jilvador gradientlar va bolalar uchun qulay yirik tugmalar qo‘shish.
-
-### ✅ 2-BOSQICH: Interaktiv Ovozli Pleyer va Ag‘dariluvchi Fleshkartalar (Flip Cards)
-- [x] Vizual lug‘at kartochkalariga **3D Flip (Ag‘darilish)** effektini qo‘shish:
-  - Old tomoni: Rasm, o‘zbekcha so‘z, talaffuz tugmasi.
-  - Orqa tomoni: Inglizcha tarjimasi, misol jumla va o‘zbekona mini-tushuntirish.
-- [x] **Web Audio API Tovush Effektlari:** Hech qanday og‘ir fayllarsiz to‘g‘ridan-to‘g‘ri brauzerda sintez qilinadigan tovushlar (Click, Ding, Coin, Fanfare).
-- [x] Ovozni o‘chirib-yoqish (Sound Effects Toggle) boshqaruvi.
-
-### ✅ 3-BOSQICH: O‘yinlashtirish Tizimi (Gamification — Tangalar va Streak)
-- [x] **«Zukko Tangalari» (Lingo Coins 🪙):** Har bir o‘rganilgan so‘z va topshirilgan test uchun tangalar berish.
-- [x] **Kunlik Faollik (Streak 🔥):** O‘quvchining har kungi darsga kirishini rag‘batlantirish.
-- [x] So‘zlarni moslashtirish o‘yiniga animatsion ball va tanga berish logikasini ulash.
-
-### ✅ 4-BOSQICH: Rasmiy Sertifikat / Diplom Generatori (Certificate)
-- [x] 5 ta darsni muvaffaqiyatli yakunlagan bolalar uchun rasmiy nomlangan **«O‘zbek Tili Bilimdoni Diplomi»** sahifasini yaratish.
-- [x] Chop etish (Print / PDF) va ijtimoiy tarmoqda ota-onalar faxr bilan bo‘lishishi uchun tayyor dizayn.
-
-### ✅ 5-BOSQICH: Ota-onalar uchun Rivojlanish Hisoboti (Parent Progress)
-- [x] Bolaning qaysi darsda qancha so‘z yodlaganini ko‘rsatuvchi tushunarli infografika.
-- [x] Ota-onalarga farzandi bilan uyda o‘zbekcha muloqot qilish bo‘yicha amaliy 5 ta tavsiya (Tips for Diaspora Parents).
-
-### ✅ 6-BOSQICH: Testing, Xavfsizlik va Git Versiyalash
-- [x] `student-app fix-perms lingo` orqali SQLite va Linux huquqlarini tekshirish.
-- [x] Barcha marshrutlarni (Desktop & Mobile) test qilish.
-- [x] Git’ga toza commit qilish va GitHub’ga ulashga tayyorlash.
+1. **To‘liq Xavfsiz Autentifikatsiya (POST-Only):**
+   - Tizimda soxta yoki g‘alati `GET` orqali login qilish (`?as=...`) butunlay olib tashlandi.
+   - Barcha harakatlar qat’iy `POST`, CSRF-token tekshiruvi, sessiya regeneratsiyasi va `password_hash` / `password_verify` orqali ishlaydi.
+   - `/login` sahifasida faqat test uchun qulay ma’lumot beruvchi chiroyli kartochka joylashtirilgan bo‘lib, u formadagi maydonlarni to‘ldirib, haqiqiy `POST` so‘rov yuboradi.
+2. **Foydalanuvchi Profili Boshqaruvi (`/profile`):**
+   - O‘quvchi va ota-onalar o‘z ismini, yoshini, darajasini, vaqt zonasini tahrirlashi hamda parolini xavfsiz yangilashi mumkin.
+3. **Administrator Boshqaruvi (`/admin`):**
+   - Ota-onalarning arizalarini to‘g‘ridan-to‘g‘ri boshqarish (Holat: *Kutilmoqda*, *Bog‘lanildi*, *Tasdiqlandi*, *Rad etildi* — `POST /admin/enrollments/status`).
+   - Manual Override: O‘quvchilarga istalgan darsni majburiy ochib berish (`POST /admin/unlock`).
+   - CSV Eksport: Arizalarni bir marta bosish bilan yuklab olish.
+4. **80% Content Locking Qoidasi:**
+   - Server darajasida qat’iy tekshiruv: o‘quvchi dars testidan kamida 80% to‘plamasa, keyingi dars URL orqali ham ochilmaydi.
 
 ---
 
-## 📌 Hozirgi Holat
-- **Faol bosqich:** 1- va 2-bosqichlar to‘liq tatbiq qilinmoqda.
-- **Domen:** https://lingo.vexa.uz
+## 🚀 Bosqichma-Bosqich Yo‘l Xaritasi
+
+### 1-BOSQICH: Registon & Milliy Me’morchilik Dizayni [BAJARILDI ✅]
+- [x] Registon va Samarqand moviy koshinlari, Buxoro oltin-zar naqshlari uslubidagi dizayn yaratildi.
+- [x] Peshtaq arkali kartochkalar, lojuvard foni va naqshlar tatbiq etildi.
+- [x] Barcha emojilar professional SVG vektor ikonkalariga (`src/icons.php`) almashtirildi.
+
+### 2-BOSQICH: Haqiqiy Backend & Autentifikatsiya [BAJARILDI ✅]
+- [x] Soxta GET so‘rovlar va pastdagi sinov paneli to‘liq o‘chirildi.
+- [x] Haqiqiy POST login, ro‘yxatdan o‘tish va sessiya xavfsizligi ta’minlandi.
+- [x] O‘quvchi profili sahifasi (`/profile`) va parolni yangilash funksiyasi qo‘shildi.
+- [x] Administrator uchun arizalar holatini boshqarish (`POST /admin/enrollments/status`) ulandi.
+
+### 3-BOSQICH: Interaktiv Dars Pleyeri va 3D Flip Lug‘at [BAJARILDI ✅]
+- [x] 3D ag‘dariluvchi (Flip) fleshkartalar: old tomoni o‘zbekcha va ovozli, orqa tomoni inglizcha ma’no va misollar.
+- [x] Web Audio API orqali zang, tanga va fanfara tovush effektlari.
+- [x] Web Speech API orqali so‘zlarni toza o‘zbekcha talaffuz qilish.
+
+### 4-BOSQICH: O‘yinlashtirish va Sertifikatlash [BAJARILDI ✅]
+- [x] So‘zlarni moslashtirish mini-o‘yini va tangalar hisobi.
+- [x] 80% test natijasi bo‘yicha konfetti va g‘alaba ekrani.
+- [x] Rasmiy «O‘zbek Tili Bilimdoni Diplomi» generatori (`/certificate`).
+
+### 5-BOSQICH: Ota-onalar Qo‘llanmasi va Xavfsizlik [BAJARILDI ✅]
+- [x] Diasporadagi ota-onalarga 5 ta oltin tavsiya (`/parent-tips`).
+- [x] COPPA standartlari bo‘yicha maxfiylik siyosati (`/privacy`).
+
+---
+
+## 📌 Server va Texnik Holat
+* **URL:** https://lingo.vexa.uz
+* **Loyiha yo‘li:** `/var/www/startups/lingo`
+* **Arxitektura:** Laravel + SQLite (izolyatsiyalangan PHP-FPM poolida 5ms tezlikda ishlaydi).
+* **Git:** Barcha o‘zgarishlar `main` branchida commit qilingan.

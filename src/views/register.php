@@ -2,7 +2,9 @@
     <div class="container">
         <div class="auth-card">
             <div class="auth-header">
-                <span class="auth-icon">🎒</span>
+                <div class="auth-icon-wrap">
+                    <?= icon('user', 'auth-svg-icon', 36) ?>
+                </div>
                 <h1>O‘quvchini Ro‘yxatdan O‘tkazish</h1>
                 <p>Ota-ona yoki bola uchun tezkor profil yaratish</p>
             </div>
@@ -55,8 +57,8 @@
                     </select>
                 </div>
 
-                <button type="submit" class="btn btn-accent btn-lg btn-block">
-                    🚀 Boshlash va 1-Darsni Ochish
+                <button type="submit" class="btn btn-primary btn-lg btn-block">
+                    Boshlash va 1-Darsni Ochish <?= icon('arrow-right', '', 18) ?>
                 </button>
             </form>
 

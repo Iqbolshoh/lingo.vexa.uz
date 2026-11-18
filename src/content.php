@@ -12,11 +12,11 @@ function seed_initial_data(PDO $pdo): void
 
     // 2. Default Badges
     $badges = [
-        ['first_step', 'Birinchi qadam! 🌟', '1-darsni muvaffaqiyatli yakunladingiz!', '🌱'],
-        ['smart_kid', 'Bilimdon bola 🧠', 'Dars testida 80% yoki undan yuqori natija ko‘rsatildi!', '⚡'],
-        ['halfway_hero', 'Uch qahramon 🏅', '3 ta darsni to‘liq o‘zlashtirdingiz!', '🎯'],
-        ['speaker', 'Jonli Muloqotchi 🗣️', 'Zoom jonli muloqot mashg‘ulotida qatnashdingiz!', '🎙️'],
-        ['lingo_master', 'O‘zbek Tili Chempioni 🏆', 'Barcha 5 ta MVP darslarini a’lo darajada tugatdingiz!', '👑'],
+        ['first_step', 'Birinchi qadam', '1-darsni muvaffaqiyatli yakunladingiz!', 'award'],
+        ['smart_kid', 'Bilimdon bola', 'Dars testida 80% yoki undan yuqori natija ko‘rsatildi!', 'trophy'],
+        ['halfway_hero', 'Uch qahramon', '3 ta darsni to‘liq o‘zlashtirdingiz!', 'sparkles'],
+        ['speaker', 'Jonli Muloqotchi', 'Zoom jonli muloqot mashg‘ulotida qatnashdingiz!', 'video'],
+        ['lingo_master', 'O‘zbek Tili Chempioni', 'Barcha 5 ta MVP darslarini a’lo darajada tugatdingiz!', 'registon'],
     ];
     $stmtBadge = $pdo->prepare('INSERT OR IGNORE INTO badges (code, title, description, icon) VALUES (?, ?, ?, ?)');
     foreach ($badges as $b) {
@@ -388,6 +388,6 @@ function seed_initial_data(PDO $pdo): void
     // 6. Live Sessions (Zoom Speaking Room)
     $pdo->exec("
         INSERT OR IGNORE INTO live_sessions (id, title, description, starts_at, timezone, zoom_url, mentor_name, status)
-        VALUES (1, 'Haftalik Jonli Muloqot: Do‘stlar va Oila 🗣️', 'O‘tilgan mavzularni birga suhbatlashib mustahkamlaymiz. O‘yinlar va erkin muloqot.', datetime('now', '+3 days', '11:00'), 'America/New_York (EST)', 'https://zoom.us/j/998877665544', 'Gulomov Ustoz', 'scheduled')
+        VALUES (1, 'Haftalik Jonli Muloqot: Do‘stlar va Oila', 'O‘tilgan mavzularni birga suhbatlashib mustahkamlaymiz. O‘yinlar va erkin muloqot.', datetime('now', '+3 days', '11:00'), 'America/New_York (EST)', 'https://zoom.us/j/998877665544', 'Gulomov Ustoz', 'scheduled')
     ");
 }

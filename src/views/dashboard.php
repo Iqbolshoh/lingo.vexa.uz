@@ -1,11 +1,11 @@
 <div class="dashboard-page">
     <div class="container">
         <!-- Top Welcome Card -->
-        <div class="welcome-card">
+        <div class="welcome-card registon-welcome">
             <div class="welcome-text">
-                <span class="welcome-badge">O‘quvchi Fazosi 🚀</span>
+                <span class="welcome-badge"><?= icon('registon', '', 14) ?> O‘quvchi Fazosi</span>
                 <h1 class="welcome-title">
-                    Assalomu alaykum, <span class="student-name"><?= e($user['display_name']) ?></span>! 🌟
+                    Assalomu alaykum, <span class="student-name"><?= e($user['display_name']) ?></span>!
                 </h1>
                 <p class="welcome-sub">
                     Bugun qaysi yangi o‘zbekcha so‘zlarni o‘rganamiz? Sarguzashtni davom ettirishga tayyormisiz?
@@ -13,13 +13,13 @@
 
                 <div class="dashboard-cta-row">
                     <a href="/lessons/<?= $nextLessonId ?>" class="btn btn-primary btn-lg pulse-hover">
-                        ▶️ Darsni Davom Ettirish (<?= $nextLessonId ?>-Dars)
+                        <?= icon('play', '', 18) ?> Darsni Davom Ettirish (<?= $nextLessonId ?>-Dars)
                     </a>
                     <a href="/live" class="btn btn-secondary btn-lg">
-                        🎙️ Jonli Zoom Xonasi
+                        <?= icon('video', '', 18) ?> Jonli Zoom Xonasi
                     </a>
                     <a href="/certificate" class="btn btn-accent btn-lg">
-                        🎓 Diplomingizni ko‘rish
+                        <?= icon('award', '', 18) ?> Diplomingizni ko‘rish
                     </a>
                 </div>
             </div>
@@ -44,7 +44,7 @@
             <!-- Left: 5 Lessons List -->
             <div class="dashboard-main-col">
                 <div class="section-heading-row">
-                    <h2>📚 Darslar Xaritasi (MVP Kursi)</h2>
+                    <h2><?= icon('book-open', '', 22) ?> Darslar Xaritasi (MVP Kursi)</h2>
                     <span class="rule-hint">Qoida: Keyingi dars ochilishi uchun testdan <strong>80%+</strong> kerak!</span>
                 </div>
 
@@ -60,11 +60,11 @@
                             <div class="card-seq-col">
                                 <div class="seq-circle">
                                     <?php if ($isCompleted): ?>
-                                        ✅
+                                        <?= icon('check-circle', 'icon-green', 22) ?>
                                     <?php elseif ($isAvailable): ?>
                                         <?= $l['sequence_number'] ?>
                                     <?php else: ?>
-                                        🔒
+                                        <?= icon('lock', 'icon-gray', 20) ?>
                                     <?php endif; ?>
                                 </div>
                                 <div class="seq-connector"></div>
@@ -73,18 +73,18 @@
                             <div class="card-body-col">
                                 <div class="card-meta">
                                     <span class="meta-seq"><?= $l['sequence_number'] ?>-DARS</span>
-                                    <span class="meta-time">⏱️ <?= $l['duration_min'] ?> daqiqa</span>
+                                    <span class="meta-time"><?= icon('clock', '', 13) ?> <?= $l['duration_min'] ?> daqiqa</span>
                                     <?php if ($isCompleted): ?>
                                         <span class="badge-status completed">
-                                            A’lo natija: <?= $l['best_score'] ?>% 🏆
+                                            <?= icon('trophy', '', 14) ?> A’lo natija: <?= $l['best_score'] ?>%
                                         </span>
                                     <?php elseif ($isAvailable): ?>
                                         <span class="badge-status open">
-                                            Boshlashga tayyor ✨
+                                            <?= icon('sparkles', '', 14) ?> Boshlashga tayyor
                                         </span>
                                     <?php else: ?>
                                         <span class="badge-status locked">
-                                            Qulflangan 🔒
+                                            <?= icon('lock', '', 14) ?> Qulflangan
                                         </span>
                                     <?php endif; ?>
                                 </div>
@@ -96,18 +96,18 @@
                                 <div class="card-actions">
                                     <?php if ($isCompleted): ?>
                                         <a href="/lessons/<?= $l['id'] ?>" class="btn btn-sm btn-outline">
-                                            🔄 Darsni qayta ko‘rish
+                                            <?= icon('rotate-cw', '', 14) ?> Darsni qayta ko‘rish
                                         </a>
                                         <a href="/lessons/<?= $l['id'] ?>#test" class="btn btn-sm btn-secondary">
-                                            📝 Test natijalari
+                                            <?= icon('check-circle', '', 14) ?> Test natijalari
                                         </a>
                                     <?php elseif ($isAvailable): ?>
                                         <a href="/lessons/<?= $l['id'] ?>" class="btn btn-sm btn-primary">
-                                            ▶️ Darsni boshlash
+                                            <?= icon('play', '', 14) ?> Darsni boshlash
                                         </a>
                                     <?php else: ?>
                                         <div class="locked-note">
-                                            <span>🔒 Ushbu darsni ochish uchun avval <strong><?= $l['sequence_number'] - 1 ?>-dars</strong> testidan kamida <strong>80%</strong> to‘plang.</span>
+                                            <span><?= icon('lock', '', 13) ?> Ushbu darsni ochish uchun avval <strong><?= $l['sequence_number'] - 1 ?>-dars</strong> testidan kamida <strong>80%</strong> to‘plang.</span>
                                         </div>
                                     <?php endif; ?>
                                 </div>
@@ -124,9 +124,9 @@
                     <div class="mascot-tip-inner">
                         <img src="/assets/mascot-zukko.svg" alt="Zukko" width="68" height="68">
                         <div>
-                            <div class="mascot-tip-title">Zukko maslahati 💡</div>
+                            <div class="mascot-tip-title">Zukko maslahati <?= icon('sparkles', '', 14) ?></div>
                             <p class="mascot-tip-text">
-                                «Har kuni 1 marta yangi so‘zni ovozini eshitib, baland ovozda qaytarsang, xotirang yanada mustahkam bo‘ladi!»
+                                «Har kuni 1 marta yangi so‘zning ovozini eshitib, baland ovozda qaytarsang, xotirang yanada mustahkam bo‘ladi!»
                             </p>
                         </div>
                     </div>
@@ -135,7 +135,7 @@
                 <!-- Badges Box -->
                 <div class="side-card badges-card">
                     <div class="side-card-header">
-                        <h3>🏆 Yutuqlar va Nishonlar</h3>
+                        <h3><?= icon('award', '', 18) ?> Yutuqlar va Nishonlar</h3>
                         <span class="badge-count">
                             <?= count(array_filter($badges, fn($b) => !empty($b['earned_at']))) ?> / <?= count($badges) ?>
                         </span>
@@ -146,7 +146,7 @@
                             <?php $isEarned = !empty($b['earned_at']); ?>
                             <div class="badge-item <?= $isEarned ? 'earned' : 'locked' ?>" title="<?= e($b['description']) ?>">
                                 <div class="badge-icon-wrap">
-                                    <span class="badge-emoji"><?= $b['icon'] ?></span>
+                                    <span class="badge-svg-wrap"><?= $isEarned ? icon('trophy', 'icon-gold', 22) : icon('lock', 'icon-gray', 20) ?></span>
                                 </div>
                                 <div class="badge-text-wrap">
                                     <div class="badge-title">
@@ -159,7 +159,7 @@
                                     <?php if ($isEarned): ?>
                                         <div class="badge-date">Olingan: <?= date('d.m.Y', strtotime($b['earned_at'])) ?></div>
                                     <?php else: ?>
-                                        <div class="badge-lock-hint">🔒 Hali olinmadi</div>
+                                        <div class="badge-lock-hint"><?= icon('lock', '', 11) ?> Hali olinmadi</div>
                                     <?php endif; ?>
                                 </div>
                             </div>
@@ -178,20 +178,23 @@
                         <p class="live-desc"><?= e($liveSession['description']) ?></p>
 
                         <div class="live-meta-row">
-                            <div>📅 <strong>Sana:</strong> <?= date('d-M, H:i', strtotime($liveSession['starts_at'])) ?></div>
-                            <div>⏰ <strong>Vaqt:</strong> <?= e($liveSession['timezone']) ?></div>
-                            <div>👨‍🏫 <strong>Ustoz:</strong> <?= e($liveSession['mentor_name']) ?></div>
+                            <div><?= icon('calendar', '', 14) ?> <strong>Sana:</strong> <?= date('d-M, H:i', strtotime($liveSession['starts_at'])) ?></div>
+                            <div><?= icon('clock', '', 14) ?> <strong>Vaqt:</strong> <?= e($liveSession['timezone']) ?></div>
+                            <div><?= icon('user', '', 14) ?> <strong>Ustoz:</strong> <?= e($liveSession['mentor_name']) ?></div>
                         </div>
 
                         <a href="/live" class="btn btn-accent btn-block" style="margin-top: 14px;">
-                            🎙️ Zoom Xonasiga Kirish
+                            <?= icon('video', '', 16) ?> Zoom Xonasiga Kirish
                         </a>
                     </div>
                 <?php endif; ?>
 
                 <!-- User profile info -->
                 <div class="side-card profile-mini-card">
-                    <h4>👤 O‘quvchi Ma’lumoti</h4>
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+                        <h4 style="margin:0;"><?= icon('user', '', 16) ?> O‘quvchi Ma’lumoti</h4>
+                        <a href="/profile" class="btn btn-xs btn-outline" title="Tahrirlash"><?= icon('settings', '', 12) ?> Sozlamalar</a>
+                    </div>
                     <p><strong>Ism:</strong> <?= e($user['display_name']) ?></p>
                     <p><strong>Yoshi:</strong> <?= e($user['age_band']) ?> yosh</p>
                     <p><strong>Daraja:</strong> <?= e($user['language_level']) ?></p>

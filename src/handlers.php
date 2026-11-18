@@ -107,28 +107,94 @@ function action_login(): void
     }
 
     login_user($user);
-    flash('success', 'Xush kelibsiz, ' . e($user['display_name']) . '! 🌟');
+    flash('success', 'Xush kelibsiz, ' . e($user['display_name']) . '!');
     redirect($user['role'] === 'admin' ? '/admin' : '/dashboard');
 }
 
-function action_quick_login(): void
+function page_profile(): void
 {
-    // Convenient one-click login for presentation/pilot testing
-    $role = $_GET['as'] ?? 'student';
-    $email = ($role === 'admin') ? 'admin@lingo.uz' : 'ali@lingo.uz';
+    if (!auth_check()) {
+        redirect('/login');
+    }
+    $user = auth_user();
+    $pdo = db();
 
-    $stmt = db()->prepare('SELECT * FROM users WHERE email = ?');
-    $stmt->execute([$email]);
-    $user = $stmt->fetch();
+    // User's quiz stats
+    $stats = $pdo->prepare('
+        SELECT count(*) as attempts,
+               sum(CASE WHEN passed = 1 THEN 1 ELSE 0 END) as passed_count,
+               max(percent) as best_percent
+        FROM quiz_attempts
+        WHERE user_id = ?
+    ');
+    $stats->execute([$user['id']]);
+    $userStats = $stats->fetch();
 
-    if ($user) {
-        login_user($user);
-        flash('success', 'Tezkor kirish amalga oshirildi: ' . e($user['display_name']));
-        redirect($user['role'] === 'admin' ? '/admin' : '/dashboard');
+    render('profile', [
+        'title' => 'Mening Profilim — ' . e($user['display_name']),
+        'user' => $user,
+        'stats' => $userStats,
+    ]);
+}
+
+function action_update_profile(): void
+{
+    if (!auth_check()) {
+        redirect('/login');
+    }
+    $user = auth_user();
+    $displayName = trim($_POST['display_name'] ?? '');
+    $ageBand = trim($_POST['age_band'] ?? $user['age_band']);
+    $languageLevel = trim($_POST['language_level'] ?? $user['language_level']);
+    $timezone = trim($_POST['timezone'] ?? $user['timezone']);
+    $newPassword = trim($_POST['new_password'] ?? '');
+
+    if ($displayName === '') {
+        flash('error', 'Ism yoki taxallus bo‘sh bo‘lishi mumkin emas.');
+        redirect('/profile');
     }
 
-    flash('error', 'Foydalanuvchi topilmadi.');
-    redirect('/login');
+    $pdo = db();
+    if ($newPassword !== '') {
+        if (strlen($newPassword) < 4) {
+            flash('error', 'Yangi parol kamida 4 ta belgidan iborat bo‘lishi kerak.');
+            redirect('/profile');
+        }
+        $hash = password_hash($newPassword, PASSWORD_DEFAULT);
+        $stmt = $pdo->prepare('
+            UPDATE users SET display_name = ?, age_band = ?, language_level = ?, timezone = ?, password_hash = ?
+            WHERE id = ?
+        ');
+        $stmt->execute([$displayName, $ageBand, $languageLevel, $timezone, $hash, $user['id']]);
+    } else {
+        $stmt = $pdo->prepare('
+            UPDATE users SET display_name = ?, age_band = ?, language_level = ?, timezone = ?
+            WHERE id = ?
+        ');
+        $stmt->execute([$displayName, $ageBand, $languageLevel, $timezone, $user['id']]);
+    }
+
+    flash('success', 'Profilingiz muvaffaqiyatli yangilandi!');
+    redirect('/profile');
+}
+
+function action_admin_enrollment_status(): void
+{
+    if (!is_admin()) {
+        http_response_code(403);
+        exit('Ruxsat berilmagan');
+    }
+
+    $id = (int)($_POST['enrollment_id'] ?? 0);
+    $status = trim($_POST['status'] ?? 'pending');
+
+    if ($id > 0 && in_array($status, ['pending', 'contacted', 'approved', 'rejected'], true)) {
+        $stmt = db()->prepare('UPDATE enrollments SET status = ? WHERE id = ?');
+        $stmt->execute([$status, $id]);
+        flash('success', "Ariza #{$id} holati '{$status}' ga o‘zgartirildi.");
+    }
+
+    redirect('/admin');
 }
 
 function action_logout(): void

@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 // LingoUz by Gulomov's Academy - Application Bootstrap
+require_once __DIR__ . '/icons.php';
 
 function db(): PDO
 {
