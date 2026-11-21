@@ -152,16 +152,16 @@ function action_admin_student_store(): void
     $password = (string) ($_POST['password'] ?? '');
     if ($d['display_name'] === '' || !filter_var($d['email'], FILTER_VALIDATE_EMAIL) || mb_strlen($password) < 6) {
         flash('error', 'Ism, to‘g‘ri email va kamida 6 belgili parol kiriting.');
-        redirect('/admin/students/create');
+        app_redirect('/admin/students/create');
     }
     if (email_taken($d['email'])) {
         flash('error', 'Bu email bilan foydalanuvchi allaqachon bor.');
-        redirect('/admin/students/create');
+        app_redirect('/admin/students/create');
     }
     db()->prepare("INSERT INTO users (role, display_name, email, password_hash, age_band, language_level, timezone) VALUES ('student', ?, ?, ?, ?, ?, ?)")
         ->execute([$d['display_name'], $d['email'], password_hash($password, PASSWORD_DEFAULT), $d['age_band'], $d['language_level'], $d['timezone']]);
     flash('success', 'O‘quvchi yaratildi. Birinchi kirishda u tanishuv savollariga javob beradi.');
-    redirect('/admin/students/' . db()->lastInsertId());
+    app_redirect('/admin/students/' . db()->lastInsertId());
 }
 
 function action_admin_student_update(int $userId): void
@@ -177,7 +177,7 @@ function action_admin_student_update(int $userId): void
             ->execute([...array_values($d), $userId]);
         flash('success', 'O‘quvchi ma’lumotlari saqlandi.');
     }
-    redirect("/admin/students/{$userId}");
+    app_redirect("/admin/students/{$userId}");
 }
 
 function action_admin_student_reset_progress(int $userId): void
@@ -191,7 +191,7 @@ function action_admin_student_reset_progress(int $userId): void
     $pdo->prepare("UPDATE users SET xp = 0, coins = 0, streak_days = 0, last_active_date = NULL WHERE id = ? AND role = 'student'")->execute([$userId]);
     $pdo->commit();
     flash('success', 'O‘quvchining natijalari, XP va nishonlari nolga tushirildi.');
-    redirect("/admin/students/{$userId}");
+    app_redirect("/admin/students/{$userId}");
 }
 
 // ---------------------------------------------------------------- CSV exports
@@ -233,7 +233,7 @@ function action_admin_export_gradebook(): void
     require_admin();
     $course = find_course((int) ($_GET['course'] ?? 0));
     if (!$course) {
-        redirect('/admin/gradebook');
+        app_redirect('/admin/gradebook');
     }
     $lessons = course_lessons((int) $course['id'], false);
     $grid = [];
@@ -274,7 +274,7 @@ function action_admin_password(): void
         db()->prepare('UPDATE users SET password_hash = ? WHERE id = ?')->execute([password_hash($new, PASSWORD_DEFAULT), $me['id']]);
         flash('success', 'Parolingiz yangilandi.');
     }
-    redirect('/admin/settings');
+    app_redirect('/admin/settings');
 }
 
 function action_admin_create_admin(): void
@@ -292,5 +292,5 @@ function action_admin_create_admin(): void
             ->execute([$name, $email, password_hash($password, PASSWORD_DEFAULT)]);
         flash('success', 'Yangi administrator qo‘shildi.');
     }
-    redirect('/admin/settings');
+    app_redirect('/admin/settings');
 }

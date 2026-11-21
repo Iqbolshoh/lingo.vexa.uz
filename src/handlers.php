@@ -8,7 +8,7 @@ function require_login(string $message = 'Iltimos, avval tizimga kiring.'): arra
 {
     if (!auth_check()) {
         flash('info', t($message));
-        redirect('/login');
+        app_redirect('/login');
     }
     return auth_user();
 }
@@ -68,11 +68,11 @@ function action_enroll(): void
 
     if ($parentName === '' || $childName === '' || !filter_var($parentEmail, FILTER_VALIDATE_EMAIL)) {
         flash('error', t('Iltimos, ota-ona ismi, to‘g‘ri email va bola ismini kiriting.'));
-        redirect('/register');
+        app_redirect('/register');
     }
     if ($createAccount && mb_strlen($password) < 6) {
         flash('error', t('Akkaunt uchun parol kamida 6 ta belgidan iborat bo‘lishi kerak.'));
-        redirect('/register');
+        app_redirect('/register');
     }
 
     $pdo = db();
@@ -91,14 +91,14 @@ function action_enroll(): void
             ')->execute([mb_substr($childName, 0, 80), $parentEmail, password_hash($password, PASSWORD_DEFAULT), $childAge, $languageLevel, $timezone]);
             login_user(['id' => (int) $pdo->lastInsertId()]);
             flash('success', t('Arizangiz qabul qilindi va o‘quvchi profili yaratildi! Keling, tanishaylik.'));
-            redirect('/onboarding');
+            app_redirect('/onboarding');
         }
         flash('info', t('Ariza qabul qilindi. Bu email bilan akkaunt allaqachon bor — tizimga kiring.'));
-        redirect('/login');
+        app_redirect('/login');
     }
 
     flash('success', t('Rahmat! Arizangiz qabul qilindi. Tez orada mentorlarimiz siz bilan bog‘lanishadi.'));
-    redirect('/');
+    app_redirect('/');
 }
 
 function page_login(): void
@@ -114,11 +114,11 @@ function action_login(): void
 
     if (login_throttled($ip)) {
         flash('error', t('Juda ko‘p noto‘g‘ri urinish. 15 daqiqadan so‘ng qayta urinib ko‘ring.'));
-        redirect('/login');
+        app_redirect('/login');
     }
     if ($identifier === '' || $password === '') {
         flash('error', t('Email yoki login va parolni kiriting.'));
-        redirect('/login');
+        app_redirect('/login');
     }
 
     $altEmail = str_contains($identifier, '@') ? $identifier : $identifier . '@lingo.uz';
@@ -129,26 +129,26 @@ function action_login(): void
     if (!$user || !password_verify($password, $user['password_hash'])) {
         record_login_failure($ip, $identifier);
         flash('error', t('Login yoki parol noto‘g‘ri kiritildi.'));
-        redirect('/login');
+        app_redirect('/login');
     }
 
     clear_login_failures($ip);
     login_user($user);
     flash('success', t('Xush kelibsiz, :name!', ['name' => $user['display_name']], false));
-    redirect($user['role'] === 'admin' ? '/admin' : '/dashboard');
+    app_redirect($user['role'] === 'admin' ? '/admin' : '/dashboard');
 }
 
 function action_logout(): void
 {
     logout_user();
     flash('info', t('Tizimdan muvaffaqiyatli chiqdingiz.'));
-    redirect('/login');
+    app_redirect('/login');
 }
 
 function page_register(): void
 {
     if (auth_check()) {
-        redirect('/dashboard');
+        app_redirect('/dashboard');
     }
     render('register', ['title' => t('O‘quvchini ro‘yxatdan o‘tkazish — LingoUz')]);
 }
@@ -164,7 +164,7 @@ function action_register(): void
 
     if ($displayName === '' || !filter_var($email, FILTER_VALIDATE_EMAIL) || mb_strlen($password) < 6) {
         flash('error', t('Ism, to‘g‘ri email va kamida 6 belgili parol kiriting.'));
-        redirect('/register');
+        app_redirect('/register');
     }
 
     $pdo = db();
@@ -172,7 +172,7 @@ function action_register(): void
     $check->execute([$email]);
     if ($check->fetch()) {
         flash('error', t('Bu email orqali allaqachon ro‘yxatdan o‘tilgan. Tizimga kiring.'));
-        redirect('/login');
+        app_redirect('/login');
     }
 
     $pdo->prepare('
@@ -182,7 +182,7 @@ function action_register(): void
     login_user(['id' => (int) $pdo->lastInsertId()]);
 
     flash('success', t('Xush kelibsiz! Keling, avval bir-birimizni yaxshiroq tanib olaylik.'));
-    redirect('/onboarding');
+    app_redirect('/onboarding');
 }
 
 function page_profile(): void
@@ -212,11 +212,11 @@ function action_update_profile(): void
 
     if ($displayName === '' || mb_strlen($displayName) > 80) {
         flash('error', t('Ism 1–80 belgidan iborat bo‘lishi kerak.'));
-        redirect('/profile');
+        app_redirect('/profile');
     }
     if ($newPassword !== '' && mb_strlen($newPassword) < 6) {
         flash('error', t('Yangi parol kamida 6 ta belgidan iborat bo‘lishi kerak.'));
-        redirect('/profile');
+        app_redirect('/profile');
     }
 
     $pdo = db();
@@ -227,14 +227,14 @@ function action_update_profile(): void
     }
 
     flash('success', t('Profilingiz yangilandi!'));
-    redirect('/profile');
+    app_redirect('/profile');
 }
 
 function page_dashboard(): void
 {
     $user = require_login(t('Iltimos, avval tizimga kiring yoki demo akkaunt orqali sinab ko‘ring.'));
     if ($user['role'] === 'student' && empty($user['onboarded_at'])) {
-        redirect('/onboarding');
+        app_redirect('/onboarding');
     }
     $pdo = db();
 
@@ -345,7 +345,7 @@ function accessible_lesson(int $lessonId, array $user): ?array
     if ($state['user_status'] === 'locked') {
         $prev = $state['prev_lesson'];
         flash('error', t('Bu dars hali qulflangan. Avval «:title» testidan kamida :score% to‘plang.', ['title' => $prev ? loc($prev, 'title') : t('oldingi dars'), 'score' => $prev['passing_score'] ?? 80], false));
-        redirect('/courses/' . $lesson['course_id']);
+        app_redirect('/courses/' . $lesson['course_id']);
     }
     return $state;
 }
@@ -388,7 +388,7 @@ function action_submit_quiz(int $lessonId): void
     $questions = lesson_questions($lessonId);
     if (!$questions) {
         flash('error', t('Bu darsda hali test savollari yo‘q.'));
-        redirect('/lessons/' . $lessonId);
+        app_redirect('/lessons/' . $lessonId);
     }
 
     $correct = 0;
@@ -465,7 +465,7 @@ function action_submit_quiz(int $lessonId): void
         award_badge((int) $user['id'], 'xp_500');
     }
 
-    redirect("/lessons/{$lessonId}/result?attempt={$attemptId}");
+    app_redirect("/lessons/{$lessonId}/result?attempt={$attemptId}");
 }
 
 function action_game_complete(int $lessonId): void
@@ -502,7 +502,7 @@ function page_quiz_result(int $lessonId): void
     $stmt->execute([$user['id'], $lessonId, $attemptId, $attemptId]);
     $attempt = $stmt->fetch();
     if (!$attempt) {
-        redirect("/lessons/{$lessonId}");
+        app_redirect("/lessons/{$lessonId}");
     }
 
     render('quiz_result', [

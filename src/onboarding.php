@@ -122,7 +122,7 @@ function build_placement(): array
 function require_student_login(): array
 {
     if (!auth_check()) {
-        redirect('/login');
+        app_redirect('/login');
     }
     return auth_user();
 }
@@ -160,14 +160,14 @@ function action_onboarding(): void
         $user['id'],
     ]);
 
-    redirect($selfLevel === 'none' ? '/onboarding/done' : '/onboarding/placement');
+    app_redirect($selfLevel === 'none' ? '/onboarding/done' : '/onboarding/placement');
 }
 
 function action_onboarding_skip(): void
 {
     $user = require_student_login();
     db()->prepare("UPDATE users SET onboarded_at = COALESCE(onboarded_at, datetime('now')) WHERE id = ?")->execute([$user['id']]);
-    redirect('/dashboard');
+    app_redirect('/dashboard');
 }
 
 function page_placement(): void
@@ -175,7 +175,7 @@ function page_placement(): void
     require_student_login();
     $questions = build_placement();
     if (!$questions) {
-        redirect('/onboarding/done');
+        app_redirect('/onboarding/done');
     }
     $_SESSION['placement'] = $questions;
     render('placement', ['title' => t('Daraja testi — LingoUz'), 'questions' => $questions]);
@@ -187,7 +187,7 @@ function action_placement(): void
     $questions = $_SESSION['placement'] ?? [];
     unset($_SESSION['placement']);
     if (!$questions) {
-        redirect('/onboarding/placement');
+        app_redirect('/onboarding/placement');
     }
 
     $correct = 0;
@@ -220,7 +220,7 @@ function action_placement(): void
 
     $pdo->prepare('UPDATE users SET placement_score = ?, language_level = ? WHERE id = ?')->execute([$percent, $level, $user['id']]);
     $_SESSION['placement_result'] = ['percent' => $percent, 'correct' => $correct, 'total' => count($questions), 'level' => $level, 'unlocked' => $unlocked];
-    redirect('/onboarding/done');
+    app_redirect('/onboarding/done');
 }
 
 function page_onboarding_done(): void

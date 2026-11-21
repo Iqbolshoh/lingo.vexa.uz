@@ -1084,3 +1084,22 @@ button.btn-header-logout { cursor: pointer; font: inherit; }
 .pwa-drawer-install-btn {
     background: linear-gradient(135deg, #0284c7, #0369a1); border-radius: 12px; font-weight: 800;
 }
+.pwa-install-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: linear-gradient(135deg, #0284c7, #0369a1);
+    color: #ffffff !important;
+    border: none;
+    border-radius: 999px;
+    padding: 6px 14px;
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+    box-shadow: 0 2px 6px rgba(2, 132, 199, 0.25);
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+.pwa-install-pill:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 10px rgba(2, 132, 199, 0.35);
+}

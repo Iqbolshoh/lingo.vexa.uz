@@ -121,122 +121,203 @@ const Owl = {
 window.Owl = Owl;
 
 /**
- * Natural Uzbek Speech Synthesis via Web Speech API
- * Automatically selects the best phonetically matching Turkic voice model (Uzbek, Turkish)
- * and applies phonetic text adaptation so pronunciation matches authentic Uzbek, NOT English!
+ * Natural Uzbek Speech Synthesis Engine via Web Speech API
+ * Automatically detects the best available phonetic voice model (Native Uzbek -> Turkish -> CIS Russian -> Pure Latin -> English phonetic fallback)
+ * and applies phonetic text adaptation so pronunciation sounds like authentic, natural Uzbek!
  */
-let uzVoiceInfo = null;
+let uzVoiceCache = null;
+let activeUtterance = null; // Fix Chrome Web Speech API garbage collection abort bug
 
-function getBestUzbekVoice() {
+function toUzbekCyrillic(text) {
+    if (!text) return '';
+    let s = text;
+    s = s.replace(/ye/gi, m => m[0] === 'Y' ? 'Е' : 'е');
+    s = s.replace(/yo/gi, m => m[0] === 'Y' ? 'Ё' : 'ё');
+    s = s.replace(/yu/gi, m => m[0] === 'Y' ? 'Ю' : 'ю');
+    s = s.replace(/ya/gi, m => m[0] === 'Y' ? 'Я' : 'я');
+    s = s.replace(/sh/gi, m => m[0] === 'S' ? 'Ш' : 'ш');
+    s = s.replace(/ch/gi, m => m[0] === 'C' ? 'Ч' : 'ç');
+    s = s.replace(/ng/gi, m => m[0] === 'N' ? 'Нг' : 'нг');
+    s = s.replace(/o['‘`ʻ’öÖ]/gi, m => (m[0] === 'O' || m[0] === 'Ö') ? 'Ў' : 'ў');
+    s = s.replace(/g['‘`ʻ’ğĞ]/gi, m => (m[0] === 'G' || m[0] === 'Ğ') ? 'Ғ' : 'ғ');
+    s = s.replace(/q/gi, m => m === 'Q' ? 'Қ' : 'қ');
+    s = s.replace(/x/gi, m => m === 'X' ? 'Х' : 'х');
+    s = s.replace(/h/gi, m => m === 'H' ? 'Ҳ' : 'ҳ');
+    s = s.replace(/j/gi, m => m === 'J' ? 'Ж' : 'ж');
+    const table = {
+        'a': 'а', 'A': 'А', 'b': 'б', 'B': 'Б', 'd': 'д', 'D': 'Д',
+        'e': 'э', 'E': 'Э', 'f': 'ф', 'F': 'Ф', 'g': 'г', 'G': 'Г',
+        'i': 'и', 'I': 'И', 'k': 'к', 'K': 'К', 'l': 'л', 'L': 'Л',
+        'm': 'м', 'M': 'М', 'n': 'н', 'N': 'Н', 'o': 'о', 'O': 'О',
+        'p': 'п', 'P': 'П', 'r': 'р', 'R': 'Р', 's': 'с', 'S': 'С',
+        't': 'т', 'T': 'Т', 'u': 'у', 'U': 'У', 'v': 'в', 'V': 'В',
+        'y': 'й', 'Y': 'Й', 'z': 'з', 'Z': 'З'
+    };
+    return s.split('').map(c => table[c] || c).join('');
+}
+
+function toEnglishPhonetics(text) {
+    if (!text) return '';
+    return text
+        .replace(/['‘`ʻ’]/g, '')
+        .replace(/o[‘`ʻ']/gi, 'o')
+        .replace(/g[‘`ʻ']/gi, 'g')
+        .replace(/x/gi, 'h')
+        .replace(/q/gi, 'k')
+        .replace(/a/gi, 'ah')
+        .replace(/u/gi, 'oo')
+        .replace(/i/gi, 'ee')
+        .replace(/o/gi, 'oh');
+}
+
+function detectUzbekVoice() {
     if (!('speechSynthesis' in window)) return null;
     const voices = window.speechSynthesis.getVoices() || [];
     if (!voices.length) return null;
 
-    // 1. Native Uzbek voice if available
-    let v = voices.find(v => v.lang && v.lang.toLowerCase().startsWith('uz'));
-    if (v) return { voice: v, lang: 'uz-UZ' };
+    // 1. Native Uzbek voice if installed (Google Android, Windows, Mac)
+    let v = voices.find(v => v.lang && /^uz[-_]/i.test(v.lang));
+    if (!v) v = voices.find(v => v.lang && v.lang.toLowerCase().startsWith('uz'));
+    if (!v) v = voices.find(v => v.name && /uzbek|o['‘`ʻ’]?zbek/i.test(v.name));
+    if (v) return { voice: v, lang: v.lang || 'uz-UZ', family: 'uz' };
 
-    // 2. Turkish voice (built into Chrome, Edge, Safari, Windows, Mac, Android, iOS)
-    // Closest Turkic phonetics: pure vowels, rolled r, matching consonants (ş, ç, ö, ğ)
-    v = voices.find(v => v.lang && v.lang.toLowerCase().startsWith('tr'));
-    if (v) return { voice: v, lang: 'tr-TR' };
+    // 2. Turkish voice (installed on 99% of Android, Windows, Mac, iOS devices)
+    v = voices.find(v => v.lang && /^tr[-_]/i.test(v.lang));
+    if (!v) v = voices.find(v => v.lang && v.lang.toLowerCase().startsWith('tr'));
+    if (!v) v = voices.find(v => v.name && /turkish|türk/i.test(v.name));
+    if (v) return { voice: v, lang: v.lang || 'tr-TR', family: 'tr' };
 
-    // 3. Azerbaijani
-    v = voices.find(v => v.lang && v.lang.toLowerCase().startsWith('az'));
-    if (v) return { voice: v, lang: 'az-AZ' };
+    // 3. Azerbaijani or Kazakh / Kyrgyz / Tatar
+    v = voices.find(v => v.lang && /^(az|kk|ky|tt)[-_]/i.test(v.lang));
+    if (v) return { voice: v, lang: v.lang, family: 'tr' };
 
-    // 4. Kazakh / Tatar
-    v = voices.find(v => v.lang && (v.lang.toLowerCase().startsWith('kk') || v.lang.toLowerCase().startsWith('tt')));
-    if (v) return { voice: v, lang: v.lang };
+    // 4. Russian (CIS standard, excellent pronunciation when fed Cyrillic text)
+    v = voices.find(v => v.lang && /^ru[-_]/i.test(v.lang));
+    if (!v) v = voices.find(v => v.lang && v.lang.toLowerCase().startsWith('ru'));
+    if (!v) v = voices.find(v => v.name && /russian|русский/i.test(v.name));
+    if (v) return { voice: v, lang: v.lang || 'ru-RU', family: 'ru' };
 
-    // 5. Russian (good phonetic consonant/vowel accuracy)
-    v = voices.find(v => v.lang && v.lang.toLowerCase().startsWith('ru'));
-    if (v) return { voice: v, lang: 'ru-RU' };
+    // 5. Romance (Italian / Spanish - pure vowels)
+    v = voices.find(v => v.lang && /^(it|es)[-_]/i.test(v.lang));
+    if (v) return { voice: v, lang: v.lang, family: 'it' };
 
-    // 6. Italian or Spanish (pure Latin vowels)
-    v = voices.find(v => v.lang && (v.lang.toLowerCase().startsWith('it') || v.lang.toLowerCase().startsWith('es')));
-    if (v) return { voice: v, lang: v.lang };
+    // 6. Default or first available voice
+    const def = voices.find(v => v.default) || voices[0];
+    if (def) {
+        const isEn = def.lang && def.lang.toLowerCase().startsWith('en');
+        return { voice: def, lang: def.lang || 'en-US', family: isEn ? 'en' : 'default' };
+    }
 
     return null;
 }
 
-if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
-    window.speechSynthesis.onvoiceschanged = () => {
-        uzVoiceInfo = getBestUzbekVoice();
-    };
+function updateUzbekVoiceCache() {
+    uzVoiceCache = detectUzbekVoice();
 }
 
-function prepareUzbekSpeech(text, targetLang) {
+if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
+    updateUzbekVoiceCache();
+    window.speechSynthesis.addEventListener('voiceschanged', updateUzbekVoiceCache);
+    if (!uzVoiceCache) {
+        setTimeout(updateUzbekVoiceCache, 300);
+        setTimeout(updateUzbekVoiceCache, 1200);
+    }
+}
+
+function prepareUzbekSpeech(text, family) {
     if (!text || typeof text !== 'string') return '';
     let s = text.replace(/<[^>]+>/g, '').trim();
 
-    // Standardize to new Latin alphabet first
-    s = s.replace(/o['‘`ʻ’]/gi, m => m[0] === 'O' ? 'Ö' : 'ö')
-         .replace(/g['‘`ʻ’]/gi, m => m[0] === 'G' ? 'Ğ' : 'ğ')
-         .replace(/sh/gi, m => m[0] === 'S' ? 'Ş' : 'ş')
-         .replace(/ch/gi, m => m[0] === 'C' ? 'Ç' : 'ç');
-
-    const lang = (targetLang || 'tr-TR').toLowerCase();
-
-    if (lang.startsWith('uz')) {
+    if (family === 'uz') {
+        // Native Uzbek model handles Latin text directly
         return s;
     }
 
-    if (lang.startsWith('tr') || lang.startsWith('az')) {
+    if (family === 'ru') {
+        // Russian engine: transliterate to Cyrillic for authentic Central Asian phonetics
+        return toUzbekCyrillic(s);
+    }
+
+    if (family === 'tr') {
+        // Turkish voice: adapt consonants and vowels to Turkish phonology
         return s
-            .replace(/q/g, 'k').replace(/Q/g, 'K')
+            .replace(/\bj/g, 'c').replace(/\bJ/g, 'C')
+            .replace(/([aeiou])j/gi, (m, v) => v + 'c')
+            .replace(/j([aeiou])/gi, (m, v) => 'c' + v)
+            .replace(/sh/gi, m => m[0] === 'S' ? 'Ş' : 'ş')
+            .replace(/ş/gi, m => m[0] === 'S' ? 'Ş' : 'ş')
+            .replace(/ch/gi, m => m[0] === 'C' ? 'Ç' : 'ç')
+            .replace(/ç/gi, m => m[0] === 'C' ? 'Ç' : 'ç')
             .replace(/x/g, 'h').replace(/X/g, 'H')
+            .replace(/q/g, 'k').replace(/Q/g, 'K')
+            .replace(/o['‘`ʻ’]/gi, 'o')
+            .replace(/ö/gi, 'o')
+            .replace(/g['‘`ʻ’]/gi, 'g')
+            .replace(/ğ/gi, 'g')
             .replace(/['‘`ʻ’]/g, '');
     }
 
-    if (lang.startsWith('ru')) {
-        const cyr = {
-            'Ö': 'Ў', 'ö': 'ў', 'Ğ': 'Ғ', 'ğ': 'ғ', 'Ş': 'Ш', 'ş': 'ш', 'Ç': 'Ч', 'ç': 'ч',
-            'A': 'А', 'a': 'а', 'B': 'Б', 'b': 'б', 'D': 'Д', 'd': 'д', 'E': 'Е', 'e': 'е',
-            'F': 'Ф', 'f': 'ф', 'G': 'Г', 'g': 'г', 'H': 'Ҳ', 'h': 'ҳ', 'I': 'И', 'i': 'и',
-            'J': 'Ж', 'j': 'ж', 'K': 'К', 'k': 'к', 'L': 'Л', 'l': 'л', 'M': 'М', 'm': 'м',
-            'N': 'Н', 'n': 'н', 'O': 'О', 'o': 'о', 'P': 'П', 'p': 'п', 'Q': 'Қ', 'q': 'қ',
-            'R': 'Р', 'r': 'р', 'S': 'С', 's': 'с', 'T': 'Т', 't': 'т', 'U': 'У', 'u': 'у',
-            'V': 'В', 'v': 'в', 'X': 'Х', 'x': 'х', 'Y': 'Й', 'y': 'й', 'Z': 'З', 'z': 'з'
-        };
-        return s.split('').map(c => cyr[c] || c).join('');
+    if (family === 'en') {
+        return toEnglishPhonetics(s);
     }
 
-    // Default fallback
+    // Default Latin / Italian / Spanish
     return s
-        .replace(/['‘`ʻ’]/g, '')
-        .replace(/ö/g, 'u').replace(/Ö/g, 'U')
-        .replace(/ğ/g, 'g').replace(/Ğ/g, 'G')
-        .replace(/ş/g, 'sh').replace(/Ş/g, 'Sh')
-        .replace(/ç/g, 'ch').replace(/Ç/g, 'Ch')
-        .replace(/x/g, 'h').replace(/X/g, 'H')
-        .replace(/q/g, 'k').replace(/Q/g, 'K');
+        .replace(/sh/gi, 'sh')
+        .replace(/ch/gi, 'ch')
+        .replace(/o['‘`ʻ’öÖ]/gi, 'o')
+        .replace(/g['‘`ʻ’ğĞ]/gi, 'g')
+        .replace(/['‘`ʻ’]/g, '');
 }
 
 function speakUzbek(text, slow = false) {
     if (!text || !('speechSynthesis' in window)) return null;
 
-    window.speechSynthesis.cancel();
+    if (!uzVoiceCache) {
+        updateUzbekVoiceCache();
+    }
 
-    const info = uzVoiceInfo || getBestUzbekVoice();
-    const targetLang = info ? info.lang : 'tr-TR';
-    const spokenText = prepareUzbekSpeech(text, targetLang);
+    const info = uzVoiceCache || detectUzbekVoice();
+    const family = info ? info.family : 'tr';
+    const spokenText = prepareUzbekSpeech(text, family);
+
+    try {
+        window.speechSynthesis.cancel();
+    } catch (e) {}
 
     const utterance = new SpeechSynthesisUtterance(spokenText);
-    utterance.rate = slow ? 0.6 : 0.88;
-    utterance.pitch = 1.05;
+    utterance.rate = slow ? 0.65 : 0.88;
+    utterance.pitch = 1.02;
 
     if (info && info.voice) {
         utterance.voice = info.voice;
-        utterance.lang = info.voice.lang;
+        utterance.lang = info.lang || info.voice.lang || 'tr-TR';
     } else {
         utterance.lang = 'tr-TR';
     }
 
+    // Keep reference so Garbage Collector does not abort speech
+    activeUtterance = utterance;
+    window._lingoActiveUtterance = utterance;
+    const cleanup = () => {
+        if (activeUtterance === utterance) activeUtterance = null;
+    };
+    utterance.onend = cleanup;
+    utterance.onerror = cleanup;
+
     if (window.Owl && typeof window.Owl.talk === 'function') {
         window.Owl.talk(utterance);
     }
-    window.speechSynthesis.speak(utterance);
+
+    // 40ms timeout ensures clean execution across Android Chrome and WebKit
+    setTimeout(() => {
+        try {
+            window.speechSynthesis.speak(utterance);
+        } catch (err) {
+            console.warn('[LingoUz TTS] speak error:', err);
+        }
+    }, 40);
+
     return utterance;
 }
 window.speakUzbek = speakUzbek;

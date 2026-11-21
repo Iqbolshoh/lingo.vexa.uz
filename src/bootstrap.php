@@ -131,11 +131,23 @@ function logout_user(): void
     session_regenerate_id(true);
 }
 
+function app_redirect(string $url): never
+{
+    while (ob_get_level() > 0) {
+        @ob_end_clean();
+    }
+    if (!headers_sent()) {
+        header('Location: ' . $url, true, 302);
+    } else {
+        echo '<script>window.location.replace(' . json_encode($url) . ');</script>';
+    }
+    exit;
+}
+
 if (!function_exists('redirect')) {
     function redirect(string $url): void
     {
-        header('Location: ' . $url);
-        exit;
+        app_redirect($url);
     }
 }
 
@@ -206,4 +218,5 @@ function render(string $view, array $data = []): void
         }
         echo $content;
     }
+    exit;
 }

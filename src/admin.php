@@ -8,11 +8,11 @@ function require_admin(): array
 {
     if (!auth_check()) {
         flash('info', 'Admin panelga kirish uchun tizimga kiring.');
-        redirect('/login');
+        app_redirect('/login');
     }
     if (!is_admin()) {
         flash('error', 'Bu sahifaga faqat administratorlar kira oladi.');
-        redirect('/dashboard');
+        app_redirect('/dashboard');
     }
     return auth_user();
 }
@@ -20,7 +20,7 @@ function require_admin(): array
 function admin_back(string $fallback): void
 {
     $to = (string) ($_POST['_back'] ?? '');
-    redirect(str_starts_with($to, '/admin') ? $to : $fallback);
+    app_redirect(str_starts_with($to, '/admin') ? $to : $fallback);
 }
 
 function input_str(string $key, int $max = 255): string
@@ -174,7 +174,7 @@ function action_admin_course_save(?int $courseId = null): void
     $d = course_form_data();
     if ($d['title'] === '') {
         flash('error', 'Kurs nomini kiriting.');
-        redirect($courseId ? "/admin/courses/{$courseId}/edit" : '/admin/courses/create');
+        app_redirect($courseId ? "/admin/courses/{$courseId}/edit" : '/admin/courses/create');
     }
     $pdo = db();
     if ($courseId) {
@@ -187,7 +187,7 @@ function action_admin_course_save(?int $courseId = null): void
         $courseId = (int) $pdo->lastInsertId();
         flash('success', 'Kurs yaratildi. Endi unga dars qo‘shing.');
     }
-    redirect("/admin/courses/{$courseId}");
+    app_redirect("/admin/courses/{$courseId}");
 }
 
 function action_admin_course_delete(int $courseId): void
@@ -199,7 +199,7 @@ function action_admin_course_delete(int $courseId): void
     $pdo->prepare('DELETE FROM courses WHERE id = ?')->execute([$courseId]);
     $pdo->commit();
     flash('success', 'Kurs va uning barcha darslari o‘chirildi.');
-    redirect('/admin/courses');
+    app_redirect('/admin/courses');
 }
 
 function page_admin_course(int $courseId): void
@@ -239,7 +239,7 @@ function action_admin_lesson_move(int $lessonId): void
     require_admin();
     $lesson = find_lesson($lessonId);
     if (!$lesson) {
-        redirect('/admin/courses');
+        app_redirect('/admin/courses');
     }
     renumber_lessons((int) $lesson['course_id']);
     $lesson = find_lesson($lessonId);
@@ -251,7 +251,7 @@ function action_admin_lesson_move(int $lessonId): void
         $pdo->prepare('UPDATE lessons SET position = ? WHERE id = ?')->execute([$lesson['position'], $otherId]);
         $pdo->prepare('UPDATE lessons SET position = ? WHERE id = ?')->execute([$target, $lessonId]);
     }
-    redirect('/admin/courses/' . $lesson['course_id']);
+    app_redirect('/admin/courses/' . $lesson['course_id']);
 }
 
 // ---------------------------------------------------------------- lessons
@@ -308,12 +308,12 @@ function action_admin_lesson_store(int $courseId): void
 {
     require_admin();
     if (!find_course($courseId)) {
-        redirect('/admin/courses');
+        app_redirect('/admin/courses');
     }
     $d = lesson_form_data();
     if ($d['title'] === '' || $d['objective'] === '') {
         flash('error', 'Dars nomi va maqsadini kiriting.');
-        redirect("/admin/courses/{$courseId}/lessons/create");
+        app_redirect("/admin/courses/{$courseId}/lessons/create");
     }
     $d['title_en'] = $d['title_en'] ?: $d['title'];
     $d['video_url'] = clean_video_url($d['video_url']);
@@ -328,7 +328,7 @@ function action_admin_lesson_store(int $courseId): void
     $lessonId = (int) $pdo->lastInsertId();
     lesson_quiz($lessonId);
     flash('success', 'Dars yaratildi. Endi lug‘at va test savollarini qo‘shing.');
-    redirect("/admin/lessons/{$lessonId}");
+    app_redirect("/admin/lessons/{$lessonId}");
 }
 
 function page_admin_lesson(int $lessonId): void
@@ -369,12 +369,12 @@ function action_admin_lesson_update(int $lessonId): void
     require_admin();
     $lesson = find_lesson($lessonId);
     if (!$lesson) {
-        redirect('/admin/courses');
+        app_redirect('/admin/courses');
     }
     $d = lesson_form_data();
     if ($d['title'] === '' || $d['objective'] === '') {
         flash('error', 'Dars nomi va maqsadini kiriting.');
-        redirect("/admin/lessons/{$lessonId}");
+        app_redirect("/admin/lessons/{$lessonId}");
     }
     $d['title_en'] = $d['title_en'] ?: $d['title'];
     $raw = $d['video_url'];
@@ -388,7 +388,7 @@ function action_admin_lesson_update(int $lessonId): void
     flash($raw !== '' && $d['video_url'] === '' ? 'error' : 'success', $raw !== '' && $d['video_url'] === ''
         ? 'Dars saqlandi, lekin video havolasi tanilmadi (YouTube, Vimeo yoki https://….mp4).'
         : 'Dars saqlandi.');
-    redirect("/admin/lessons/{$lessonId}");
+    app_redirect("/admin/lessons/{$lessonId}");
 }
 
 function action_admin_lesson_delete(int $lessonId): void
@@ -400,7 +400,7 @@ function action_admin_lesson_delete(int $lessonId): void
         renumber_lessons((int) $lesson['course_id']);
         flash('success', '«' . $lesson['title'] . '» darsi o‘chirildi.');
     }
-    redirect('/admin/courses/' . ($lesson['course_id'] ?? ''));
+    app_redirect('/admin/courses/' . ($lesson['course_id'] ?? ''));
 }
 
 // ---------------------------------------------------------------- vocabulary
@@ -412,7 +412,7 @@ function action_admin_vocab_save(int $lessonId, ?int $vocabId = null): void
     $en = input_str('word_en', 160);
     if ($uz === '' || $en === '') {
         flash('error', 'O‘zbekcha so‘z va tarjimani kiriting.');
-        redirect("/admin/lessons/{$lessonId}?tab=vocab");
+        app_redirect("/admin/lessons/{$lessonId}?tab=vocab");
     }
     $row = [$uz, $en, input_str('pronunciation', 120), input_str('example', 300)];
     if ($vocabId) {
@@ -422,7 +422,7 @@ function action_admin_vocab_save(int $lessonId, ?int $vocabId = null): void
         db()->prepare("INSERT INTO vocabulary (lesson_id, word_uz, word_en, pronunciation, example, icon) VALUES (?, ?, ?, ?, ?, '')")->execute([$lessonId, ...$row]);
         flash('success', '«' . $uz . '» so‘zi qo‘shildi.');
     }
-    redirect("/admin/lessons/{$lessonId}?tab=vocab");
+    app_redirect("/admin/lessons/{$lessonId}?tab=vocab");
 }
 
 function action_admin_vocab_delete(int $lessonId, int $vocabId): void
@@ -430,7 +430,7 @@ function action_admin_vocab_delete(int $lessonId, int $vocabId): void
     require_admin();
     db()->prepare('DELETE FROM vocabulary WHERE id = ? AND lesson_id = ?')->execute([$vocabId, $lessonId]);
     flash('success', 'So‘z o‘chirildi.');
-    redirect("/admin/lessons/{$lessonId}?tab=vocab");
+    app_redirect("/admin/lessons/{$lessonId}?tab=vocab");
 }
 
 // ---------------------------------------------------------------- questions
@@ -457,7 +457,7 @@ function action_admin_question_save(int $lessonId, ?int $questionId = null): voi
     };
     if ($error) {
         flash('error', $error);
-        redirect($back);
+        app_redirect($back);
     }
     if (in_array($type, ['build', 'fill'], true)) {
         $correct = 0;
@@ -476,7 +476,7 @@ function action_admin_question_save(int $lessonId, ?int $questionId = null): voi
             ->execute([...$row, $quiz['id'], $order]);
         flash('success', 'Savol qo‘shildi.');
     }
-    redirect($back);
+    app_redirect($back);
 }
 
 function action_admin_question_delete(int $lessonId, int $questionId): void
@@ -485,7 +485,7 @@ function action_admin_question_delete(int $lessonId, int $questionId): void
     $quiz = lesson_quiz($lessonId);
     db()->prepare('DELETE FROM questions WHERE id = ? AND quiz_id = ?')->execute([$questionId, $quiz['id']]);
     flash('success', 'Savol o‘chirildi.');
-    redirect("/admin/lessons/{$lessonId}?tab=questions");
+    app_redirect("/admin/lessons/{$lessonId}?tab=questions");
 }
 
 function action_admin_question_move(int $lessonId, int $questionId): void
@@ -503,7 +503,7 @@ function action_admin_question_move(int $lessonId, int $questionId): void
     foreach ($ids as $n => $id) {
         $upd->execute([$n + 1, $id]);
     }
-    redirect("/admin/lessons/{$lessonId}?tab=questions");
+    app_redirect("/admin/lessons/{$lessonId}?tab=questions");
 }
 
 // ---------------------------------------------------------------- students
@@ -585,7 +585,7 @@ function action_admin_student_reset_password(int $userId): void
         db()->prepare("UPDATE users SET password_hash = ? WHERE id = ? AND role = 'student'")->execute([password_hash($password, PASSWORD_DEFAULT), $userId]);
         flash('success', 'Parol yangilandi.');
     }
-    redirect("/admin/students/{$userId}");
+    app_redirect("/admin/students/{$userId}");
 }
 
 function action_admin_student_delete(int $userId): void
@@ -593,7 +593,7 @@ function action_admin_student_delete(int $userId): void
     require_admin();
     db()->prepare("DELETE FROM users WHERE id = ? AND role = 'student'")->execute([$userId]);
     flash('success', 'O‘quvchi va uning natijalari o‘chirildi.');
-    redirect('/admin/students');
+    app_redirect('/admin/students');
 }
 
 function page_admin_gradebook(): void
@@ -688,7 +688,7 @@ function action_admin_live_save(?int $id = null): void
     }
     if ($title === '' || $startsUtc === '' || !preg_match('~^https://~', $zoom)) {
         flash('error', 'Nom, sana-vaqt va https:// bilan boshlanadigan Zoom havolasini kiriting.');
-        redirect('/admin/live' . ($id ? "?edit={$id}" : ''));
+        app_redirect('/admin/live' . ($id ? "?edit={$id}" : ''));
     }
     $row = [$title, input_str('description', 1000), $startsUtc, $zone, $zoom, input_str('mentor_name', 80) ?: 'Gulomov Ustoz', ($_POST['status'] ?? '') === 'cancelled' ? 'cancelled' : 'scheduled'];
     if ($id) {
@@ -697,7 +697,7 @@ function action_admin_live_save(?int $id = null): void
         db()->prepare('INSERT INTO live_sessions (title, description, starts_at, timezone, zoom_url, mentor_name, status) VALUES (?,?,?,?,?,?,?)')->execute($row);
     }
     flash('success', 'Jonli dars saqlandi.');
-    redirect('/admin/live');
+    app_redirect('/admin/live');
 }
 
 function action_admin_live_delete(int $id): void
@@ -705,5 +705,5 @@ function action_admin_live_delete(int $id): void
     require_admin();
     db()->prepare('DELETE FROM live_sessions WHERE id = ?')->execute([$id]);
     flash('success', 'Jonli dars o‘chirildi.');
-    redirect('/admin/live');
+    app_redirect('/admin/live');
 }

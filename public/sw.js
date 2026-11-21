@@ -1,5 +1,5 @@
-// LingoUz Progressive Web App (PWA) Service Worker
-const CACHE_NAME = 'lingouz-pwa-v1';
+// LingoUz Progressive Web App (PWA) Service Worker - v2
+const CACHE_NAME = 'lingouz-pwa-v2';
 const PRECACHE_ASSETS = [
     '/',
     '/assets/style.css',
@@ -25,7 +25,7 @@ self.addEventListener('install', (event) => {
     );
 });
 
-// Activate: clean up older caches
+// Activate: clean up older caches and claim clients
 self.addEventListener('activate', (event) => {
     event.waitUntil(
         caches.keys().then((keys) => {
@@ -49,8 +49,13 @@ self.addEventListener('fetch', (event) => {
 
     const url = new URL(req.url);
 
+    // Only intercept same-origin requests
+    if (url.origin !== location.origin) {
+        return;
+    }
+
     // Static assets: cache-first with network fallback
-    if (url.origin === location.origin && (url.pathname.startsWith('/assets/') || url.pathname.startsWith('/favicon'))) {
+    if (url.pathname.startsWith('/assets/') || url.pathname.startsWith('/favicon') || url.pathname === '/manifest.webmanifest') {
         event.respondWith(
             caches.match(req).then((cached) => {
                 if (cached) {
@@ -68,26 +73,34 @@ self.addEventListener('fetch', (event) => {
                         caches.open(CACHE_NAME).then((cache) => cache.put(req, copy));
                     }
                     return res;
+                }).catch(() => {
+                    return caches.match(req);
                 });
             })
         );
         return;
     }
 
-    // HTML navigations: network-first, fallback to cache
+    // HTML Navigations: network-first with safe offline fallback
     if (req.mode === 'navigate') {
         event.respondWith(
-            fetch(req).catch(() => {
-                return caches.match(req).then((cached) => {
-                    return cached || caches.match('/');
-                });
+            fetch(req).catch(async () => {
+                const cached = await caches.match(req);
+                if (cached) return cached;
+                const root = await caches.match('/');
+                if (root) return root;
+                return new Response(
+                    '<!DOCTYPE html><html lang="uz"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"><title>Oflayn - LingoUz</title><style>body{font-family:sans-serif;text-align:center;padding:48px 16px;background:#f8fafc;color:#1e293b;}.box{max-width:400px;margin:0 auto;background:#fff;padding:32px;border-radius:16px;box-shadow:0 4px 12px rgba(0,0,0,.08);}h1{color:#0284c7;font-size:20px;}p{color:#64748b;font-size:14px;line-height:1.5;}.btn{display:inline-block;background:#0284c7;color:#fff;padding:10px 20px;border-radius:10px;text-decoration:none;border:none;cursor:pointer;font-weight:bold;margin-top:12px;}</style></head><body><div class="box"><div style="font-size:40px;">📡</div><h1>Internetga ulanish yo‘q</h1><p>Internet tarmog‘ini tekshiring va sahifani qayta yuklang.</p><button class="btn" onclick="location.reload()">Qayta yuklash</button></div></body></html>',
+                    {
+                        status: 503,
+                        statusText: 'Service Unavailable',
+                        headers: { 'Content-Type': 'text/html; charset=utf-8' }
+                    }
+                );
             })
         );
         return;
     }
 
-    // Default: network with cache fallback
-    event.respondWith(
-        fetch(req).catch(() => caches.match(req))
-    );
+    // For any other GET request (API, dynamic endpoints), let browser handle natively
 });

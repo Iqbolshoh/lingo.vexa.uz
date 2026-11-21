@@ -13,6 +13,7 @@ $user = auth_user();
     <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
     <link rel="manifest" href="/manifest.webmanifest">
     <meta name="theme-color" content="#0284c7">
+    <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="LingoUz">
@@ -56,6 +57,9 @@ $user = auth_user();
 
             <!-- Header Actions -->
             <div class="header-actions">
+                <button class="pwa-install-pill" id="pwaHeaderInstallBtn" type="button" style="display:none;" title="<?= t('LingoUz mobil ilovasini o‘rnatish') ?>">
+                    📱 <span><?= t('Ilova') ?></span>
+                </button>
                 <div class="lang-switch" role="group" aria-label="Language">
                     <?php foreach (LOCALES as $code => $name): ?><a href="<?= e(lang_url($code)) ?>" class="<?= locale() === $code ? 'is-active' : '' ?>" hreflang="<?= $code ?>" title="<?= $name ?>"><?= strtoupper($code) ?></a><?php endforeach; ?>
                 </div>
@@ -304,26 +308,47 @@ $user = auth_user();
     }
 
     let deferredPrompt = null;
+    const showPwaButtons = () => {
+        const headerBtn = document.getElementById('pwaHeaderInstallBtn');
+        if (headerBtn) headerBtn.style.display = 'inline-flex';
+        const drawerWrap = document.getElementById('drawerPwaWrap');
+        if (drawerWrap) drawerWrap.style.display = 'block';
+    };
+
     window.addEventListener('beforeinstallprompt', (e) => {
         e.preventDefault();
         deferredPrompt = e;
-        const pwaWrap = document.getElementById('drawerPwaWrap');
-        if (pwaWrap) pwaWrap.style.display = 'block';
+        showPwaButtons();
     });
 
-    const pwaBtn = document.getElementById('pwaDrawerBtn');
-    if (pwaBtn) {
-        pwaBtn.addEventListener('click', async () => {
-            if (!deferredPrompt) return;
-            deferredPrompt.prompt();
-            const { outcome } = await deferredPrompt.userChoice;
-            if (outcome === 'accepted') {
-                const pwaWrap = document.getElementById('drawerPwaWrap');
-                if (pwaWrap) pwaWrap.style.display = 'none';
+    const triggerPwaInstall = async () => {
+        if (!deferredPrompt) return;
+        deferredPrompt.prompt();
+        try {
+            const choice = await deferredPrompt.userChoice;
+            if (choice && choice.outcome === 'accepted') {
+                const headerBtn = document.getElementById('pwaHeaderInstallBtn');
+                if (headerBtn) headerBtn.style.display = 'none';
+                const drawerWrap = document.getElementById('drawerPwaWrap');
+                if (drawerWrap) drawerWrap.style.display = 'none';
             }
-            deferredPrompt = null;
-        });
-    }
+        } catch (err) {}
+        deferredPrompt = null;
+    };
+
+    const pwaHBtn = document.getElementById('pwaHeaderInstallBtn');
+    if (pwaHBtn) pwaHBtn.addEventListener('click', triggerPwaInstall);
+
+    const pwaDBtn = document.getElementById('pwaDrawerBtn');
+    if (pwaDBtn) pwaDBtn.addEventListener('click', triggerPwaInstall);
+
+    window.addEventListener('appinstalled', () => {
+        deferredPrompt = null;
+        const headerBtn = document.getElementById('pwaHeaderInstallBtn');
+        if (headerBtn) headerBtn.style.display = 'none';
+        const drawerWrap = document.getElementById('drawerPwaWrap');
+        if (drawerWrap) drawerWrap.style.display = 'none';
+    });
     </script>
 </body>
 </html>
