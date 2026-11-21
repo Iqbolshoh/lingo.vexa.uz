@@ -100,13 +100,16 @@ a:hover {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    height: 78px;
+    height: 72px;
+    flex-wrap: nowrap;
+    gap: 12px;
 }
 
 .brand-logo {
     display: flex;
     align-items: center;
-    gap: 12px;
+    gap: 10px;
+    flex-shrink: 0;
 }
 
 .brand-mascot-img {
@@ -120,10 +123,11 @@ a:hover {
 
 .brand-name {
     font-family: var(--font-heading);
-    font-size: 25px;
+    font-size: 24px;
     font-weight: 700;
     color: var(--registon-dark);
     line-height: 1.1;
+    white-space: nowrap;
 }
 
 .brand-name .highlight {
@@ -141,18 +145,21 @@ a:hover {
 .main-nav {
     display: flex;
     align-items: center;
-    gap: 20px;
+    gap: 6px;
+    flex-wrap: nowrap;
+    flex-shrink: 1;
 }
 
 .main-nav a {
     display: inline-flex;
     align-items: center;
-    gap: 6px;
+    gap: 5px;
     font-weight: 600;
-    font-size: 14.5px;
+    font-size: 13.5px;
     color: #334155;
-    padding: 6px 12px;
+    padding: 6px 10px;
     border-radius: var(--radius-sm);
+    white-space: nowrap;
     transition: all 0.2s;
 }
 
@@ -186,7 +193,9 @@ a:hover {
 .header-actions {
     display: flex;
     align-items: center;
-    gap: 12px;
+    gap: 8px;
+    flex-shrink: 0;
+    flex-wrap: nowrap;
 }
 
 .user-chip {
@@ -1828,13 +1837,34 @@ body.drawer-open {
    Responsive Breakpoints
    ========================================================================== */
 
-@media (max-width: 1100px) {
+@media (max-width: 1200px) {
     .desktop-nav,
     .desktop-only {
         display: none !important;
     }
     .menu-toggle {
         display: inline-flex !important;
+    }
+}
+
+@media (min-width: 1201px) and (max-width: 1320px) {
+    .main-nav {
+        gap: 4px;
+    }
+    .main-nav a {
+        padding: 5px 8px;
+        font-size: 13px;
+        gap: 4px;
+    }
+    .header-actions {
+        gap: 6px;
+    }
+    .header-actions .btn-sm {
+        padding: 5px 10px;
+        font-size: 12.5px;
+    }
+    .brand-name {
+        font-size: 22px;
     }
 }
 
@@ -1872,6 +1902,13 @@ body.drawer-open {
 
 @media (max-width: 520px) {
     .container { padding: 0 14px; }
+    .header-inner { height: 62px; }
+    .brand-name { font-size: 21px; }
+    .brand-mascot-img { width: 34px; height: 39px; }
+    .brand-logo { gap: 8px; }
+    .lang-switch { margin-right: 0; }
+    .lang-switch a { padding: 4px 7px; font-size: 11px; }
+    .menu-toggle { width: 38px; height: 38px; }
     .hero-title { font-size: 26px; }
     .hero-subtitle { font-size: 15px; }
     .welcome-title { font-size: 22px; }

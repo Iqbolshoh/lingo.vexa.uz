@@ -49,14 +49,12 @@ $user = auth_user();
                     <?php endif; ?>
                     <a href="/parent-tips"><?= icon('users', '', 16) ?> <?= t('Qo‘llanma') ?></a>
                 <?php else: ?>
-                    <!-- Guest Navigation -->
+                    <!-- Guest Navigation: streamlined core links without duplicates -->
                     <a href="/"><?= icon('registon', '', 16) ?> <?= t('Bosh sahifa') ?></a>
-                    <a href="/leaderboard"><?= icon('trophy', '', 16) ?> <?= t('Reyting') ?></a>
-                    <a href="/flashcards"><?= icon('layers', '', 16) ?> <?= t('Flashcards') ?></a>
-                    <a href="/#metodika"><?= icon('sparkles', '', 16) ?> <?= t('Metodika') ?></a>
                     <a href="/#darslar"><?= icon('book-open', '', 16) ?> <?= t('Darslar') ?></a>
+                    <a href="/flashcards"><?= icon('layers', '', 16) ?> <?= t('Flashcards') ?></a>
+                    <a href="/leaderboard"><?= icon('trophy', '', 16) ?> <?= t('Reyting') ?></a>
                     <a href="/parent-tips"><?= icon('users', '', 16) ?> <?= t('Qo‘llanma') ?></a>
-                    <a href="/register" class="nav-highlight"><?= icon('arrow-right', '', 16) ?> <?= t('Ro‘yxatdan o‘tish') ?></a>
                 <?php endif; ?>
             </nav>
 
