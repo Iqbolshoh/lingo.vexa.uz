@@ -146,6 +146,31 @@ function json_response(array $data, int $status = 200): void
     exit;
 }
 
+function current_path(): string
+{
+    $uri = $_SERVER['REQUEST_URI'] ?? '/';
+    $path = parse_url($uri, PHP_URL_PATH) ?: '/';
+    return rtrim($path, '/') ?: '/';
+}
+
+function is_nav_active(string|array $routes): bool
+{
+    $current = current_path();
+    foreach ((array) $routes as $r) {
+        $clean = rtrim($r, '/') ?: '/';
+        if ($clean === '/') {
+            if ($current === '/') {
+                return true;
+            }
+        } else {
+            if ($current === $clean || str_starts_with($current, $clean . '/')) {
+                return true;
+            }
+        }
+    }
+    return false;
+}
+
 function render(string $view, array $data = []): void
 {
     extract($data);

@@ -39,22 +39,22 @@ $user = auth_user();
             <nav class="main-nav desktop-nav">
                 <?php if ($user): ?>
                     <!-- Logged in (Student / Admin): Priority app navigation -->
-                    <a href="/dashboard" class="nav-pill"><?= icon('layers', '', 16) ?> <?= t('Mening sahifam') ?></a>
-                    <a href="/courses"><?= icon('book-open', '', 16) ?> <?= t('Kurslar') ?></a>
-                    <a href="/flashcards"><?= icon('layers', '', 16) ?> <?= t('Flashcards') ?></a>
-                    <a href="/leaderboard"><?= icon('trophy', '', 16) ?> <?= t('Reyting') ?></a>
-                    <a href="/live"><?= icon('video', '', 16) ?> <?= t('Jonli Muloqot') ?></a>
+                    <a href="/dashboard" class="<?= is_nav_active('/dashboard') ? 'is-active' : '' ?>"><?= icon('layers', '', 16) ?> <?= t('Mening sahifam') ?></a>
+                    <a href="/courses" class="<?= is_nav_active(['/courses', '/lessons']) ? 'is-active' : '' ?>"><?= icon('book-open', '', 16) ?> <?= t('Kurslar') ?></a>
+                    <a href="/flashcards" class="<?= is_nav_active('/flashcards') ? 'is-active' : '' ?>"><?= icon('layers', '', 16) ?> <?= t('Flashcards') ?></a>
+                    <a href="/leaderboard" class="<?= is_nav_active('/leaderboard') ? 'is-active' : '' ?>"><?= icon('trophy', '', 16) ?> <?= t('Reyting') ?></a>
+                    <a href="/live" class="<?= is_nav_active('/live') ? 'is-active' : '' ?>"><?= icon('video', '', 16) ?> <?= t('Jonli Muloqot') ?></a>
                     <?php if (is_admin()): ?>
-                        <a href="/admin" class="nav-admin"><?= icon('shield-check', '', 16) ?> Admin</a>
+                        <a href="/admin" class="nav-admin <?= is_nav_active('/admin') ? 'is-active' : '' ?>"><?= icon('shield-check', '', 16) ?> Admin</a>
                     <?php endif; ?>
-                    <a href="/parent-tips"><?= icon('users', '', 16) ?> <?= t('Qo‘llanma') ?></a>
+                    <a href="/parent-tips" class="<?= is_nav_active('/parent-tips') ? 'is-active' : '' ?>"><?= icon('users', '', 16) ?> <?= t('Qo‘llanma') ?></a>
                 <?php else: ?>
                     <!-- Guest Navigation: streamlined core links without duplicates -->
-                    <a href="/"><?= icon('registon', '', 16) ?> <?= t('Bosh sahifa') ?></a>
-                    <a href="/#darslar"><?= icon('book-open', '', 16) ?> <?= t('Darslar') ?></a>
-                    <a href="/flashcards"><?= icon('layers', '', 16) ?> <?= t('Flashcards') ?></a>
-                    <a href="/leaderboard"><?= icon('trophy', '', 16) ?> <?= t('Reyting') ?></a>
-                    <a href="/parent-tips"><?= icon('users', '', 16) ?> <?= t('Qo‘llanma') ?></a>
+                    <a href="/" class="<?= is_nav_active('/') ? 'is-active' : '' ?>"><?= icon('registon', '', 16) ?> <?= t('Bosh sahifa') ?></a>
+                    <a href="/courses" class="<?= is_nav_active(['/courses', '/lessons']) ? 'is-active' : '' ?>"><?= icon('book-open', '', 16) ?> <?= t('Darslar') ?></a>
+                    <a href="/flashcards" class="<?= is_nav_active('/flashcards') ? 'is-active' : '' ?>"><?= icon('layers', '', 16) ?> <?= t('Flashcards') ?></a>
+                    <a href="/leaderboard" class="<?= is_nav_active('/leaderboard') ? 'is-active' : '' ?>"><?= icon('trophy', '', 16) ?> <?= t('Reyting') ?></a>
+                    <a href="/parent-tips" class="<?= is_nav_active('/parent-tips') ? 'is-active' : '' ?>"><?= icon('users', '', 16) ?> <?= t('Qo‘llanma') ?></a>
                 <?php endif; ?>
             </nav>
 
@@ -126,57 +126,57 @@ $user = auth_user();
         <div class="drawer-nav-list">
             <?php if ($user): ?>
                 <div class="drawer-section-label"><?= t('O‘quv Xonasi') ?></div>
-                <a href="/dashboard" class="drawer-link active">
+                <a href="/dashboard" class="drawer-link <?= is_nav_active('/dashboard') ? 'active' : '' ?>">
                     <span class="drawer-icon"><?= icon('layers', '', 18) ?></span>
                     <span><?= t('Mening sahifam') ?></span>
                 </a>
-                <a href="/courses" class="drawer-link">
+                <a href="/courses" class="drawer-link <?= is_nav_active(['/courses', '/lessons']) ? 'active' : '' ?>">
                     <span class="drawer-icon"><?= icon('book-open', '', 18) ?></span>
                     <span><?= t('Kurslar va darslar') ?></span>
                 </a>
-                <a href="/flashcards" class="drawer-link">
+                <a href="/flashcards" class="drawer-link <?= is_nav_active('/flashcards') ? 'active' : '' ?>">
                     <span class="drawer-icon"><?= icon('layers', '', 18) ?></span>
                     <span><?= t('Aqlli Flashcards') ?></span>
                 </a>
-                <a href="/leaderboard" class="drawer-link">
+                <a href="/leaderboard" class="drawer-link <?= is_nav_active('/leaderboard') ? 'active' : '' ?>">
                     <span class="drawer-icon"><?= icon('trophy', '', 18) ?></span>
                     <span><?= t('Reyting va Liga') ?></span>
                 </a>
-                <a href="/live" class="drawer-link">
+                <a href="/live" class="drawer-link <?= is_nav_active('/live') ? 'active' : '' ?>">
                     <span class="drawer-icon"><?= icon('video', '', 18) ?></span>
                     <span><?= t('Zoom Jonli Muloqot') ?></span>
                 </a>
                 <?php if (is_admin()): ?>
-                    <a href="/admin" class="drawer-link admin-link">
+                    <a href="/admin" class="drawer-link admin-link <?= is_nav_active('/admin') ? 'active' : '' ?>">
                         <span class="drawer-icon"><?= icon('shield-check', '', 18) ?></span>
                         <span><?= t('Admin Boshqaruv Markazi') ?></span>
                     </a>
                 <?php endif; ?>
-                <a href="/profile" class="drawer-link">
+                <a href="/profile" class="drawer-link <?= is_nav_active('/profile') ? 'active' : '' ?>">
                     <span class="drawer-icon"><?= icon('settings', '', 18) ?></span>
                     <span><?= t('Profil Sozlamalari') ?></span>
                 </a>
 
                 <div class="drawer-section-label" style="margin-top:16px;"><?= t('Akademiya') ?></div>
-                <a href="/" class="drawer-link">
+                <a href="/" class="drawer-link <?= is_nav_active('/') ? 'active' : '' ?>">
                     <span class="drawer-icon"><?= icon('registon', '', 18) ?></span>
                     <span><?= t('Bosh sahifa') ?></span>
                 </a>
-                <a href="/parent-tips" class="drawer-link">
+                <a href="/parent-tips" class="drawer-link <?= is_nav_active('/parent-tips') ? 'active' : '' ?>">
                     <span class="drawer-icon"><?= icon('book-open', '', 18) ?></span>
                     <span><?= t('Ota-onalar Qo‘llanmasi') ?></span>
                 </a>
             <?php else: ?>
                 <div class="drawer-section-label"><?= t('Menyu') ?></div>
-                <a href="/" class="drawer-link">
+                <a href="/" class="drawer-link <?= is_nav_active('/') ? 'active' : '' ?>">
                     <span class="drawer-icon"><?= icon('registon', '', 18) ?></span>
                     <span><?= t('Bosh sahifa') ?></span>
                 </a>
-                <a href="/leaderboard" class="drawer-link">
+                <a href="/leaderboard" class="drawer-link <?= is_nav_active('/leaderboard') ? 'active' : '' ?>">
                     <span class="drawer-icon"><?= icon('trophy', '', 18) ?></span>
                     <span><?= t('Reyting va Liga') ?></span>
                 </a>
-                <a href="/flashcards" class="drawer-link">
+                <a href="/flashcards" class="drawer-link <?= is_nav_active('/flashcards') ? 'active' : '' ?>">
                     <span class="drawer-icon"><?= icon('layers', '', 18) ?></span>
                     <span><?= t('Aqlli Flashcards') ?></span>
                 </a>
@@ -184,15 +184,15 @@ $user = auth_user();
                     <span class="drawer-icon"><?= icon('sparkles', '', 18) ?></span>
                     <span><?= t('Ta’lim Metodikasi') ?></span>
                 </a>
-                <a href="/#darslar" class="drawer-link">
+                <a href="/courses" class="drawer-link <?= is_nav_active(['/courses', '/lessons']) ? 'active' : '' ?>">
                     <span class="drawer-icon"><?= icon('book-open', '', 18) ?></span>
                     <span><?= t('Kurslar va darslar') ?></span>
                 </a>
-                <a href="/parent-tips" class="drawer-link">
+                <a href="/parent-tips" class="drawer-link <?= is_nav_active('/parent-tips') ? 'active' : '' ?>">
                     <span class="drawer-icon"><?= icon('users', '', 18) ?></span>
                     <span><?= t('Ota-onalar Qo‘llanmasi') ?></span>
                 </a>
-                <a href="/register" class="drawer-link highlight-link">
+                <a href="/register" class="drawer-link highlight-link <?= is_nav_active('/register') ? 'active' : '' ?>">
                     <span class="drawer-icon"><?= icon('arrow-right', '', 18) ?></span>
                     <span><?= t('Ro‘yxatdan o‘tish') ?></span>
                 </a>

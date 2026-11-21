@@ -168,6 +168,20 @@ a:hover {
     background: var(--registon-light);
 }
 
+.main-nav a.is-active,
+.main-nav a.active {
+    color: var(--registon-dark);
+    background: var(--registon-light);
+    font-weight: 700;
+    box-shadow: inset 0 -2.5px 0 var(--registon-blue);
+}
+
+.main-nav a.is-active svg,
+.main-nav a.active svg {
+    color: var(--registon-blue);
+    stroke-width: 2.3;
+}
+
 .main-nav .nav-highlight {
     background: var(--gold-light);
     color: var(--gold-dark);
@@ -1779,6 +1793,8 @@ body.drawer-open {
     background: var(--registon-light);
     color: var(--registon-dark);
     font-weight: 700;
+    border-left: 4px solid var(--registon-blue);
+    padding-left: 20px;
 }
 
 .drawer-link.admin-link {
