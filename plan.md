@@ -7,16 +7,16 @@ URL: https://lingo.vexa.uz · Yo‘l: `/var/www/startups/lingo` · Oxirgi to‘l
 
 ## 0. Umumiy holat — qay darajada tayyor
 
-**Umumiy tayyorlik: ~65% (ishlaydigan MVP / pilot bosqichi).**
+**Umumiy tayyorlik: ~67% (ishlaydigan MVP / pilot bosqichi).**
 Sayt to‘liq dinamik: barcha ma’lumot (foydalanuvchilar, darslar, lug‘at, testlar, natijalar, nishonlar, arizalar, jonli darslar) **SQLite** bazasida saqlanadi va har so‘rovda bazadan o‘qiladi. Hozircha SQLite yetarli (owner qarori 2026-11-21: MySQL/Laravel'ga ko‘chirish shart emas).
 
 | # | Qism | Tayyorlik | Holat |
 |---|------|-----------|-------|
-| 1 | Landing (bosh sahifa) | 90% | Ishlaydi, darslar va lug‘at bazadan |
+| 1 | Landing (bosh sahifa) | 95% | Ishlaydi, yangi lapis dizayn (2026-11-21) |
 | 2 | Pilotga ariza (enrollment) | 75% | Ishlaydi, validatsiya zaif |
 | 3 | Ro‘yxatdan o‘tish / kirish / chiqish / profil | 75% | Ishlaydi, brute-force himoyasi yo‘q |
 | 4 | O‘quvchi paneli (darslar xaritasi, progress) | 85% | Ishlaydi |
-| 5 | Dars pleyeri (sahna, flip-kartalar, o‘yin, ovoz) | 80% | Ishlaydi, haqiqiy video yo‘q |
+| 5 | Dars pleyeri (sahna, flip-kartalar, o‘yin, ovoz) | 85% | Ishlaydi, haqiqiy video yo‘q |
 | 6 | Test va 80% qulf qoidasi | 60% | Sahifa qulfi bor, lekin POST orqali chetlab o‘tiladi |
 | 7 | Nishonlar (badges) va tangalar | 70% | Nishonlar bazada, tangalar faqat brauzerda |
 | 8 | Diplom (sertifikat) | 40% | Hamma uchun ochiq, darslarni tugatish tekshirilmaydi |
@@ -128,8 +128,18 @@ Sinov jonli saytning nusxasida o‘tkazildi (jonli bazaga test yozuvi tushmadi).
 
 ## 5. Keyingi qadamlar (yo‘l xaritasi)
 
-### 10-BOSQICH: Dizaynni sayqallash [JARAYONDA]
-- [ ] Umumiy vizual sifatni oshirish (tipografiya, bo‘shliqlar, kartalar, tugmalar, mobil ko‘rinish).
+### 10-BOSQICH: Dizaynni sayqallash [BAJARILDI ✅ 2026-11-21]
+- [x] Hero: to‘q lojuvard (lapis) fon, oltin girih naqshi, oltin gradient sarlavha, pastki arka egri chizig‘i.
+- [x] Hero’dagi suzuvchi belgilar kartani yopib qo‘yardi — endi karta ostida bir qatorda.
+- [x] Shisha (glass) header, gradient tugmalar, fokus halqasi (klaviatura uchun), kartalar hover effekti.
+- [x] Bo‘lim sarlavhalariga oltin ornament chiziqlari; footer va o‘quvchi paneli banneriga girih naqshi.
+- [x] Mobil hero: statistikalar 3 ustunda, kichik ekranlarda o‘lchamlar moslandi.
+- [x] Yopiq mobil menyuning soyasi ekran o‘ng chetida ko‘rinib turardi — tuzatildi.
+- [x] Dars sahna pleyeri maskotni emoji bilan almashtirardi — endi maskot qoladi (muammo 8).
+- [x] CSS/JS keshlash: `?v=time()` → `?v=filemtime()` (muammo 10).
+- [x] Footer: “Laravel + SQLite” → “PHP + SQLite” (muammo 16).
+- [x] `prefers-reduced-motion` uchun animatsiyalar o‘chiriladi.
+- Barcha o‘zgarishlar `style.css` oxiridagi “Design polish v2” blokida.
 
 ### 11-BOSQICH: Xavfsizlik va qoidalar
 - [ ] Quiz POST’da dars qulfini tekshirish (muammo 1).
@@ -155,4 +165,4 @@ Sinov jonli saytning nusxasida o‘tkazildi (jonli bazaga test yozuvi tushmadi).
 
 ## 6. O‘zgarishlar tarixi
 - **2026-11-18:** MVP, Registon dizayni, SVG ikonkalar, flip-kartalar, diplom, admin, mobil drawer, login/logout tuzatishlari (1–9 bosqichlar).
-- **2026-11-21:** To‘liq tekshiruv o‘tkazildi, plan.md qayta yozildi (haqiqiy holat, tayyorlik foizlari, topilgan 16 muammo). MySQL/Laravel’ga ko‘chirish bekor qilindi — SQLite qoladi.
+- **2026-11-21:** To‘liq tekshiruv o‘tkazildi, plan.md qayta yozildi (haqiqiy holat, tayyorlik foizlari, topilgan 16 muammo). MySQL/Laravel’ga ko‘chirish bekor qilindi — SQLite qoladi. Dizayn sayqallandi (10-bosqich).

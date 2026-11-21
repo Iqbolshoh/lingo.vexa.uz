@@ -163,7 +163,6 @@ function initScenePlayer() {
     if (!window.LESSON_VOCAB || window.LESSON_VOCAB.length === 0) return;
 
     scenePhrases = window.LESSON_VOCAB.slice(0, 5).map(v => ({
-        emoji: v.icon || '🌟',
         uz: v.example || v.word_uz,
         en: v.word_en,
         word: v.word_uz
@@ -176,12 +175,10 @@ function updateScene() {
     if (scenePhrases.length === 0) return;
     const item = scenePhrases[currentPhraseIdx];
 
-    const avatarEl = document.getElementById('avatarEmoji');
     const phraseEl = document.getElementById('scenePhrase');
     const subEl = document.getElementById('sceneSub');
     const indicatorEl = document.getElementById('phraseIndicator');
 
-    if (avatarEl) avatarEl.innerText = item.emoji;
     if (phraseEl) phraseEl.innerText = '«' + item.uz + '»';
     if (subEl) subEl.innerText = item.en;
     if (indicatorEl) indicatorEl.innerText = `${currentPhraseIdx + 1} / ${scenePhrases.length}`;

@@ -14,7 +14,7 @@ $user = auth_user();
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="/assets/style.css?v=<?= time() ?>">
+    <link rel="stylesheet" href="/assets/style.css?v=<?= filemtime(__DIR__ . '/../../public/assets/style.css') ?>">
 </head>
 <body class="registon-theme">
     <!-- Site Header -->
@@ -261,11 +261,11 @@ $user = auth_user();
         <div class="footer-bottom">
             <div class="container footer-bottom-inner">
                 <p>© 2026 LingoUz by Gulomov’s Academy. Barcha huquqlar himoyalangan.</p>
-                <p class="tech-tag">Registon Heritage Edition | Laravel + SQLite</p>
+                <p class="tech-tag">Registon Heritage Edition | PHP + SQLite</p>
             </div>
         </div>
     </footer>
 
-    <script src="/assets/app.js?v=<?= time() ?>"></script>
+    <script src="/assets/app.js?v=<?= filemtime(__DIR__ . '/../../public/assets/app.js') ?>"></script>
 </body>
 </html>
