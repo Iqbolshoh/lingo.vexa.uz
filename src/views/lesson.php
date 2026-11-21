@@ -9,7 +9,7 @@ $best = (int) ($currentProgress['best_score'] ?? 0);
 $pass = (int) $lesson['passing_score'];
 $kindLabels = ['choice' => t('Variantni tanlang'), 'listen' => t('Tinglang'), 'build' => t('Gap tuzing'), 'fill' => t('Yozing')];
 $kindIcons = ['choice' => 'check-circle', 'listen' => 'volume-2', 'build' => 'layers', 'fill' => 'message-square'];
-$steps = [['sahna', t('Sahna')], ['lugat', t('Lug‘at')]];
+$steps = [['sahna', t('Video')], ['lugat', t('Lug‘at')]];
 if ($hasReading) { $steps[] = ['oqish', t('O‘qish')]; }
 $steps[] = ['oyin', t('O‘yin')];
 $steps[] = ['mashq', t('Mashq')];
@@ -46,18 +46,66 @@ $n = 0;
             <?php endforeach; ?>
         </nav>
 
-        <!-- 1. Scene / video -->
+        <!-- 1. Video & Scene -->
         <section class="l-section" id="sahna">
-            <div class="l-head"><span class="l-num"><?= ++$n ?></span><div><h2><?= t('Mikro-sahna') ?></h2><p><?= t('Lingo bilan birga iboralarni tinglang va baland ovozda takrorlang.') ?></p></div></div>
+            <div class="l-head">
+                <span class="l-num"><?= ++$n ?></span>
+                <div>
+                    <h2><?= t('Video dars va Mikro-sahna') ?></h2>
+                    <p><?= t('Jonli video tushuntirishni ko‘ring, subtitrlarni o‘qing va Lingo bilan birga mashq qiling.') ?></p>
+                </div>
+            </div>
+
             <?php if (!empty($lesson['video_url'])): ?>
                 <div class="video-frame" style="margin-bottom:16px">
                     <?php if (preg_match('~\.(mp4|webm)$~i', $lesson['video_url'])): ?>
                         <video src="<?= e($lesson['video_url']) ?>" controls preload="metadata"></video>
                     <?php else: ?>
-                        <iframe src="<?= e($lesson['video_url']) ?>" title="<?= e($lesson['title']) ?>" loading="lazy" allow="accelerometer; encrypted-media; picture-in-picture" allowfullscreen></iframe>
+                        <iframe src="<?= e($lesson['video_url']) ?>" title="<?= e($lesson['title']) ?>" loading="lazy" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
                     <?php endif; ?>
                 </div>
+
+                <?php 
+                $subtitles = !empty($lesson['video_subtitles']) ? json_decode($lesson['video_subtitles'], true) : [];
+                if (!empty($subtitles) && is_array($subtitles)): 
+                ?>
+                    <div class="video-subtitles-card" id="videoSubtitlesCard">
+                        <div class="subtitles-header">
+                            <div class="subtitles-title">
+                                <?= icon('book-open', '', 18) ?>
+                                <span><?= t('Video subtitrlari va matni') ?></span>
+                            </div>
+                            <div class="subtitles-controls">
+                                <button type="button" class="btn-sub-filter is-active" data-sub-mode="dual"><?= t('Ikkala til') ?></button>
+                                <button type="button" class="btn-sub-filter" data-sub-mode="uz"><?= t('O‘zbekcha') ?></button>
+                                <button type="button" class="btn-sub-filter" data-sub-mode="en"><?= t('English') ?></button>
+                            </div>
+                        </div>
+                        <div class="subtitles-list">
+                            <?php foreach ($subtitles as $sub): ?>
+                                <div class="subtitle-line">
+                                    <span class="sub-time"><?= e($sub['time'] ?? '0:00') ?></span>
+                                    <div class="sub-content">
+                                        <div class="sub-uz"><?= e($sub['uz'] ?? '') ?></div>
+                                        <?php if (!empty($sub['en'])): ?>
+                                            <div class="sub-en"><?= e($sub['en']) ?></div>
+                                        <?php endif; ?>
+                                    </div>
+                                    <div class="sub-actions">
+                                        <button type="button" class="btn-sub-action" data-speak="<?= e($sub['uz'] ?? '') ?>" title="<?= t('Eshitish') ?>">
+                                            <?= icon('volume-2', '', 14) ?>
+                                        </button>
+                                        <button type="button" class="btn-sub-action btn-sub-mic" data-check-speech="<?= e($sub['uz'] ?? '') ?>" title="<?= t('Talaffuzni tekshirish') ?>">
+                                            <?= icon('mic', '', 14) ?>
+                                        </button>
+                                    </div>
+                                </div>
+                            <?php endforeach; ?>
+                        </div>
+                    </div>
+                <?php endif; ?>
             <?php endif; ?>
+
             <div class="video-container-card registon-video-card">
                 <div class="interactive-video-player">
                     <div class="player-canvas" id="playerCanvas">

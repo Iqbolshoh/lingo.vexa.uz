@@ -72,6 +72,7 @@ function migrate(PDO $pdo): void
             objective TEXT NOT NULL,
             duration_min INTEGER NOT NULL DEFAULT 5,
             video_url TEXT,
+            video_subtitles TEXT,
             summary TEXT,
             prerequisite_lesson_id INTEGER,
             passing_score INTEGER NOT NULL DEFAULT 80,

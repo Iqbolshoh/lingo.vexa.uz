@@ -57,6 +57,21 @@
         next();
     });
 
+    // Video subtitles language filter
+    document.querySelectorAll('.btn-sub-filter').forEach(btn => {
+        btn.addEventListener('click', () => {
+            const card = document.getElementById('videoSubtitlesCard');
+            if (!card) return;
+            document.querySelectorAll('.btn-sub-filter').forEach(b => b.classList.remove('is-active'));
+            btn.classList.add('is-active');
+            const mode = btn.dataset.subMode;
+            card.classList.remove('hide-en', 'hide-uz');
+            if (mode === 'uz') card.classList.add('hide-en');
+            else if (mode === 'en') card.classList.add('hide-uz');
+            if (typeof SoundFX !== 'undefined') SoundFX.click();
+        });
+    });
+
     // Step nav highlights the section in view.
     const stepLinks = [...document.querySelectorAll('.lesson-steps a')];
     if ('IntersectionObserver' in window && stepLinks.length) {

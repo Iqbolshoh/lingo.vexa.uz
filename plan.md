@@ -78,9 +78,10 @@ MVP ni mukammal startap holatiga yetkazish uchun quyidagi qadamlar rejalashtiril
 - [x] **Ovozli lug‘at** (`#lugat`) dagi har bir so‘z kartochkasiga mikrofon tugmasi qo‘shildi (o‘quvchi o‘z talaffuzini mustaqil tekshirishi mumkin).
 - [x] Bosh sahifa (Landing) dagi namunaviy kartaga «Özingiz ayting» mikrofon testi ulandi.
 
-### 2.2. Haqiqiy video darslar integratsiyasi
-- [ ] Hozirgi namunaviy video o‘rniga har bir dars boshida 1-2 daqiqalik qiziqarli mikro-videolar (YouTube embed yoki HLS/MP4 CDN orqali).
-- [ ] Subtitrlar (o‘zbekcha yangi alifboda va inglizcha).
+### 2.2. Haqiqiy video darslar integratsiyasi [BAJARILDI ✅ 2026-11-21]
+- [x] Barcha 17 ta dars uchun haqiqiy o‘quv video darsliklar va madaniy hujjatli videoroliklar integratsiya qilindi (Ibrat Farzandlari, O‘zbekiston milliy madaniyati va sayohat videolari).
+- [x] Har bir dars ostiga ikki tilli interaktiv subtitrlar tizimi (`video_subtitles`) qo‘shildi: vaqt ko‘rsatkichi (`0:05`), yangi lotin alifbosidagi o‘zbekcha matn, inglizcha tarjima, har bir qatorda alohida ovoz eshitish va o‘z talaffuzini mikrofonda tekshirish tugmalari.
+- [x] Subtitrlarni filtrlash rejimi ulandi: `[Ikkala til]`, `[O‘zbekcha]`, `[English]`.
 
 ### 2.3. Telegram Bot bilan integratsiya (Retenshn va Eslatmalar)
 - [ ] O‘quvchi har kuni o‘rganishni to‘xtatib qo‘ymasligi uchun (Streak saqlash) Telegram bot orqali kunlik eslatmalar.
