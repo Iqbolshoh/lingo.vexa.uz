@@ -62,7 +62,10 @@
                     <input type="password" id="new_password" name="new_password" placeholder="Yangi parol (ixtiyoriy)">
                 </div>
 
-                <div style="display:flex; justify-content:flex-end; gap:12px; margin-top:20px;">
+                <div style="display:flex; justify-content:flex-end; gap:12px; margin-top:20px; flex-wrap:wrap;">
+                    <?php if ($user['role'] === 'student'): ?>
+                        <a href="/onboarding" class="btn btn-ghost btn-lg" style="margin-right:auto"><?= icon('heart', '', 16) ?> Qiziqishlar va kunlik maqsad</a>
+                    <?php endif; ?>
                     <button type="submit" class="btn btn-primary btn-lg">
                         Saqlash
                     </button>

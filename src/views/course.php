@@ -23,7 +23,7 @@
             <div>
                 <h2 class="section-h mt-0"><?= icon('map-pin', '', 24) ?> Darslar yo‘li</h2>
                 <?php if (!$state['lessons']): ?>
-                    <div class="card empty"><div class="e-ico"><?= icon('book-open', '', 26) ?></div>Bu kursga darslar tez orada qo‘shiladi.</div>
+                    <div class="card empty"><?= mascot('sleeping', 90) ?><p>Bu kursga darslar tez orada qo‘shiladi.</p></div>
                 <?php endif; ?>
                 <div class="path">
                     <?php $currentShown = false; foreach ($state['lessons'] as $l):
@@ -64,7 +64,7 @@
                 </div>
                 <?php if ($state['lessons']): ?>
                     <div class="path-finish">
-                        <span class="finish-ico"><?= icon('award', '', 30) ?></span>
+                        <?= mascot($done ? 'celebrate' : 'encourage', 64, 'owl--mini') ?>
                         <div style="flex:1">
                             <strong style="font-family:var(--font-heading);font-size:19px">Marra — kurs diplomi!</strong>
                             <div class="small">Barcha darslarni 80%+ bilan tugating va diplomni chop eting.</div>

@@ -3,10 +3,14 @@
     <main class="adm-main">
         <div class="adm-head">
             <div><div class="crumbs"><a href="/admin">Admin</a> / O‘quvchilar</div><h1>O‘quvchilar</h1></div>
+            <div class="adm-actions">
+            <a href="/admin/students/create" class="btn btn-primary btn-sm"><?= icon('sparkles', '', 14) ?> Yangi o‘quvchi</a>
+            <a href="/admin/export/students" class="btn btn-ghost btn-sm"><?= icon('download', '', 14) ?> CSV</a>
             <form method="GET" action="/admin/students" class="search-bar field">
                 <input type="search" name="q" value="<?= e($q) ?>" placeholder="Ism yoki email bo‘yicha qidirish">
                 <button class="btn btn-primary btn-sm"><?= icon('search', '', 14) ?></button>
             </form>
+            </div>
         </div>
         <div class="tbl-wrap">
             <table class="tbl" data-sortable>

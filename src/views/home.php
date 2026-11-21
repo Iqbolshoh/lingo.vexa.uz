@@ -41,9 +41,9 @@
         <div class="hero-visual">
             <div class="hero-card-stack">
                 <div class="mascot-hero-wrap">
-                    <img src="/assets/mascot-lingo.svg" alt="Lingo" class="mascot-floating-img" width="120" height="120">
+                    <?= mascot('welcome', 120, 'hero-owl') ?>
                     <div class="mascot-speech-bubble">
-                        «Salom do‘stim! Men <strong>Lingo</strong>man. Birga o‘zbekcha o‘rganamiz!»
+                        «Assalomu alaykum! Men <strong>Boyo‘g‘li</strong>man — sizning o‘zbek tili do‘stingiz. Birga o‘rganamiz!»
                     </div>
                 </div>
 

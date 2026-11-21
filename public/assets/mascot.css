@@ -1,0 +1,124 @@
+/* ==========================================================================
+   Boyo‘g‘li — LingoUz owl mascot. Every part keeps its own transform origin
+   (fill-box) so states can be combined: idle motions always run underneath.
+   ========================================================================== */
+
+.owl { display: inline-block; width: var(--owl-size, 120px); height: calc(var(--owl-size, 120px) * 1.15); line-height: 0; flex: none; }
+.owl-svg { width: 100%; height: 100%; overflow: visible; }
+.owl-svg * { transform-box: fill-box; }
+
+.owl-rig { transform-origin: 50% 100%; }
+.owl-breath { transform-origin: 50% 100%; animation: owl-breath 3.2s ease-in-out infinite; }
+.owl-head { transform-origin: 50% 80%; animation: owl-tilt 7s ease-in-out infinite; }
+.owl-pupils { transform-origin: center; animation: owl-look 9s ease-in-out infinite; }
+.owl-lid { transform-origin: 50% 0; transform: scaleY(0); animation: owl-blink 4.6s infinite; }
+.owl-happy, .owl-closed { opacity: 0; }
+.owl-wing--l { transform-origin: 70% 10%; animation: owl-flap-l 3.2s ease-in-out infinite; }
+.owl-wing--r { transform-origin: 30% 10%; animation: owl-flap-r 3.2s ease-in-out infinite; }
+.owl-scarf-tail { transform-origin: 50% 0; animation: owl-scarf 2.6s ease-in-out infinite; }
+.owl-book { transform-origin: 30% 80%; }
+.owl-beak-low { transform-origin: 50% 0; }
+.owl-shadow { transform-origin: center; animation: owl-shadow 3.2s ease-in-out infinite; }
+.owl-fx, .owl-confetti { opacity: 0; }
+
+@keyframes owl-breath { 0%, 100% { transform: scale(1, 1); } 50% { transform: scale(1.015, 1.03); } }
+@keyframes owl-tilt { 0%, 40%, 100% { transform: rotate(0); } 50%, 60% { transform: rotate(-4deg); } 75%, 85% { transform: rotate(3deg); } }
+@keyframes owl-look { 0%, 30%, 100% { transform: translate(0, 0); } 36%, 48% { transform: translate(3px, -1px); } 54%, 66% { transform: translate(-3px, 1px); } }
+@keyframes owl-blink { 0%, 92%, 100% { transform: scaleY(0); } 95% { transform: scaleY(1); } }
+@keyframes owl-flap-l { 0%, 100% { transform: rotate(0); } 50% { transform: rotate(4deg); } }
+@keyframes owl-flap-r { 0%, 100% { transform: rotate(0); } 50% { transform: rotate(-4deg); } }
+@keyframes owl-scarf { 0%, 100% { transform: rotate(0); } 50% { transform: rotate(7deg); } }
+@keyframes owl-shadow { 0%, 100% { transform: scaleX(1); } 50% { transform: scaleX(1.04); } }
+
+/* ---------- Welcome: waves the right wing, happy eyes ---------- */
+.owl--welcome .owl-wing--r { animation: owl-wave 1.1s ease-in-out infinite; }
+.owl--welcome .owl-happy, .owl--success .owl-happy, .owl--celebrate .owl-happy, .owl--encourage .owl-happy { opacity: 1; }
+.owl--welcome .owl-pupils, .owl--success .owl-pupils, .owl--celebrate .owl-pupils, .owl--encourage .owl-pupils,
+.owl--welcome .owl-lid, .owl--success .owl-lid, .owl--celebrate .owl-lid, .owl--encourage .owl-lid { opacity: 0; }
+.owl--welcome .owl-breath { animation: owl-bounce-soft 1.1s ease-in-out infinite; }
+@keyframes owl-wave { 0%, 100% { transform: rotate(-95deg); } 50% { transform: rotate(-130deg); } }
+@keyframes owl-bounce-soft { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-3px); } }
+
+/* ---------- Thinking: head tilt, looks up, thought dots ---------- */
+.owl--thinking .owl-head { animation: none; transform: rotate(9deg); transition: transform .3s; }
+.owl--thinking .owl-pupils { animation: none; transform: translate(-3px, -4px); }
+.owl--thinking .owl-wing--r { animation: none; transform: rotate(-35deg); }
+.owl--thinking .owl-fx--think { opacity: 1; }
+.owl--thinking .owl-fx--think circle { animation: owl-dots 1.5s ease-in-out infinite; transform-origin: center; }
+.owl--thinking .owl-fx--think circle:nth-child(2) { animation-delay: .2s; }
+.owl--thinking .owl-fx--think circle:nth-child(3) { animation-delay: .4s; }
+@keyframes owl-dots { 0%, 100% { transform: scale(.7); opacity: .5; } 50% { transform: scale(1.1); opacity: 1; } }
+
+/* ---------- Learning: book raised, eyes down, gentle nod ---------- */
+.owl--learning .owl-book { transform: translate(-22px, -40px) rotate(-6deg) scale(1.25); transition: transform .4s; }
+.owl--learning .owl-pupils { animation: owl-read 2.4s ease-in-out infinite; }
+.owl--learning .owl-wing--l { animation: none; transform: rotate(-28deg); }
+.owl--learning .owl-wing--r { animation: none; transform: rotate(18deg); }
+.owl--learning .owl-head { animation: owl-nod 2.4s ease-in-out infinite; }
+@keyframes owl-read { 0%, 100% { transform: translate(-3px, 4px); } 50% { transform: translate(3px, 4px); } }
+@keyframes owl-nod { 0%, 100% { transform: rotate(0); } 50% { transform: rotate(2.5deg) translateY(1px); } }
+
+/* ---------- Success: bounce, both wings up ---------- */
+.owl--success .owl-rig { animation: owl-hop .7s cubic-bezier(.3, 1.6, .5, 1) infinite; }
+.owl--success .owl-wing--l { animation: none; transform: rotate(120deg); }
+.owl--success .owl-wing--r { animation: none; transform: rotate(-120deg); }
+.owl--success .owl-fx--spark { opacity: 1; animation: owl-twinkle .7s ease-in-out infinite; }
+@keyframes owl-hop { 0%, 100% { transform: translateY(0) scale(1, 1); } 15% { transform: translateY(0) scale(1.06, .94); } 50% { transform: translateY(-10px) scale(.97, 1.03); } }
+@keyframes owl-twinkle { 0%, 100% { opacity: .4; } 50% { opacity: 1; } }
+
+/* ---------- Celebration: big jumps + confetti ---------- */
+.owl--celebrate .owl-rig { animation: owl-jump .9s cubic-bezier(.3, 1.4, .5, 1) infinite; }
+.owl--celebrate .owl-wing--l { animation: owl-cheer-l .45s ease-in-out infinite alternate; }
+.owl--celebrate .owl-wing--r { animation: owl-cheer-r .45s ease-in-out infinite alternate; }
+.owl--celebrate .owl-confetti { opacity: 1; }
+.owl--celebrate .owl-confetti-bit { transform-origin: center; animation: owl-confetti 1.6s linear infinite; animation-delay: var(--d); }
+.owl--celebrate .owl-shadow { animation: owl-shadow-jump .9s ease-in-out infinite; }
+@keyframes owl-jump { 0%, 100% { transform: translateY(0) scale(1, 1); } 12% { transform: translateY(0) scale(1.08, .92); } 45% { transform: translateY(-22px) scale(.96, 1.05) rotate(-3deg); } 70% { transform: translateY(-8px) rotate(3deg); } }
+@keyframes owl-cheer-l { from { transform: rotate(100deg); } to { transform: rotate(140deg); } }
+@keyframes owl-cheer-r { from { transform: rotate(-100deg); } to { transform: rotate(-140deg); } }
+@keyframes owl-confetti { 0% { transform: translateY(-10px) rotate(0); opacity: 0; } 10% { opacity: 1; } 100% { transform: translateY(190px) rotate(var(--r)); opacity: 0; } }
+@keyframes owl-shadow-jump { 0%, 100% { transform: scaleX(1); opacity: .18; } 45% { transform: scaleX(.7); opacity: .08; } }
+
+/* ---------- Mistake: cute confused tilt, never sad ---------- */
+.owl--mistake .owl-head { animation: owl-puzzle 1.8s ease-in-out infinite; }
+.owl--mistake .owl-pupils { animation: none; transform: translate(4px, 0) scale(.92); }
+.owl--mistake .owl-wing--r { animation: none; transform: rotate(-60deg); }
+.owl--mistake .owl-fx--q { opacity: 1; animation: owl-q 1.8s ease-in-out infinite; transform-origin: center; }
+@keyframes owl-puzzle { 0%, 100% { transform: rotate(-11deg); } 50% { transform: rotate(-7deg); } }
+@keyframes owl-q { 0%, 100% { transform: translateY(0) rotate(8deg); } 50% { transform: translateY(-4px) rotate(-4deg); } }
+
+/* ---------- Encouragement: wing "thumbs up", warm smile ---------- */
+.owl--encourage .owl-wing--r { animation: owl-thumb 1.4s ease-in-out infinite; }
+.owl--encourage .owl-head { animation: owl-nod 1.4s ease-in-out infinite; }
+.owl--encourage .owl-fx--spark { opacity: .9; }
+@keyframes owl-thumb { 0%, 100% { transform: rotate(-150deg) translateY(0); } 50% { transform: rotate(-160deg) translateY(-3px); } }
+
+/* ---------- Sleeping: eyes closed, sway, Zzz ---------- */
+.owl--sleeping .owl-lid { animation: none; transform: scaleY(1); }
+.owl--sleeping .owl-pupils { animation: none; }
+.owl--sleeping .owl-closed { opacity: 1; }
+.owl--sleeping .owl-rig { animation: owl-sway 4s ease-in-out infinite; }
+.owl--sleeping .owl-breath { animation-duration: 4s; }
+.owl--sleeping .owl-head { animation: none; transform: rotate(-6deg) translateY(2px); }
+.owl--sleeping .owl-fx--zzz { opacity: 1; }
+.owl--sleeping .owl-fx--zzz text { animation: owl-z 3s ease-in-out infinite; transform-origin: center; opacity: 0; }
+.owl--sleeping .owl-fx--zzz .z2 { animation-delay: 1s; }
+.owl--sleeping .owl-fx--zzz .z3 { animation-delay: 2s; }
+@keyframes owl-sway { 0%, 100% { transform: rotate(-2.5deg); } 50% { transform: rotate(2.5deg); } }
+@keyframes owl-z { 0% { opacity: 0; transform: translate(0, 6px) scale(.6); } 30% { opacity: 1; } 100% { opacity: 0; transform: translate(6px, -10px) scale(1.1); } }
+
+/* ---------- Speaking: beak moves, slight head bob ---------- */
+.owl--speaking .owl-beak-low { animation: owl-talk .26s ease-in-out infinite alternate; }
+.owl--speaking .owl-head { animation: owl-nod .52s ease-in-out infinite; }
+.owl--speaking .owl-wing--l { animation: owl-gesture 1s ease-in-out infinite; }
+@keyframes owl-talk { from { transform: scaleY(.3); } to { transform: scaleY(1.9) translateY(1px); } }
+@keyframes owl-gesture { 0%, 100% { transform: rotate(0); } 50% { transform: rotate(22deg); } }
+/* the lower beak only shows while talking */
+.owl-beak-low { transform: scaleY(.3); }
+
+/* Small sizes: keep it calm and readable */
+.owl.owl--mini .owl-fx, .owl.owl--mini .owl-confetti { display: none; }
+
+@media (prefers-reduced-motion: reduce) {
+    .owl *, .owl-svg * { animation: none !important; }
+}

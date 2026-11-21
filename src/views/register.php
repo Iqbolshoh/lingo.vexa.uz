@@ -2,9 +2,7 @@
     <div class="container">
         <div class="auth-card">
             <div class="auth-header">
-                <div class="auth-icon-wrap">
-                    <?= icon('user', 'auth-svg-icon', 36) ?>
-                </div>
+                <?= mascot('welcome', 96) ?>
                 <h1>O‘quvchini Ro‘yxatdan O‘tkazish</h1>
                 <p>O‘zingiz yoki farzandingiz uchun bepul profil</p>
             </div>

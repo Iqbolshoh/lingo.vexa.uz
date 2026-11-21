@@ -6,6 +6,7 @@ $passed = $result['passed'];
     <div class="container pg-narrow">
         <section class="pg-hero result-hero <?= $passed ? '' : 'theme-gold' ?>">
             <span class="hero-chip"><?= icon($passed ? 'trophy' : 'sparkles', '', 14) ?> <?= e($lesson['title']) ?></span>
+            <div style="margin-top:10px"><?= mascot($passed ? 'celebrate' : 'encourage', 120) ?></div>
             <h1><?= $passed ? 'Barakalla! Dars o‘zlashtirildi' : 'Yaxshi harakat! Yana bir urinish' ?></h1>
             <div class="ring" style="--p: <?= (int) $result['percent'] ?>">
                 <div><strong><?= (int) $result['percent'] ?>%</strong><span><?= (int) $result['score'] ?> / <?= (int) $result['total'] ?> to‘g‘ri</span></div>

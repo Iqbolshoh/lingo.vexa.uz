@@ -18,6 +18,7 @@
         u.pitch = 1.05;
         const voice = window.speechSynthesis.getVoices().find(v => v.lang && v.lang.toLowerCase().startsWith('uz'));
         if (voice) u.voice = voice; else u.lang = 'uz-UZ';
+        if (window.Owl) window.Owl.talk(u);
         window.speechSynthesis.speak(u);
         return u;
     }
@@ -151,7 +152,7 @@
         steps.forEach(step => {
             if (step.dataset.type === 'build') wireBuild(step, show);
             step.addEventListener('input', show);
-            step.addEventListener('change', () => { fx.click(); show(); });
+            step.addEventListener('change', () => { fx.click(); show(); window.Owl && Owl.play(quiz.querySelector('[data-owl]'), 'encourage', 900); });
         });
         prev.addEventListener('click', () => { if (at > 0) { at--; show(); } });
         next.addEventListener('click', () => {
@@ -183,6 +184,7 @@
         const btn = practice.querySelector('[data-act=check]');
         const fill = practice.querySelector('.ex-top .bar > i');
         const count = practice.querySelector('.ex-count');
+        const practiceOwl = practice.querySelector('[data-owl]');
 
         const plain = (w) => w.replace(/\s*\(.*?\)\s*/g, '').split('/')[0].trim();
         const pickOthers = (item, key, n) => shuffle(vocab.filter(v => v !== item)).slice(0, n).map(v => v[key]);
@@ -251,10 +253,18 @@
             fill.style.width = '100%';
             const pct = Math.round(right / tasks.length * 100);
             body.innerHTML = `<div class="ex-done">
-                <img src="/assets/mascot-lingo.svg" alt="" width="96" height="96">
+                <div class="ex-done-owl"></div>
                 <div class="big">${pct >= 80 ? 'Barakalla!' : 'Yaxshi harakat!'}</div>
                 <p class="muted">${right} / ${tasks.length} to‘g‘ri. ${pct >= 80 ? 'Endi yakuniy testga tayyorsiz!' : 'Lug‘atni yana bir ko‘rib, qayta urinib ko‘ring.'}</p>
             </div>`;
+            const big = practiceOwl ? practiceOwl.cloneNode(true) : null;
+            if (big) {
+                big.removeAttribute('data-speaker');
+                big.classList.remove('owl--mini');
+                big.style.setProperty('--owl-size', '110px');
+                window.Owl && Owl.set(big, pct >= 80 ? 'celebrate' : 'encourage');
+                body.querySelector('.ex-done-owl').appendChild(big);
+            }
             if (pct >= 80) fx.fanfare(); else fx.encourage();
             foot.classList.remove('is-right', 'is-wrong');
             feedback.innerHTML = '';
@@ -278,6 +288,7 @@
                 ? `<span>Barakalla! To‘g‘ri.</span>`
                 : `<span>To‘g‘ri javob: ${esc(t.answer)}<small>${esc(t.item.word_uz)} — ${esc(t.item.word_en)}</small></span>`;
             ok ? fx.coin() : fx.encourage();
+            window.Owl && Owl.play(practiceOwl, ok ? 'success' : 'mistake', 1800);
             speak(t.item.word_uz);
             btn.textContent = 'Davom etish';
             mode = 'next';

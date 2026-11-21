@@ -45,7 +45,7 @@ $n = 0;
 
         <!-- 1. Scene / video -->
         <section class="l-section" id="sahna">
-            <div class="l-head"><span class="l-num"><?= ++$n ?></span><div><h2>Mikro-sahna</h2><p>Lingo bilan birga iboralarni tinglang va baland ovozda takrorlang.</p></div></div>
+            <div class="l-head"><span class="l-num"><?= ++$n ?></span><div><h2>Mikro-sahna</h2><p>Boyo‘g‘li bilan birga iboralarni tinglang va baland ovozda takrorlang.</p></div></div>
             <?php if (!empty($lesson['video_url'])): ?>
                 <div class="video-frame" style="margin-bottom:16px">
                     <?php if (preg_match('~\.(mp4|webm)$~i', $lesson['video_url'])): ?>
@@ -59,7 +59,7 @@ $n = 0;
                 <div class="interactive-video-player">
                     <div class="player-canvas" id="playerCanvas">
                         <div class="player-scene">
-                            <div class="scene-avatar" id="avatarEmoji"><img src="/assets/mascot-lingo.svg" alt="Lingo" width="80" height="80"></div>
+                            <div class="scene-avatar" id="avatarEmoji"><?= mascot('idle', 96, '', ['data-speaker' => '1']) ?></div>
                             <h3 class="scene-phrase" id="scenePhrase">«Salom!»</h3>
                             <p class="scene-sub" id="sceneSub">Hello!</p>
                             <button class="btn btn-accent btn-sm" type="button" onclick="speakCurrentPhrase()"><?= icon('volume-2', '', 16) ?> Ovozni eshitish</button>
@@ -105,7 +105,7 @@ $n = 0;
         <!-- 3. Reading + culture -->
         <?php if ($hasReading): ?>
             <section class="l-section" id="oqish">
-                <div class="l-head"><span class="l-num"><?= ++$n ?></span><div><h2>O‘qish va madaniyat</h2><p>Har bir gapni bosing — Lingo uni o‘qib beradi. So‘ng o‘zingiz baland ovozda takrorlang.</p></div></div>
+                <div class="l-head"><span class="l-num"><?= ++$n ?></span><div><h2>O‘qish va madaniyat</h2><p>Har bir gapni bosing — Boyo‘g‘li uni o‘qib beradi. So‘ng o‘zingiz baland ovozda takrorlang.</p></div></div>
                 <div class="reading-card">
                     <?php if ($readingUz): ?>
                         <div class="reading-text" id="readingText">
@@ -155,7 +155,7 @@ $n = 0;
         <section class="l-section" id="mashq">
             <div class="l-head"><span class="l-num"><?= ++$n ?></span><div><h2>Tezkor mashq</h2><p>Tinglang, tanlang, yozing — har javobdan keyin darhol bilib olasiz. Bu baholanmaydi, bemalol xato qiling!</p></div></div>
             <div class="ex-shell" id="practice">
-                <div class="ex-top"><div class="bar"><i style="width:0%"></i></div><span class="ex-count">0 / 0</span></div>
+                <div class="ex-top"><?= mascot('idle', 40, 'owl--mini', ['data-owl' => 'practice', 'data-speaker' => '1']) ?><div class="bar"><i style="width:0%"></i></div><span class="ex-count">0 / 0</span></div>
                 <div class="ex-body"></div>
                 <div class="ex-foot">
                     <div class="ex-feedback"></div>
@@ -172,7 +172,7 @@ $n = 0;
             <?php else: ?>
                 <form action="/lessons/<?= (int) $lesson['id'] ?>/quiz" method="POST" class="ex-shell" id="quizStepper">
                     <?= csrf_field() ?>
-                    <div class="ex-top"><div class="bar"><i style="width:0%"></i></div><span class="ex-count">1 / <?= count($questions) ?></span></div>
+                    <div class="ex-top"><?= mascot('learning', 40, 'owl--mini', ['data-owl' => 'quiz']) ?><div class="bar"><i style="width:0%"></i></div><span class="ex-count">1 / <?= count($questions) ?></span></div>
                     <div class="ex-body">
                         <?php foreach ($questions as $i => $q): $type = $q['type']; ?>
                             <div class="q-step <?= $i === 0 ? 'is-active' : '' ?>" data-type="<?= e($type) ?>">

@@ -16,6 +16,31 @@
             <div class="stat-tile tone-emerald"><span class="stat-ico"><?= icon('award', '', 22) ?></span><div><strong><?= count($badges) ?></strong><span>nishon</span></div></div>
         </div>
 
+        <?php
+            $sm = decode_list($student['motives_json'], ONB_MOTIVES);
+            $sp = decode_list($student['places_json'], ONB_PLACES);
+            $si = decode_list($student['interests_json'], ONB_INTERESTS);
+        ?>
+        <div class="card tone-gold">
+            <h3 class="card-title"><span class="icon-wrap"><?= icon('heart', '', 20) ?></span> Tanishuv javoblari</h3>
+            <?php if (!$student['motives_json']): ?>
+                <p class="muted small">O‘quvchi hali tanishuv savollariga javob bermagan.</p>
+            <?php else: ?>
+                <div class="grid-2">
+                    <div><div class="small muted" style="font-weight:700">Nega o‘rganyapti</div><div class="chip-cloud"><?php foreach ($sm as $k): ?><span class="tag tag-lapis"><?= ONB_MOTIVES[$k][0] ?></span><?php endforeach; ?><?= $sm ? '' : '—' ?></div></div>
+                    <div><div class="small muted" style="font-weight:700">Qayerga bormoqchi</div><div class="chip-cloud"><?php foreach ($sp as $k): ?><span class="tag tag-emerald"><?= ONB_PLACES[$k][0] ?></span><?php endforeach; ?><?= $sp ? '' : '—' ?></div></div>
+                    <div><div class="small muted" style="font-weight:700">Qiziqishlar</div><div class="chip-cloud"><?php foreach ($si as $k): ?><span class="tag tag-gold"><?= ONB_INTERESTS[$k][0] ?></span><?php endforeach; ?><?= $si ? '' : '—' ?></div></div>
+                    <div><div class="small muted" style="font-weight:700">Daraja</div>
+                        <div class="chip-cloud">
+                            <span class="tag tag-ruby"><?= e(ONB_LEVELS[$student['self_level']][0] ?? '—') ?></span>
+                            <?php if ($student['placement_score'] !== null): ?><span class="tag tag-lapis">Daraja testi: <?= (int) $student['placement_score'] ?>%</span><?php endif; ?>
+                            <span class="tag tag-emerald">Kunlik maqsad: <?= e(ONB_GOALS[(int) $student['daily_goal_xp']][0] ?? '—') ?></span>
+                        </div>
+                    </div>
+                </div>
+            <?php endif; ?>
+        </div>
+
         <?php foreach ($courseStates as $cs): ?>
             <h2 class="section-h"><?= icon($cs['course']['icon'], '', 22) ?> <?= e($cs['course']['title']) ?> <small>O‘zlashtirish <?= $cs['mastery'] ?>% · <?= $cs['completed'] ?>/<?= $cs['total'] ?> dars</small></h2>
             <div class="tbl-wrap">
@@ -60,10 +85,19 @@
             </div>
             <div class="stack-sm">
                 <h2 class="section-h mt-0"><?= icon('settings', '', 22) ?> Boshqaruv</h2>
+                <form method="POST" action="/admin/students/<?= (int) $student['id'] ?>/update" class="card">
+                    <?= csrf_field() ?>
+                    <?php $s = $student; require __DIR__ . '/_student_fields.php'; ?>
+                    <div class="form-foot"><button class="btn btn-primary btn-sm">Ma’lumotlarni saqlash</button></div>
+                </form>
                 <form method="POST" action="/admin/students/<?= (int) $student['id'] ?>/password" class="card field">
                     <?= csrf_field() ?>
                     <label>Yangi parol o‘rnatish</label>
                     <div class="search-bar"><input type="text" name="password" minlength="6" required placeholder="Kamida 6 belgi" autocomplete="off"><button class="btn btn-primary btn-sm">Saqlash</button></div>
+                </form>
+                <form method="POST" action="/admin/students/<?= (int) $student['id'] ?>/reset-progress" class="card" onsubmit="return confirm('Barcha natijalar, XP va nishonlar o‘chiriladi. Davom etasizmi?')">
+                    <?= csrf_field() ?>
+                    <div class="row-between"><div><strong>Natijalarni nolga tushirish</strong><div class="small muted">Akkaunt qoladi, darslar boshidan boshlanadi.</div></div><button class="btn btn-ghost btn-sm"><?= icon('rotate-cw', '', 14) ?> Nolga</button></div>
                 </form>
                 <form method="POST" action="/admin/students/<?= (int) $student['id'] ?>/delete" class="card" style="border-color:#fecdd3" onsubmit="return confirm('O‘quvchi va uning barcha natijalari o‘chiriladi. Davom etasizmi?')">
                     <?= csrf_field() ?>

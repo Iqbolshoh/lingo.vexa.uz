@@ -2,9 +2,7 @@
     <div class="container">
         <div class="auth-card">
             <div class="auth-header">
-                <div class="auth-icon-wrap">
-                    <?= icon('lock', 'auth-svg-icon', 36) ?>
-                </div>
+                <?= mascot('welcome', 96) ?>
                 <h1>Tizimga Kirish</h1>
                 <p>LingoUz ta’lim paneliga xush kelibsiz!</p>
             </div>

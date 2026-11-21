@@ -35,6 +35,10 @@ if ($method === 'POST') {
 require __DIR__ . '/../src/learning.php';
 require __DIR__ . '/../src/handlers.php';
 require __DIR__ . '/../src/admin.php';
+require __DIR__ . '/../src/onboarding.php';
+require __DIR__ . '/../src/stats.php';
+
+track_activity();
 
 // [method, pattern, handler]; numeric captures are passed as int arguments.
 $routes = [
@@ -46,6 +50,12 @@ $routes = [
     ['GET', '/register', 'page_register'],
     ['POST', '/register', 'action_register'],
     ['GET', '/dashboard', 'page_dashboard'],
+    ['GET', '/onboarding', 'page_onboarding'],
+    ['POST', '/onboarding', 'action_onboarding'],
+    ['POST', '/onboarding/skip', 'action_onboarding_skip'],
+    ['GET', '/onboarding/placement', 'page_placement'],
+    ['POST', '/onboarding/placement', 'action_placement'],
+    ['GET', '/onboarding/done', 'page_onboarding_done'],
     ['GET', '/courses', 'page_courses'],
     ['GET', '/courses/(\d+)', 'page_course'],
     ['GET', '/lessons/(\d+)', 'page_lesson'],
@@ -87,6 +97,16 @@ $routes = [
     ['POST', '/admin/students/(\d+)/delete', 'action_admin_student_delete'],
     ['POST', '/admin/unlock', 'action_admin_unlock'],
     ['GET', '/admin/gradebook', 'page_admin_gradebook'],
+    ['GET', '/admin/stats', 'page_admin_stats'],
+    ['GET', '/admin/students/create', 'page_admin_student_create'],
+    ['POST', '/admin/students', 'action_admin_student_store'],
+    ['POST', '/admin/students/(\d+)/update', 'action_admin_student_update'],
+    ['POST', '/admin/students/(\d+)/reset-progress', 'action_admin_student_reset_progress'],
+    ['GET', '/admin/export/students', 'action_admin_export_students'],
+    ['GET', '/admin/export/gradebook', 'action_admin_export_gradebook'],
+    ['GET', '/admin/settings', 'page_admin_settings'],
+    ['POST', '/admin/settings/password', 'action_admin_password'],
+    ['POST', '/admin/settings/admins', 'action_admin_create_admin'],
     ['GET', '/admin/enrollments', 'page_admin_enrollments'],
     ['POST', '/admin/enrollments/status', 'action_admin_enrollment_status'],
     ['GET', '/admin/export', 'action_admin_export'],

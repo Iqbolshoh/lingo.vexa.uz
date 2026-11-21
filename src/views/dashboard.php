@@ -3,6 +3,8 @@ $totalDone = array_sum(array_column($courseStates, 'completed'));
 $totalLessons = array_sum(array_column($courseStates, 'total'));
 $overall = $totalLessons > 0 ? (int) round($totalDone / $totalLessons * 100) : 0;
 $earned = array_filter($badges, fn ($b) => $b['earned_at']);
+$goalXp = max(1, (int) $user['daily_goal_xp']);
+$goalPct = min(100, (int) round($todayXp / $goalXp * 100));
 ?>
 <div class="pg">
     <div class="container">
@@ -30,8 +32,11 @@ $earned = array_filter($badges, fn ($b) => $b['earned_at']);
                         <a href="/courses" class="btn btn-glass btn-lg"><?= icon('book-open', '', 18) ?> Barcha kurslar</a>
                     </div>
                 </div>
-                <div class="ring" style="--p: <?= $overall ?>">
-                    <div><strong><?= $overall ?>%</strong><span>umumiy yo‘l</span></div>
+                <div class="hero-owl-ring">
+                    <?= mascot($continue ? 'welcome' : 'celebrate', 110) ?>
+                    <div class="ring" style="--p: <?= $overall ?>">
+                        <div><strong><?= $overall ?>%</strong><span>umumiy yo‘l</span></div>
+                    </div>
                 </div>
             </div>
         </section>
@@ -53,14 +58,33 @@ $earned = array_filter($badges, fn ($b) => $b['earned_at']);
                 </div>
             </div>
             <div class="stat-tile tone-ruby">
-                <span class="stat-ico"><?= icon('award', '', 22) ?></span>
-                <div><strong><?= count($earned) ?> / <?= count($badges) ?></strong><span>nishonlar</span></div>
+                <span class="stat-ico"><?= icon('flame', '', 22) ?></span>
+                <div style="flex:1">
+                    <strong><?= $todayXp ?> / <?= $goalXp ?> XP</strong><span><?= $goalPct >= 100 ? 'Bugungi maqsad bajarildi!' : 'bugungi maqsad' ?></span>
+                    <div class="bar bar-emerald"><i style="width: <?= $goalPct ?>%"></i></div>
+                </div>
             </div>
         </div>
 
         <div class="layout-main-side">
             <div>
-                <h2 class="section-h mt-0"><?= icon('layers', '', 24) ?> Mening kurslarim <small>Keyingi dars uchun testdan 80%+ kerak</small></h2>
+                <?php if ($recommended): ?>
+                    <div class="card for-you tone-gold">
+                        <?= mascot('learning', 72, 'owl--mini') ?>
+                        <div style="flex:1;min-width:200px">
+                            <div class="small" style="font-weight:800;letter-spacing:.6px;color:#b45309;text-transform:uppercase">Siz uchun tavsiya</div>
+                            <strong style="font-family:var(--font-heading);font-size:20px;color:var(--ink)"><?= e($recommended['title']) ?></strong>
+                            <?php if ($interests): ?>
+                                <div class="chip-cloud" style="margin-top:6px"><?php foreach (array_slice($interests, 0, 4) as $k): ?><span class="tag tag-gold"><?= ONB_INTERESTS[$k][0] ?></span><?php endforeach; ?></div>
+                            <?php endif; ?>
+                        </div>
+                        <div class="adm-actions">
+                            <a href="/courses/<?= (int) $recommended['id'] ?>" class="btn btn-primary btn-sm"><?= icon('play', '', 14) ?> Ochish</a>
+                            <a href="/onboarding" class="btn btn-ghost btn-sm">Qiziqishlarim</a>
+                        </div>
+                    </div>
+                <?php endif; ?>
+                <h2 class="section-h"><?= icon('layers', '', 24) ?> Mening kurslarim <small>Keyingi dars uchun testdan 80%+ kerak</small></h2>
                 <div class="course-grid">
                     <?php foreach ($courseStates as $cs): $c = $cs['course']; ?>
                         <?php require __DIR__ . '/partials/course_card.php'; ?>
@@ -71,7 +95,7 @@ $earned = array_filter($badges, fn ($b) => $b['earned_at']);
                 <div class="card">
                     <?php if (!$recent): ?>
                         <div class="empty">
-                            <div class="e-ico"><?= icon('sparkles', '', 26) ?></div>
+                            <?= mascot('sleeping', 90) ?>
                             Hali test topshirilmagan. Birinchi darsni boshlang — natijalar shu yerda ko‘rinadi!
                         </div>
                     <?php else: ?>

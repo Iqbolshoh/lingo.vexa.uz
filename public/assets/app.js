@@ -85,6 +85,42 @@ const SoundFX = {
 };
 
 /**
+ * Boyo‘g‘li mascot API: Owl.set(el, state) switches the base state,
+ * Owl.play(el, state, ms) shows a state briefly and returns to the base one.
+ */
+const Owl = {
+    states: ['idle', 'welcome', 'thinking', 'learning', 'success', 'celebrate', 'mistake', 'encourage', 'sleeping', 'speaking'],
+    apply(el, state) {
+        if (!el) return;
+        this.states.forEach(s => el.classList.remove('owl--' + s));
+        el.classList.add('owl--' + state);
+    },
+    set(el, state) {
+        if (!el) return;
+        el.dataset.state = state;
+        clearTimeout(el._owlTimer);
+        this.apply(el, state);
+    },
+    play(el, state, ms = 1500) {
+        if (!el) return;
+        clearTimeout(el._owlTimer);
+        this.apply(el, state);
+        el._owlTimer = setTimeout(() => this.apply(el, el.dataset.state || 'idle'), ms);
+    },
+    /** Every owl marked data-speaker moves its beak while the utterance plays. */
+    talk(utterance) {
+        const owls = document.querySelectorAll('.owl[data-speaker]');
+        if (!owls.length || !utterance) return;
+        owls.forEach(o => { clearTimeout(o._owlTimer); this.apply(o, 'speaking'); });
+        const stop = () => owls.forEach(o => this.apply(o, o.dataset.state || 'idle'));
+        utterance.addEventListener('end', stop);
+        utterance.addEventListener('error', stop);
+        setTimeout(stop, 6000);
+    },
+};
+window.Owl = Owl;
+
+/**
  * Uzbek Speech Synthesis via Web Speech API
  */
 function speakUzbek(text) {
@@ -103,6 +139,7 @@ function speakUzbek(text) {
         utterance.lang = 'uz-UZ';
     }
 
+    Owl.talk(utterance);
     window.speechSynthesis.speak(utterance);
 }
 

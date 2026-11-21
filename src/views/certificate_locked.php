@@ -2,6 +2,7 @@
 <div class="pg">
     <div class="container pg-narrow">
         <section class="pg-hero theme-gold" style="text-align:center">
+            <?= mascot('encourage', 110) ?><br>
             <span class="hero-chip"><?= icon('award', '', 14) ?> Kurs diplomi</span>
             <h1>Diplom hali yopiq</h1>
             <p style="margin:0 auto">«<?= e($c['title']) ?>» kursining barcha darslarini kamida 80% bilan tugatganingizda diplom avtomatik ochiladi.</p>

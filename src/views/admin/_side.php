@@ -4,14 +4,16 @@ $items = [
     ['overview', '/admin', 'layers', 'Umumiy ko‘rinish'],
     ['courses', '/admin/courses', 'book-open', 'Kurslar va darslar'],
     ['students', '/admin/students', 'users', 'O‘quvchilar'],
+    ['stats', '/admin/stats', 'star', 'Statistika'],
     ['gradebook', '/admin/gradebook', 'target', 'Baholar jurnali'],
     ['enrollments', '/admin/enrollments', 'message-square', 'Arizalar'],
     ['live', '/admin/live', 'video', 'Jonli darslar'],
+    ['settings', '/admin/settings', 'settings', 'Sozlamalar'],
 ];
 ?>
 <aside class="adm-side">
     <div class="adm-brand">
-        <img src="/assets/mascot-lingo.svg" alt="" width="38" height="38">
+        <img src="/assets/mascot-owl.svg" alt="" width="38" height="44">
         <div><strong>Boshqaruv</strong><span>LingoUz ustoz paneli</span></div>
     </div>
     <div class="adm-label">Menyu</div>

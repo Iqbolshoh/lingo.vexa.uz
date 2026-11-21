@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-const SCHEMA_VERSION = 3;
+const SCHEMA_VERSION = 4;
 
 function migrate(PDO $pdo): void
 {
@@ -15,7 +15,10 @@ function migrate(PDO $pdo): void
         if ($version < 2) {
             migrate_v2($pdo);
         }
-        migrate_v3($pdo);
+        if ($version < 3) {
+            migrate_v3($pdo);
+        }
+        migrate_v4($pdo);
         return;
     }
 
@@ -156,6 +159,7 @@ function migrate(PDO $pdo): void
 
     migrate_v2($pdo);
     migrate_v3($pdo);
+    migrate_v4($pdo);
 }
 
 /**
@@ -232,6 +236,44 @@ function migrate_v3(PDO $pdo): void
     require_once __DIR__ . '/content_v2.php';
     require_once __DIR__ . '/content_v3.php';
     seed_v3_content($pdo);
+    $pdo->prepare("INSERT OR REPLACE INTO startup_meta (key, value) VALUES ('schema_version', '3')")->execute();
+    $pdo->commit();
+}
+
+/** Version 4: onboarding profile (motives, places, interests, level, daily goal) and daily activity log for statistics. */
+function migrate_v4(PDO $pdo): void
+{
+    $pdo->beginTransaction();
+    $columns = array_column($pdo->query('PRAGMA table_info(users)')->fetchAll(PDO::FETCH_ASSOC), 'name');
+    foreach ([
+        'onboarded_at DATETIME',
+        'motives_json TEXT',
+        'places_json TEXT',
+        'interests_json TEXT',
+        'self_level TEXT',
+        "daily_goal_xp INTEGER NOT NULL DEFAULT 50",
+        'placement_score INTEGER',
+        'last_seen_at DATETIME',
+    ] as $definition) {
+        if (!in_array(strtok($definition, ' '), $columns, true)) {
+            $pdo->exec("ALTER TABLE users ADD COLUMN {$definition}");
+        }
+    }
+    $pdo->exec("
+        CREATE TABLE IF NOT EXISTS activity_days (
+            user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+            day TEXT NOT NULL,
+            PRIMARY KEY (user_id, day)
+        );
+        CREATE INDEX IF NOT EXISTS idx_activity_day ON activity_days (day);
+        INSERT OR IGNORE INTO activity_days (user_id, day) SELECT user_id, date(created_at) FROM quiz_attempts;
+        INSERT OR IGNORE INTO activity_days (user_id, day) SELECT id, date(created_at) FROM users WHERE created_at IS NOT NULL;
+    ");
+    // Old rows stored labels like "America/New_York (EST)"; keep only the zone id.
+    $pdo->exec("UPDATE users SET timezone = substr(timezone, 1, instr(timezone, ' ') - 1) WHERE instr(timezone, ' ') > 0");
+    $pdo->exec("UPDATE enrollments SET timezone = substr(timezone, 1, instr(timezone, ' ') - 1) WHERE instr(timezone, ' ') > 0");
+    // Accounts that existed before onboarding are not forced through it as admins.
+    $pdo->exec("UPDATE users SET onboarded_at = datetime('now') WHERE role = 'admin' AND onboarded_at IS NULL");
     $pdo->prepare("INSERT OR REPLACE INTO startup_meta (key, value) VALUES ('schema_version', ?)")
         ->execute([(string) SCHEMA_VERSION]);
     $pdo->commit();

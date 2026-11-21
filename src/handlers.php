@@ -90,8 +90,8 @@ function action_enroll(): void
                 VALUES (\'student\', ?, ?, ?, ?, ?, ?)
             ')->execute([mb_substr($childName, 0, 80), $parentEmail, password_hash($password, PASSWORD_DEFAULT), $childAge, $languageLevel, $timezone]);
             login_user(['id' => (int) $pdo->lastInsertId()]);
-            flash('success', 'Arizangiz qabul qilindi va o‘quvchi profili yaratildi! Darslarni boshlashingiz mumkin.');
-            redirect('/dashboard');
+            flash('success', 'Arizangiz qabul qilindi va o‘quvchi profili yaratildi! Keling, tanishaylik.');
+            redirect('/onboarding');
         }
         flash('info', 'Ariza qabul qilindi. Bu email bilan akkaunt allaqachon bor — tizimga kiring.');
         redirect('/login');
@@ -181,8 +181,8 @@ function action_register(): void
     ')->execute([mb_substr($displayName, 0, 80), $email, password_hash($password, PASSWORD_DEFAULT), $ageBand, $languageLevel, $timezone]);
     login_user(['id' => (int) $pdo->lastInsertId()]);
 
-    flash('success', 'Xush kelibsiz! Birinchi darsni boshlashga tayyormisiz?');
-    redirect('/dashboard');
+    flash('success', 'Xush kelibsiz! Keling, avval bir-birimizni yaxshiroq tanib olaylik.');
+    redirect('/onboarding');
 }
 
 function page_profile(): void
@@ -233,6 +233,9 @@ function action_update_profile(): void
 function page_dashboard(): void
 {
     $user = require_login('Iltimos, avval tizimga kiring yoki demo akkaunt orqali sinab ko‘ring.');
+    if ($user['role'] === 'student' && empty($user['onboarded_at'])) {
+        redirect('/onboarding');
+    }
     $pdo = db();
 
     $courseStates = array_map(fn ($c) => course_state($c, (int) $user['id'], is_admin()), published_courses());
@@ -276,6 +279,9 @@ function page_dashboard(): void
         'streak' => current_streak($user),
         'level' => xp_level((int) $user['xp']),
         'liveSession' => $liveSession,
+        'todayXp' => today_xp((int) $user['id']),
+        'recommended' => recommended_courses($user)[0] ?? null,
+        'interests' => decode_list($user['interests_json'], ONB_INTERESTS),
     ]);
 }
 

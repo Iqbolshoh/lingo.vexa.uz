@@ -3,11 +3,14 @@
     <main class="adm-main">
         <div class="adm-head">
             <div><div class="crumbs"><a href="/admin">Admin</a> / Baholar jurnali</div><h1>Baholar jurnali</h1></div>
+            <div class="adm-actions">
+            <?php if ($course): ?><a href="/admin/export/gradebook?course=<?= (int) $course['id'] ?>" class="btn btn-ghost btn-sm"><?= icon('download', '', 14) ?> CSV</a><?php endif; ?>
             <form method="GET" action="/admin/gradebook" class="field">
                 <select name="course" onchange="this.form.submit()">
                     <?php foreach ($courses as $c): ?><option value="<?= (int) $c['id'] ?>" <?= $course && (int) $course['id'] === (int) $c['id'] ? 'selected' : '' ?>><?= e($c['title']) ?></option><?php endforeach; ?>
                 </select>
             </form>
+            </div>
         </div>
         <div class="tbl-wrap">
             <table class="tbl gradebook">
