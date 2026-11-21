@@ -38,16 +38,12 @@ $user = auth_user();
             <!-- Desktop Navigation -->
             <nav class="main-nav desktop-nav">
                 <?php if ($user): ?>
-                    <!-- Logged in (Student / Admin): Priority app navigation -->
+                    <!-- Logged in Student: Priority learning navigation (5 core tabs) -->
                     <a href="/dashboard" class="<?= is_nav_active('/dashboard') ? 'is-active' : '' ?>"><?= icon('layers', '', 16) ?> <?= t('Mening sahifam') ?></a>
                     <a href="/courses" class="<?= is_nav_active(['/courses', '/lessons']) ? 'is-active' : '' ?>"><?= icon('book-open', '', 16) ?> <?= t('Kurslar') ?></a>
                     <a href="/flashcards" class="<?= is_nav_active('/flashcards') ? 'is-active' : '' ?>"><?= icon('layers', '', 16) ?> <?= t('Flashcards') ?></a>
                     <a href="/leaderboard" class="<?= is_nav_active('/leaderboard') ? 'is-active' : '' ?>"><?= icon('trophy', '', 16) ?> <?= t('Reyting') ?></a>
                     <a href="/live" class="<?= is_nav_active('/live') ? 'is-active' : '' ?>"><?= icon('video', '', 16) ?> <?= t('Jonli Muloqot') ?></a>
-                    <?php if (is_admin()): ?>
-                        <a href="/admin" class="nav-admin <?= is_nav_active('/admin') ? 'is-active' : '' ?>"><?= icon('shield-check', '', 16) ?> Admin</a>
-                    <?php endif; ?>
-                    <a href="/parent-tips" class="<?= is_nav_active('/parent-tips') ? 'is-active' : '' ?>"><?= icon('users', '', 16) ?> <?= t('Qo‘llanma') ?></a>
                 <?php else: ?>
                     <!-- Guest Navigation: streamlined core links without duplicates -->
                     <a href="/" class="<?= is_nav_active('/') ? 'is-active' : '' ?>"><?= icon('registon', '', 16) ?> <?= t('Bosh sahifa') ?></a>
@@ -63,8 +59,13 @@ $user = auth_user();
                 <div class="lang-switch" role="group" aria-label="Language">
                     <?php foreach (LOCALES as $code => $name): ?><a href="<?= e(lang_url($code)) ?>" class="<?= locale() === $code ? 'is-active' : '' ?>" hreflang="<?= $code ?>" title="<?= $name ?>"><?= strtoupper($code) ?></a><?php endforeach; ?>
                 </div>
-                                <?php if ($user): ?>
+                <?php if ($user): ?>
                     <div class="user-chip desktop-only">
+                        <?php if (is_admin()): ?>
+                            <a href="/admin" class="btn-chip-admin <?= is_nav_active('/admin') ? 'is-active' : '' ?>" title="<?= t('Admin Boshqaruv Markazi') ?>">
+                                <?= icon('shield-check', '', 14) ?> <span>Admin</span>
+                            </a>
+                        <?php endif; ?>
                         <a href="/profile" class="user-profile-link" title="<?= t('Profil sozlamalari') ?>">
                             <span class="user-avatar-icon"><?= icon('user', '', 16) ?></span>
                             <span class="user-name"><?= e($user['display_name']) ?></span>

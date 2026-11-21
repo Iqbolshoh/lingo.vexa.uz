@@ -1,0 +1,23 @@
+{
+    "name": "iqbolshoh/lingo.vexa.uz",
+    "description": "LingoUz — Interactive Uzbek Language Online Learning Platform",
+    "type": "project",
+    "license": "proprietary",
+    "authors": [
+        {
+            "name": "Iqbolshoh",
+            "email": "iilhomjonov777@gmail.com"
+        }
+    ],
+    "require": {
+        "php": ">=8.2",
+        "ext-pdo": "*",
+        "ext-pdo_sqlite": "*",
+        "ext-gd": "*",
+        "ext-json": "*"
+    },
+    "scripts": {
+        "check:i18n": "php tools/i18n/check_t.php .",
+        "seed": "php bin/seed-demo.php"
+    }
+}
