@@ -6,7 +6,7 @@ $user = auth_user();
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title><?= e($title ?? 'LingoUz by Gulomov’s Academy') ?></title>
+    <title><?= e($title ?? 'LingoUz') ?></title>
     <meta name="description" content="<?= t('O‘zbek tilini o‘rganmoqchi bo‘lgan hamma uchun — bolalar, kattalar va sayyohlar. Ovozli lug‘at, mashqlar, madaniyat va jonli darslar. Learn Uzbek online.') ?>">
     <link rel="icon" type="image/svg+xml" href="/favicon.svg?v=1">
     <link rel="icon" type="image/x-icon" href="/favicon.ico?v=1">
@@ -27,7 +27,6 @@ $user = auth_user();
                 <span class="logo-mark"><img src="/assets/mascot-owl.svg" alt="Lingo" width="40" height="46" class="brand-mascot-img"></span>
                 <span class="logo-text">
                     <span class="brand-name">Lingo<span class="highlight">Uz</span></span>
-                    <span class="brand-sub">by Gulomov’s Academy</span>
                 </span>
             </a>
 
@@ -48,7 +47,7 @@ $user = auth_user();
                     <a href="/#metodika"><?= t('Metodika') ?></a>
                     <a href="/#darslar"><?= t('Darslar') ?></a>
                     <a href="/parent-tips"><?= t('Qo‘llanma') ?></a>
-                    <a href="/#ariza" class="nav-highlight"><?= t('Pilotga ariza') ?></a>
+                    <a href="/register" class="nav-highlight"><?= t('Ro‘yxatdan o‘tish') ?></a>
                 <?php endif; ?>
             </nav>
 
@@ -97,7 +96,6 @@ $user = auth_user();
                 <img src="/assets/mascot-owl.svg" alt="Lingo" width="36" height="41">
                 <div>
                     <div class="brand-name" style="font-size:20px;">Lingo<span class="highlight">Uz</span></div>
-                    <div class="brand-sub">Gulomov’s Academy</div>
                 </div>
             </div>
             <button class="drawer-close-btn" id="drawerClose" type="button" aria-label="<?= t('Yopish') ?>">
@@ -171,9 +169,9 @@ $user = auth_user();
                     <span class="drawer-icon"><?= icon('users', '', 18) ?></span>
                     <span><?= t('Ota-onalar Qo‘llanmasi') ?></span>
                 </a>
-                <a href="/#ariza" class="drawer-link highlight-link">
+                <a href="/register" class="drawer-link highlight-link">
                     <span class="drawer-icon"><?= icon('arrow-right', '', 18) ?></span>
-                    <span><?= t('Bepul Pilotga Ariza') ?></span>
+                    <span><?= t('Ro‘yxatdan o‘tish') ?></span>
                 </a>
             <?php endif; ?>
         </div>
@@ -223,14 +221,13 @@ $user = auth_user();
     <footer class="site-footer">
         <div class="container footer-inner">
             <div class="footer-col brand-col">
-                <div class="footer-logo">
+                <a href="/" class="footer-logo">
                     <img src="/assets/mascot-owl.svg" alt="Lingo" width="34" height="39" style="vertical-align:middle;">
                     <span class="brand-name">Lingo<span class="highlight">Uz</span></span>
-                </div>
+                </a>
                 <p class="footer-desc">
-                    <?= t('Gulomov’s Academy tashabbusi: bolalar, kattalar va sayyohlar — o‘zbek tilini o‘rganmoqchi bo‘lgan hamma uchun zamonaviy, interaktiv onlayn akademiya.') ?>
+                    <?= t('O‘zbek tilini o‘rganmoqchi bo‘lgan hamma uchun zamonaviy, interaktiv onlayn ta’lim platformasi.') ?>
                 </p>
-                <div class="badge-safe"><?= icon('shield-check', '', 16) ?> <?= t('Bolalar uchun ham xavfsiz (COPPA)') ?></div>
             </div>
 
             <div class="footer-col">
@@ -240,7 +237,7 @@ $user = auth_user();
                     <li><a href="/#metodika"><?= t('Ta’lim metodikasi') ?></a></li>
                     <li><a href="/#darslar"><?= t('Kurslar va darslar') ?></a></li>
                     <li><a href="/#madaniyat"><?= t('Madaniyat burchagi') ?></a></li>
-                    <li><a href="/#ariza"><?= t('Pilot dasturiga yozilish') ?></a></li>
+                    <li><a href="/register"><?= t('Ro‘yxatdan o‘tish') ?></a></li>
                     <li><a href="/live">Zoom Speaking Room</a></li>
                 </ul>
             </div>
@@ -249,25 +246,16 @@ $user = auth_user();
                 <h4><?= t('Qo‘llanma va Qoidalar') ?></h4>
                 <ul>
                     <li><a href="/parent-tips"><?= t('Samarali o‘rganish qo‘llanmasi') ?></a></li>
-                    <li><a href="/privacy"><?= t('Maxfiylik siyosati (COPPA)') ?></a></li>
+                    <li><a href="/privacy"><?= t('Maxfiylik siyosati') ?></a></li>
                     <li><a href="/#faq"><?= t('Ko‘p beriladigan savollar') ?></a></li>
                     <li><a href="/login"><?= t('Tizimga kirish') ?></a></li>
                 </ul>
-            </div>
-
-            <div class="footer-col contact-col">
-                <h4><?= t('Aloqa va Pilot') ?></h4>
-                <p><?= icon('map-pin', '', 14) ?> <?= t('Toshkent — butun dunyo') ?></p>
-                <p>gulomov@vexa.uz</p>
-                <p>Telegram: @gulomovs_academy</p>
-                <div class="timezones-pill"><?= t('Toshkent • London • Nyu-York • LA') ?></div>
             </div>
         </div>
 
         <div class="footer-bottom">
             <div class="container footer-bottom-inner">
-                <p><?= t('© 2026 LingoUz by Gulomov’s Academy. Barcha huquqlar himoyalangan.') ?></p>
-                <p class="tech-tag">Registon Heritage Edition | PHP + SQLite</p>
+                <p><?= t('© 2026 LingoUz. Barcha huquqlar himoyalangan.') ?></p>
             </div>
         </div>
     </footer>

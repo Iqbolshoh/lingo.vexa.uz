@@ -9,9 +9,9 @@
             <?= csrf_field() ?>
             <?php require __DIR__ . '/_lesson_fields.php'; ?>
             <div class="form-foot">
-                <span class="left small muted">Saqlagandan so‘ng lug‘at va test savollarini qo‘shasiz.</span>
-                <a href="/admin/courses/<?= (int) $course['id'] ?>" class="btn btn-ghost">Bekor qilish</a>
-                <button type="submit" class="btn btn-primary"><?= icon('check-circle', '', 16) ?> Darsni yaratish</button>
+                <span class="left small muted">Saqlagandan so‘ng lug‘at va test savollarini qöşasiz.</span>
+                <a href="/admin/courses/<?= (int) $course['id'] ?>" class="btn btn-ghost">Bekor qiliş</a>
+                <button type="submit" class="btn btn-primary"><?= icon('check-circle', '', 16) ?> Darsni yaratiş</button>
             </div>
         </form>
     </main>

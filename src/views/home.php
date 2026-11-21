@@ -14,11 +14,11 @@
             </p>
 
             <div class="hero-cta-group">
-                <a href="#ariza" class="btn btn-primary btn-lg pulse-hover">
-                    <?= icon('sparkles', '', 20) ?> <?= t('Pilot dasturiga yozilish') ?>
+                <a href="/register" class="btn btn-primary btn-lg pulse-hover">
+                    <?= icon('sparkles', '', 20) ?> <?= t('Darslarni boshlash') ?>
                 </a>
                 <a href="/login" class="btn btn-secondary btn-lg">
-                    <?= icon('play', '', 18) ?> <?= t('Darslarni boshlash') ?>
+                    <?= icon('play', '', 18) ?> <?= t('Tizimga kirish') ?>
                 </a>
             </div>
 
@@ -61,6 +61,9 @@
                     <div class="card-audio-action">
                         <button class="btn-voice" onclick="speakUzbek('Salom, xush kelibsiz!')" title="<?= t('Ovozni eshitish') ?>">
                             <?= icon('volume-2', '', 16) ?> <?= t('Ovozli eshitish') ?>
+                        </button>
+                        <button class="btn-voice btn-voice-mic" type="button" data-check-speech="Salom" title="<?= t('Talaffuzni sinash') ?>">
+                            <?= icon('mic', '', 16) ?> <?= t('O‘zingiz ayting') ?>
                         </button>
                     </div>
                     <div class="card-example">
@@ -252,55 +255,7 @@
     </div>
 </section>
 
-<!-- 9 Haftalik Pilot Rejasi -->
-<section class="section section-pilot-info">
-    <div class="container">
-        <div class="pilot-summary-card">
-            <div class="pilot-header">
-                <div>
-                    <span class="section-tag"><?= t('PILOT LOYIHA') ?></span>
-                    <h2 class="section-title"><?= t('9 Haftalik Sinov Bosqichi (0 so‘m)') ?></h2>
-                </div>
-                <div class="pilot-badge-target">
-                    <?= icon('users', '', 16) ?> <?= t('Butun dunyodan o‘quvchilar') ?>
-                </div>
-            </div>
 
-            <div class="pilot-table-wrapper">
-                <table class="pilot-table">
-                    <thead>
-                        <tr>
-                            <th><?= t('Element') ?></th>
-                            <th><?= t('Tavsif va Shartlar') ?></th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td><?= t('<strong>Maqsadli guruh</strong>') ?></td>
-                            <td><?= t('Xorijdagi o‘zbek oilalari farzandlari, O‘zbekistonga keladigan sayyohlar, o‘zbek tilini o‘rganayotgan kattalar') ?></td>
-                        </tr>
-                        <tr>
-                            <td><?= t('<strong>O‘quv kontenti</strong>') ?></td>
-                            <td><?= t('3 ta kurs: «Ilk qadamlar», «Ikki madaniyat ko‘prigi», «Sayohatchilar uchun» — ovozli lug‘at, o‘qish, mashqlar, 80% testlar va Zoom suhbat') ?></td>
-                        </tr>
-                        <tr>
-                            <td><?= t('<strong>Pilot qiymati</strong>') ?></td>
-                            <td><?= t('<strong>0 so‘m (Mutlaqo bepul)</strong> — MVP sinovi va o‘quvchilar fikrini o‘rganish uchun') ?></td>
-                        </tr>
-                        <tr>
-                            <td><?= t('<strong>Xavfsizlik (COPPA)</strong>') ?></td>
-                            <td><?= t('Ortiqcha shaxsiy ma’lumotlar yig‘ilmaydi; 13 yoshgacha bolalar faqat ota-ona roziligi bilan qatnashadi') ?></td>
-                        </tr>
-                        <tr>
-                            <td><?= t('<strong>Vaqt zonalari</strong>') ?></td>
-                            <td><?= t('Toshkent, Yevropa va AQSh vaqtlari — jadval har bir o‘quvchiga o‘z vaqtida ko‘rsatiladi') ?></td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-        </div>
-    </div>
-</section>
 
 <!-- FAQ Ota-onalar uchun -->
 <section class="section section-faq" id="faq">
@@ -364,96 +319,16 @@
     </div>
 </section>
 
-<!-- Ariza topshirish formasi -->
-<section class="section section-enrollment" id="ariza">
-    <div class="container">
-        <div class="enrollment-card registon-portal-card">
-            <div class="enrollment-header text-center">
-                <span class="section-tag tag-white"><?= t('BEPUL PILOTGA QO‘SHILISH') ?></span>
-                <h2 class="title-white"><?= t('LingoUz pilotiga qo‘shiling!') ?></h2>
-                <p class="desc-white"><?= t('O‘zingiz yoki farzandingiz uchun ariza qoldiring va o‘zbek tilini bepul o‘rganishni boshlang.') ?></p>
-            </div>
-
-            <form action="/enroll" method="POST" class="enrollment-form">
-                <?= csrf_field() ?>
-
-                <div class="form-row">
-                    <div class="form-group">
-                        <label for="parent_name"><?= t('Ismingiz (ariza beruvchi) *') ?></label>
-                        <input type="text" id="parent_name" name="parent_name" required placeholder="<?= t('Masalan: Dilshod Qodirov') ?>">
-                    </div>
-
-                    <div class="form-group">
-                        <label for="parent_email"><?= t('Elektron pochta (Email) *') ?></label>
-                        <input type="email" id="parent_email" name="parent_email" required placeholder="example@gmail.com">
-                    </div>
-                </div>
-
-                <div class="form-row">
-                    <div class="form-group">
-                        <label for="parent_phone"><?= t('Telefon / Telegram (bog‘lanish uchun)') ?></label>
-                        <input type="text" id="parent_phone" name="parent_phone" placeholder="+1 (555) 000-0000">
-                    </div>
-
-                    <div class="form-group">
-                        <label for="child_name"><?= t('O‘quvchi ismi (o‘zingiz yoki farzandingiz) *') ?></label>
-                        <input type="text" id="child_name" name="child_name" required placeholder="<?= t('Masalan: Jasurbek yoki Emily') ?>">
-                    </div>
-                </div>
-
-                <div class="form-row three-cols">
-                    <div class="form-group">
-                        <label for="child_age"><?= t('O‘quvchining yoshi *') ?></label>
-                        <select id="child_age" name="child_age">
-                            <?php foreach (AGE_LABELS as $ageKey => $ageLabel): ?><option value="<?= $ageKey ?>" <?= $ageKey === '18+' ? 'selected' : '' ?>><?= t($ageLabel) ?></option><?php endforeach; ?>
-                        </select>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="language_level"><?= t('O‘zbek tili darajasi *') ?></label>
-                        <select id="language_level" name="language_level">
-                            <option value="A0"><?= t('A0 — Kam tushunadi yoki gapirmaydi') ?></option>
-                            <option value="A1" selected><?= t('A1 — Tushunadi, lekin erkin gapirishda qiynaladi') ?></option>
-                            <option value="A2"><?= t('A2 — Gapiradi, o‘qish/yozishni o‘rganmoqchi') ?></option>
-                        </select>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="timezone"><?= t('Vaqt zonasi *') ?></label>
-                        <select id="timezone" name="timezone">
-                            <?php foreach (TIMEZONES as $tzKey => $tzLabel): ?><option value="<?= $tzKey ?>"><?= t($tzLabel) ?></option><?php endforeach; ?>
-                        </select>
-                    </div>
-                </div>
-
-                <div class="form-group">
-                    <label for="notes"><?= t('Maqsadingiz yoki istaklaringiz:') ?></label>
-                    <textarea id="notes" name="notes" rows="2" placeholder="<?= t('Masalan: bahorda Samarqandga sayohat qilmoqchiman / farzandim buvisi bilan gaplashsin...') ?>"></textarea>
-                </div>
-
-                <div class="card-option-box">
-                    <label class="checkbox-label">
-                        <input type="checkbox" name="create_account" value="1" checked id="createAccountCheck" onchange="togglePasswordField()">
-                        <span><?= t('<strong>Hoziroq bepul o‘quvchi profili yaratilsin</strong> (darhol darslarni boshlash uchun)') ?></span>
-                    </label>
-
-                    <div class="form-group" id="passwordGroup" style="margin-top: 12px;">
-                        <label for="password"><?= t('Profil uchun parol yarating (kamida 6 ta belgi):') ?></label>
-                        <input type="password" id="password" name="password" minlength="6" placeholder="<?= t('Parol kiriting') ?>" autocomplete="new-password">
-                    </div>
-                </div>
-
-                <div class="form-group consent-box">
-                    <label class="checkbox-label">
-                        <input type="checkbox" name="consent" value="1" required checked>
-                        <span><?= t('<a href="/privacy" target="_blank" style="text-decoration:underline; color:#fff;">Maxfiylik siyosatiga</a> roziman. Agar farzandim uchun yozayotgan bo‘lsam, men uning ota-onasi yoki qonuniy vasiysiman.') ?></span>
-                    </label>
-                </div>
-
-                <button type="submit" class="btn btn-accent btn-xl btn-block">
-                    <?= icon('arrow-right', '', 20) ?> <?= t('Bepul Pilotga Yozilish va Boshlash') ?>
-                </button>
-            </form>
+<!-- Boshlash va ro‘yxatdan o‘tish -->
+<section class="section section-cta">
+    <div class="container text-center">
+        <div class="registon-portal-card" style="max-width: 680px; margin: 0 auto; padding: 48px 24px;">
+            <span class="section-tag tag-white"><?= t('BOSHLASH') ?></span>
+            <h2 class="title-white" style="margin: 14px 0 10px;"><?= t('O‘zbek tilini bugunoq o‘rganishni boshlang!') ?></h2>
+            <p class="desc-white" style="margin-bottom: 24px;"><?= t('Bepul hisob yarating va birinchi interaktiv darsingizga hoziroq kiring.') ?></p>
+            <a href="/register" class="btn btn-accent btn-xl">
+                <?= icon('arrow-right', '', 20) ?> <?= t('Ro‘yxatdan o‘tish') ?>
+            </a>
         </div>
     </div>
 </section>

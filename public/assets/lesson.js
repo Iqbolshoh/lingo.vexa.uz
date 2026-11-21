@@ -13,13 +13,15 @@
     const fx = (typeof SoundFX !== 'undefined') ? SoundFX : { click() {}, coin() {}, match() {}, encourage() {}, fanfare() {} };
 
     function speak(text, slow) {
+        if (typeof window.speakUzbek === 'function') {
+            return window.speakUzbek(text, slow);
+        }
         if (!text || !('speechSynthesis' in window)) return;
         window.speechSynthesis.cancel();
         const u = new SpeechSynthesisUtterance(text);
-        u.rate = slow ? 0.55 : 0.85;
+        u.rate = slow ? 0.6 : 0.88;
         u.pitch = 1.05;
-        const voice = window.speechSynthesis.getVoices().find(v => v.lang && v.lang.toLowerCase().startsWith('uz'));
-        if (voice) u.voice = voice; else u.lang = 'uz-UZ';
+        u.lang = 'tr-TR';
         if (window.Owl) window.Owl.talk(u);
         window.speechSynthesis.speak(u);
         return u;
@@ -39,7 +41,7 @@
     const reading = document.getElementById('readingText');
     document.getElementById('toggleEn')?.addEventListener('click', (e) => {
         reading.classList.toggle('show-en');
-        e.currentTarget.lastChild.textContent = ' ' + (reading.classList.contains('show-en') ? L('Tarjimani yashirish') : L('Tarjimani ko‘rsatish'));
+        e.currentTarget.lastChild.textContent = ' ' + (reading.classList.contains('show-en') ? L('Tarjimani yaşiriş') : L('Tarjimani körsatiş'));
     });
     document.getElementById('readAll')?.addEventListener('click', () => {
         const lines = [...reading.querySelectorAll('.read-line')];
@@ -74,12 +76,12 @@
             const res = await fetch(`/lessons/${window.LESSON_ID}/game`, { method: 'POST', headers: { 'X-CSRF-Token': csrf } });
             const data = await res.json();
             if (out) out.textContent = data.coins_awarded > 0
-                ? L('+:n tanga hisobingizga qo‘shildi! Jami: :total.').replace(':n', data.coins_awarded).replace(':total', data.coins)
-                : L('Zo‘r takrorlash! Tangalar bu dars uchun avval berilgan.');
+                ? L('+:n tanga hisobingizga qöşildi! Jami: :total.').replace(':n', data.coins_awarded).replace(':total', data.coins)
+                : L('Zör takrorlaş! Tangalar bu dars uçun avval berilgan.');
         } catch (_) { /* offline: the banner still shows */ }
     });
 
-    // Typing helpers for o‘ / g‘.
+    // Typing helpers for ö / ğ / ş / ç.
     document.addEventListener('click', (e) => {
         const key = e.target.closest('[data-char]');
         if (!key) return;
@@ -92,10 +94,17 @@
         input.dispatchEvent(new Event('input', { bubbles: true }));
     });
 
-    const norm = (t) => String(t).toLowerCase().replace(/[‘’ʻʼ`´']/g, "'").replace(/[.,!?«»"“”:;]/g, '').replace(/\s+/g, ' ').trim();
+    const norm = (t) => String(t).toLowerCase()
+        .replace(/o['‘`ʻ’]/g, 'ö')
+        .replace(/g['‘`ʻ’]/g, 'ğ')
+        .replace(/sh/g, 'ş')
+        .replace(/ch/g, 'ç')
+        .replace(/[.,!?«»"“”:;]/g, '').replace(/\s+/g, ' ').trim();
     const shuffle = (a) => { const b = [...a]; for (let i = b.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [b[i], b[j]] = [b[j], b[i]]; } return b; };
     const esc = (t) => String(t).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
     const ICON_SPEAKER = '<svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"/></svg>';
+    const ICON_SPEAKER_SM = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:4px;"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"/></svg>';
+    const ICON_MIC = '<svg width="42" height="42" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" x2="12" y1="19" y2="22"/></svg>';
 
     /** Wires a build-a-sentence block: tiles move between the bank and the answer line. */
     function wireBuild(step, onChange) {
@@ -190,13 +199,16 @@
 
         const plain = (w) => w.replace(/\s*\(.*?\)\s*/g, '').split('/')[0].trim();
         const pickOthers = (item, key, n) => shuffle(vocab.filter(v => v !== item)).slice(0, n).map(v => v[key]);
-        const makeTasks = () => shuffle(vocab).slice(0, Math.min(8, vocab.length)).map((item, i) => {
-            const kind = ['listen', 'uz2en', 'en2uz', 'type'][i % 4];
-            if (kind === 'type') return { kind, item, answer: plain(item.word_uz) };
-            const key = kind === 'en2uz' ? 'word_uz' : 'word_en';
-            const opts = shuffle([item[key], ...pickOthers(item, key, Math.min(3, vocab.length - 1))]);
-            return { kind, item, options: opts, answer: item[key] };
-        });
+        const makeTasks = () => {
+            const pool = shuffle(vocab).slice(0, Math.min(10, vocab.length));
+            return pool.map((item, i) => {
+                const kind = ['listen', 'uz2en', 'speak', 'en2uz', 'type'][i % 5];
+                if (kind === 'speak' || kind === 'type') return { kind, item, answer: plain(item.word_uz) };
+                const key = kind === 'en2uz' ? 'word_uz' : 'word_en';
+                const opts = shuffle([item[key], ...pickOthers(item, key, Math.min(3, vocab.length - 1))]);
+                return { kind, item, options: opts, answer: item[key] };
+            });
+        };
 
         let tasks = makeTasks();
         let at = 0;
@@ -218,15 +230,31 @@
             let html = '';
             if (t.kind === 'listen') {
                 html = `<span class="ex-kind">${L('Tinglang')}</span><h3 class="ex-prompt">${L('Nima deyildi?')}</h3>
-                    <button type="button" class="listen-big" data-speak="${esc(t.item.word_uz)}" aria-label="${L('Tinglash')}">${ICON_SPEAKER}</button>`;
+                    <button type="button" class="listen-big" data-speak="${esc(t.item.word_uz)}" aria-label="${L('Tinglaş')}">${ICON_SPEAKER}</button>`;
+            } else if (t.kind === 'speak') {
+                html = `<span class="ex-kind">${L('Talaffuz qiling')}</span>
+                    <h3 class="ex-prompt">${L('«:word» — baland ovozda ayting').replace(':word', esc(t.item.word_uz))}</h3>
+                    <p class="ex-sub">${L('Inglizça:')} ${esc(t.item.word_en)}${t.item.pronunciation ? ' · [' + esc(t.item.pronunciation) + ']' : ''}</p>
+                    <div style="text-align:center;margin-bottom:8px;">
+                        <button type="button" class="btn btn-outline btn-sm" data-speak="${esc(t.item.word_uz)}" style="border-radius:99px;padding:6px 14px;">
+                            ${ICON_SPEAKER_SM} ${L('Töğri talaffuzni eşitiş')}
+                        </button>
+                    </div>
+                    <button type="button" class="mic-big" id="btnPracticeMic" aria-label="${L('Mikrofon')}">
+                        ${ICON_MIC}
+                    </button>
+                    <div class="speech-status-box">
+                        <div class="speech-status-label" id="practiceSpeechStatus">${L('Mikrofonni bosing va gapiring')}</div>
+                        <div id="practiceSpeechResult"></div>
+                    </div>`;
             } else if (t.kind === 'uz2en') {
-                html = `<span class="ex-kind">${L('Tarjima qiling')}</span><h3 class="ex-prompt">${L('«:word» — bu nima?').replace(':word', esc(t.item.word_uz))}</h3><p class="ex-sub">${L('Inglizcha ma’nosini tanlang')}</p>`;
+                html = `<span class="ex-kind">${L('Tarjima qiling')}</span><h3 class="ex-prompt">${L('«:word» — bu nima?').replace(':word', esc(t.item.word_uz))}</h3><p class="ex-sub">${L('Inglizça ma’nosini tanlang')}</p>`;
             } else if (t.kind === 'en2uz') {
-                html = `<span class="ex-kind">${L('O‘zbekcha toping')}</span><h3 class="ex-prompt">${esc(t.item.word_en)}</h3><p class="ex-sub">${L('O‘zbekcha qanday bo‘ladi?')}</p>`;
+                html = `<span class="ex-kind">${L('Özbekça toping')}</span><h3 class="ex-prompt">${esc(t.item.word_en)}</h3><p class="ex-sub">${L('Özbekça qanday böladi?')}</p>`;
             } else {
-                html = `<span class="ex-kind">${L('Yozing')}</span><h3 class="ex-prompt">${esc(t.item.word_en)}</h3><p class="ex-sub">${L('O‘zbekcha yozing')}</p>
+                html = `<span class="ex-kind">${L('Yozing')}</span><h3 class="ex-prompt">${esc(t.item.word_en)}</h3><p class="ex-sub">${L('Özbekça yozing')}</p>
                     <input class="fill-input" type="text" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="${L('Javob…')}">
-                    <div class="char-keys"><button type="button" data-char="o‘">o‘</button><button type="button" data-char="g‘">g‘</button></div>`;
+                    <div class="char-keys"><button type="button" data-char="ö">ö</button><button type="button" data-char="ğ">ğ</button><button type="button" data-char="ş">ş</button><button type="button" data-char="ç">ç</button></div>`;
             }
             if (t.options) {
                 html += '<div class="ex-options">' + t.options.map((o, i) =>
@@ -248,6 +276,71 @@
                 input.addEventListener('input', () => { current = input.value; btn.disabled = input.value.trim() === ''; });
                 input.addEventListener('keydown', (e) => { if (e.key === 'Enter' && !btn.disabled) { e.preventDefault(); btn.click(); } });
             }
+
+            const micBtn = body.querySelector('#btnPracticeMic');
+            if (micBtn) {
+                const statusLbl = body.querySelector('#practiceSpeechStatus');
+                const resultBox = body.querySelector('#practiceSpeechResult');
+                const checker = window.speechChecker;
+
+                if (!checker || !checker.isSupported) {
+                    statusLbl.innerHTML = '<span style="color:#b91c1c;">' + L('Brauzeringiz ovoz tanishni qöllab-quvvatlamaydi. Yozib topshirishingiz mumkin:') + '</span>';
+                    resultBox.innerHTML = `<input class="fill-input" type="text" style="margin-top:10px;" placeholder="${L('Sözni yozing…')}">`;
+                    const inp = resultBox.querySelector('input');
+                    inp.addEventListener('input', () => { current = inp.value; btn.disabled = inp.value.trim() === ''; });
+                    inp.focus();
+                } else {
+                    micBtn.addEventListener('click', () => {
+                        if (mode !== 'check') return;
+                        if (micBtn.classList.contains('is-recording')) {
+                            checker.stop();
+                            micBtn.classList.remove('is-recording');
+                            statusLbl.textContent = L('Mikrofonni bosing va gapiring');
+                            return;
+                        }
+
+                        micBtn.classList.add('is-recording');
+                        statusLbl.innerHTML = '<span style="color:#e11d48;font-weight:800;">🎙️ ' + L('Tinglanmoqda... Marhamat, gapiring!') + '</span>';
+                        resultBox.innerHTML = '';
+
+                        checker.start({
+                            lang: 'uz-UZ',
+                            onResult: (primary, alternatives) => {
+                                micBtn.classList.remove('is-recording');
+                                current = primary;
+                                const evalRes = window.evaluateSpeech ? window.evaluateSpeech(t.item.word_uz, primary, alternatives) : { score: 90, ok: true };
+                                const isOk = evalRes.ok;
+
+                                resultBox.innerHTML = `
+                                    <div class="speech-transcript-box">${L('Eşitildi:')} «${esc(primary)}»</div>
+                                    <br>
+                                    <span class="speech-score-badge ${isOk ? 'speech-score-pass' : 'speech-score-retry'}">
+                                        ${evalRes.score}% ${L('moslik')} ${isOk ? '🎉 (' + L('Ajoyib!') + ')' : '🤔 (' + L('Qayta urinib köring') + ')'}
+                                    </span>
+                                `;
+                                statusLbl.textContent = isOk ? L('Javobingiz qabul qilindi!') : L('Qayta aytish uçun mikrofonni yana bosing');
+                                btn.disabled = false;
+                                if (isOk) {
+                                    fx.click();
+                                    setTimeout(() => {
+                                        if (mode === 'check' && !btn.disabled) btn.click();
+                                    }, 850);
+                                }
+                            },
+                            onError: (err) => {
+                                micBtn.classList.remove('is-recording');
+                                statusLbl.textContent = err.error === 'no-speech'
+                                    ? L('Ovoz eşitilmadi. Mikrofonni bosib qayta gapiring.')
+                                    : L('Xatolik yuz berdi. Qayta urinib köring.');
+                            },
+                            onEnd: (hasResult) => {
+                                micBtn.classList.remove('is-recording');
+                            }
+                        });
+                    });
+                }
+            }
+
             if (t.kind === 'listen') setTimeout(() => speak(t.item.word_uz), 300);
         };
 
@@ -256,8 +349,8 @@
             const pct = Math.round(right / tasks.length * 100);
             body.innerHTML = `<div class="ex-done">
                 <div class="ex-done-owl"></div>
-                <div class="big">${pct >= 80 ? L('Barakalla!') : L('Yaxshi harakat!')}</div>
-                <p class="muted">${L(':score / :total to‘g‘ri').replace(':score', right).replace(':total', tasks.length)}. ${pct >= 80 ? L('Endi yakuniy testga tayyorsiz!') : L('Lug‘atni yana bir ko‘rib, qayta urinib ko‘ring.')}</p>
+                <div class="big">${pct >= 80 ? L('Barakalla!') : L('Yaxşi harakat!')}</div>
+                <p class="muted">${L(':score / :total töğri').replace(':score', right).replace(':total', tasks.length)}. ${pct >= 80 ? L('Endi yakuniy testga tayyorsiz!') : L('Luğatni yana bir körib, qayta urinib köring.')}</p>
             </div>`;
             const big = practiceOwl ? practiceOwl.cloneNode(true) : null;
             if (big) {
@@ -270,7 +363,7 @@
             if (pct >= 80) fx.fanfare(); else fx.encourage();
             foot.classList.remove('is-right', 'is-wrong');
             feedback.innerHTML = '';
-            btn.textContent = L('Yana mashq qilish');
+            btn.textContent = L('Yana maşq qiliş');
             btn.disabled = false;
             mode = 'restart';
         };
@@ -279,7 +372,10 @@
             if (mode === 'restart') { tasks = makeTasks(); at = 0; right = 0; render(); return; }
             if (mode === 'next') { at++; if (at >= tasks.length) finish(); else render(); return; }
             const t = tasks[at];
-            const ok = norm(current) === norm(t.answer);
+            const evalResult = t.kind === 'speak' && window.evaluateSpeech ? window.evaluateSpeech(t.item.word_uz, current) : null;
+            const ok = t.kind === 'speak'
+                ? (evalResult ? evalResult.ok : norm(current) === norm(t.answer))
+                : norm(current) === norm(t.answer);
             right += ok ? 1 : 0;
             body.querySelectorAll('.ex-opt').forEach(b => {
                 if (norm(b.dataset.val) === norm(t.answer)) b.classList.add('is-right');
@@ -287,17 +383,17 @@
             });
             foot.classList.add(ok ? 'is-right' : 'is-wrong');
             feedback.innerHTML = ok
-                ? `<span>${L('Barakalla! To‘g‘ri.')}</span>`
-                : `<span>${L('To‘g‘ri javob:')} ${esc(t.answer)}<small>${esc(t.item.word_uz)} — ${esc(t.item.word_en)}</small></span>`;
+                ? `<span>${L('Barakalla! Töğri.')} ${evalResult ? '<small>(' + evalResult.score + '% ' + L('moslik') + ')</small>' : ''}</span>`
+                : `<span>${L('Töğri javob:')} ${esc(t.answer)}<small>${esc(t.item.word_uz)} — ${esc(t.item.word_en)}</small></span>`;
             ok ? fx.coin() : fx.encourage();
             window.Owl && Owl.play(practiceOwl, ok ? 'success' : 'mistake', 1800);
             speak(t.item.word_uz);
-            btn.textContent = L('Davom etish');
+            btn.textContent = L('Davom etiş');
             mode = 'next';
         });
 
         render();
     } else if (practice) {
-        practice.querySelector('.ex-body').innerHTML = '<div class="empty">' + L('Mashq uchun kamida 2 ta so‘z kerak.') + '</div>';
+        practice.querySelector('.ex-body').innerHTML = '<div class="empty">' + L('Maşq uçun kamida 2 ta söz kerak.') + '</div>';
     }
 })();

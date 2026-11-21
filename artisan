@@ -9,13 +9,13 @@ $cmd = $argv[1] ?? 'help';
 
 switch ($cmd) {
     case 'migrate':
-        echo "==> LingoUz Migratsiyasi bajarilmoqda...\n";
+        echo "==> Running LingoUz migrations...\n";
         $pdo = db();
         require_once __DIR__ . '/src/schema.php';
         migrate($pdo);
         require_once __DIR__ . '/src/content.php';
         seed_initial_data($pdo);
-        echo "==> Migratsiya muvaffaqiyatli yakunlandi!\n";
+        echo "==> Migrations completed successfully!\n";
         break;
 
     case 'db:seed':

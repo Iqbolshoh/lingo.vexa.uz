@@ -7,7 +7,7 @@
 
             <div class="legal-content">
                 <h3><?= t('1. Umumiy qoidalar') ?></h3>
-                <p><?= t('LingoUz by Gulomov’s Academy — o‘zbek tilini o‘rganmoqchi bo‘lgan hamma uchun platforma: bolalar, kattalar va sayyohlar. Biz foydalanuvchilar, ayniqsa bolalarning onlayn xavfsizligini birinchi o‘ringa qo‘yamiz va AQShning <strong>COPPA (Children’s Online Privacy Protection Act)</strong> talablariga rioya qilamiz.') ?></p>
+                <p><?= t('LingoUz — o‘zbek tilini o‘rganmoqchi bo‘lgan hamma uchun platforma: bolalar, kattalar va sayyohlar. Biz foydalanuvchilar, ayniqsa bolalarning onlayn xavfsizligini birinchi o‘ringa qo‘yamiz va AQShning <strong>COPPA (Children’s Online Privacy Protection Act)</strong> talablariga rioya qilamiz.') ?></p>
 
                 <h3><?= t('2. Biz qanday ma’lumotlarni yig‘amiz?') ?></h3>
                 <ul>
@@ -23,7 +23,7 @@
                 <p><?= t('Jonli darslarda har doim mentor nazorati bor. Xonaga faqat ro‘yxatdan o‘tgan qatnashchilar «Kutish xonasi» orqali kiritiladi. Bolalar va kattalar guruhlari alohida. Darslar qatnashchilarning roziligisiz yozib olinmaydi va tarqatilmaydi.') ?></p>
 
                 <h3><?= t('5. Aloqa') ?></h3>
-                <p><?= t('Maxfiylik bo‘yicha savollar yoki ma’lumotlarni o‘chirish talabi uchun yozing:') ?> <strong>privacy@vexa.uz</strong> · <strong>gulomov@vexa.uz</strong></p>
+                <p><?= t('Maxfiylik bo‘yicha savollar yoki ma’lumotlarni o‘chirish talabi uchun yozing:') ?> <strong>privacy@vexa.uz</strong></p>
             </div>
 
             <div style="margin-top: 32px;">

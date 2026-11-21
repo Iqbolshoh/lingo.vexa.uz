@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-// LingoUz by Gulomov's Academy - public and student route handlers
+// LingoUz - public and student route handlers
 
 function require_login(string $message = 'Iltimos, avval tizimga kiring.'): array
 {
@@ -68,11 +68,11 @@ function action_enroll(): void
 
     if ($parentName === '' || $childName === '' || !filter_var($parentEmail, FILTER_VALIDATE_EMAIL)) {
         flash('error', t('Iltimos, ota-ona ismi, to‘g‘ri email va bola ismini kiriting.'));
-        redirect('/#ariza');
+        redirect('/register');
     }
     if ($createAccount && mb_strlen($password) < 6) {
         flash('error', t('Akkaunt uchun parol kamida 6 ta belgidan iborat bo‘lishi kerak.'));
-        redirect('/#ariza');
+        redirect('/register');
     }
 
     $pdo = db();
@@ -98,7 +98,7 @@ function action_enroll(): void
     }
 
     flash('success', t('Rahmat! Arizangiz qabul qilindi. Tez orada mentorlarimiz siz bilan bog‘lanishadi.'));
-    redirect('/#ariza');
+    redirect('/');
 }
 
 function page_login(): void

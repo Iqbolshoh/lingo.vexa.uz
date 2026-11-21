@@ -3,7 +3,7 @@
         <div class="legal-card">
             <span class="legal-tag"><?= t('SAMARALI O‘RGANISH QO‘LLANMASI') ?></span>
             <h1><?= t('O‘zbek tilini tez va zavq bilan o‘rganish') ?></h1>
-            <p class="legal-meta"><?= t('Gulomov’s Academy metodikasi asosida tayyorlandi') ?></p>
+            <p class="legal-meta"><?= t('LingoUz metodikasi asosida tayyorlandi') ?></p>
 
             <div class="legal-content">
                 <h2 style="font-family:var(--font-heading);color:var(--ink);margin:6px 0 14px"><?= t('Kattalar va sayyohlar uchun 5 maslahat') ?></h2>

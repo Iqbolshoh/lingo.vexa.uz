@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-// LingoUz by Gulomov's Academy - Application Bootstrap
+// LingoUz - Application Bootstrap
 require_once __DIR__ . '/icons.php';
 require_once __DIR__ . '/mascot.php';
 require_once __DIR__ . '/i18n.php';
@@ -65,7 +65,7 @@ function verify_csrf(): void
     $token = $_POST['_csrf'] ?? $_SERVER['HTTP_X_CSRF_TOKEN'] ?? '';
     if (empty($_SESSION['_csrf_token']) || !hash_equals($_SESSION['_csrf_token'], (string) $token)) {
         http_response_code(403);
-        echo 'CSRF token yaroqsiz. Qaytadan urinib ko‘ring.';
+        echo 'Invalid CSRF token. Please refresh and try again.';
         exit;
     }
 }
@@ -151,7 +151,7 @@ function render(string $view, array $data = []): void
     extract($data);
     $viewPath = __DIR__ . '/views/' . $view . '.php';
     if (!file_exists($viewPath)) {
-        throw new RuntimeException("View [$view] topilmadi: $viewPath");
+        throw new RuntimeException("View [$view] not found at: $viewPath");
     }
 
     ob_start();
@@ -160,8 +160,17 @@ function render(string $view, array $data = []): void
 
     $layoutPath = __DIR__ . '/views/layout.php';
     if (file_exists($layoutPath)) {
+        ob_start();
         require $layoutPath;
+        $html = ob_get_clean();
+        if (locale() === 'uz') {
+            $html = to_new_latin_html($html);
+        }
+        echo $html;
     } else {
+        if (locale() === 'uz') {
+            $content = to_new_latin_html($content);
+        }
         echo $content;
     }
 }

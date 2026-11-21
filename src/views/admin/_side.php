@@ -3,7 +3,7 @@ $pendingCount = (int) db()->query("SELECT count(*) FROM enrollments WHERE status
 $items = [
     ['overview', '/admin', 'layers', 'Umumiy ko‘rinish'],
     ['courses', '/admin/courses', 'book-open', 'Kurslar va darslar'],
-    ['students', '/admin/students', 'users', 'O‘quvchilar'],
+    ['students', '/admin/students', 'users', 'Öquvçilar'],
     ['stats', '/admin/stats', 'star', 'Statistika'],
     ['gradebook', '/admin/gradebook', 'target', 'Baholar jurnali'],
     ['enrollments', '/admin/enrollments', 'message-square', 'Arizalar'],
@@ -14,7 +14,7 @@ $items = [
 <aside class="adm-side">
     <div class="adm-brand">
         <img src="/assets/mascot-owl.svg" alt="" width="38" height="44">
-        <div><strong>Boshqaruv</strong><span>LingoUz ustoz paneli</span></div>
+        <div><strong>Boşqaruv</strong><span>LingoUz ustoz paneli</span></div>
     </div>
     <div class="adm-label">Menyu</div>
     <nav class="adm-nav">
@@ -24,6 +24,6 @@ $items = [
                 <?php if ($key === 'enrollments' && $pendingCount > 0): ?><span class="cnt"><?= $pendingCount ?></span><?php endif; ?>
             </a>
         <?php endforeach; ?>
-        <a href="/dashboard"><?= icon('arrow-left', '', 18) ?> O‘quvchi ko‘rinishi</a>
+        <a href="/dashboard"><?= icon('arrow-left', '', 18) ?> Öquvçi körinişi</a>
     </nav>
 </aside>

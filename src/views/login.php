@@ -42,7 +42,7 @@
 
             <div class="auth-footer">
                 <span><?= t('Hali hisobingiz yo‘qmi?') ?></span>
-                <a href="/register"><?= t('Ro‘yxatdan o‘tish') ?></a> <?= t('yoki') ?> <a href="/#ariza"><?= t('Pilotga yozilish') ?></a>
+                <a href="/register"><?= t('Ro‘yxatdan o‘tish') ?></a>
             </div>
         </div>
     </div>

@@ -3,7 +3,7 @@
     <?php require __DIR__ . '/_side.php'; ?>
     <main class="adm-main">
         <div class="adm-head">
-            <div><div class="crumbs"><a href="/admin">Admin</a> / <a href="/admin/courses">Kurslar</a> / <?= $isEdit ? e($course['title']) : 'Yangi' ?></div><h1><?= $isEdit ? 'Kursni tahrirlash' : 'Yangi kurs' ?></h1></div>
+            <div><div class="crumbs"><a href="/admin">Admin</a> / <a href="/admin/courses">Kurslar</a> / <?= $isEdit ? e($course['title']) : 'Yangi' ?></div><h1><?= $isEdit ? 'Kursni tahrirlaş' : 'Yangi kurs' ?></h1></div>
         </div>
         <form method="POST" action="<?= $isEdit ? '/admin/courses/' . (int) $course['id'] : '/admin/courses' ?>" class="card">
             <?= csrf_field() ?>
@@ -11,11 +11,11 @@
                 <div class="field full"><label for="title">Kurs nomi *</label><input type="text" id="title" name="title" required maxlength="120" value="<?= e($course['title']) ?>" placeholder="Masalan: O‘zbek tili: Ilk qadamlar"></div>
                 <div class="field full"><label for="subtitle">Qisqa tavsif (kartada)</label><input type="text" id="subtitle" name="subtitle" maxlength="160" value="<?= e($course['subtitle']) ?>" placeholder="Salomlashish, oila, raqamlar…"></div>
                 <div class="field full"><label for="description">To‘liq tavsif</label><textarea id="description" name="description" maxlength="2000"><?= e($course['description']) ?></textarea></div>
-                <div class="field full"><label for="title_en">Kurs nomi (inglizcha)</label><input type="text" id="title_en" name="title_en" maxlength="120" value="<?= e($course['title_en'] ?? '') ?>" placeholder="Uzbek: First steps"><div class="hint">Saytning inglizcha versiyasida ko‘rinadi. Bo‘sh bo‘lsa o‘zbekchasi chiqadi.</div></div>
+                <div class="field full"><label for="title_en">Kurs nomi (inglizcha)</label><input type="text" id="title_en" name="title_en" maxlength="120" value="<?= e($course['title_en'] ?? '') ?>" placeholder="Uzbek: First steps"><div class="hint">Saytning inglizcha versiyasida körinadi. Böş bölsa özbekçasi chiqadi.</div></div>
                 <div class="field full"><label for="subtitle_en">Qisqa tavsif (inglizcha)</label><input type="text" id="subtitle_en" name="subtitle_en" maxlength="160" value="<?= e($course['subtitle_en'] ?? '') ?>"></div>
                 <div class="field full"><label for="description_en">To‘liq tavsif (inglizcha)</label><textarea id="description_en" name="description_en" maxlength="2000" style="min-height:70px"><?= e($course['description_en'] ?? '') ?></textarea></div>
                 <div class="field"><label for="level">Daraja</label><input type="text" id="level" name="level" maxlength="20" value="<?= e($course['level']) ?>"></div>
-                <div class="field"><label for="age_range">Yosh</label><input type="text" id="age_range" name="age_range" maxlength="40" value="<?= e($course['age_range']) ?>"></div>
+                <div class="field"><label for="age_range">Yoş</label><input type="text" id="age_range" name="age_range" maxlength="40" value="<?= e($course['age_range']) ?>"></div>
                 <div class="field"><label for="category">Turi</label>
                     <select id="category" name="category">
                         <option value="language" <?= $course['category'] === 'language' ? 'selected' : '' ?>>Til kursi</option>
@@ -29,7 +29,7 @@
                 </div>
                 <div class="field"><label for="status">Holati</label>
                     <select id="status" name="status">
-                        <option value="published" <?= $course['status'] === 'published' ? 'selected' : '' ?>>Ochiq (o‘quvchilar ko‘radi)</option>
+                        <option value="published" <?= $course['status'] === 'published' ? 'selected' : '' ?>>Oçiq (öquvçilar köradi)</option>
                         <option value="draft" <?= $course['status'] === 'draft' ? 'selected' : '' ?>>Qoralama (yashirin)</option>
                     </select>
                 </div>
@@ -43,16 +43,16 @@
                 </div>
             </div>
             <div class="form-foot">
-                <a href="<?= $isEdit ? '/admin/courses/' . (int) $course['id'] : '/admin/courses' ?>" class="btn btn-ghost">Bekor qilish</a>
-                <button type="submit" class="btn btn-primary"><?= icon('check-circle', '', 16) ?> Saqlash</button>
+                <a href="<?= $isEdit ? '/admin/courses/' . (int) $course['id'] : '/admin/courses' ?>" class="btn btn-ghost">Bekor qiliş</a>
+                <button type="submit" class="btn btn-primary"><?= icon('check-circle', '', 16) ?> Saqlaş</button>
             </div>
         </form>
         <?php if ($isEdit): ?>
-            <form method="POST" action="/admin/courses/<?= (int) $course['id'] ?>/delete" class="card" style="margin-top:18px;border-color:#fecdd3" onsubmit="return confirm('Kurs va undagi BARCHA darslar, so‘zlar, savollar va natijalar o‘chiriladi. Davom etasizmi?')">
+            <form method="POST" action="/admin/courses/<?= (int) $course['id'] ?>/delete" class="card" style="margin-top:18px;border-color:#fecdd3" onsubmit="return confirm('Kurs va undagi BARCHA darslar, sözlar, savollar va natijalar öçiriladi. Davom etasizmi?')">
                 <?= csrf_field() ?>
                 <div class="row-between">
-                    <div><strong style="color:#be123c">Kursni o‘chirish</strong><div class="small muted">Barcha darslar va o‘quvchi natijalari ham o‘chadi. Buni qaytarib bo‘lmaydi.</div></div>
-                    <button type="submit" class="btn btn-danger btn-sm"><?= icon('log-out', '', 14) ?> O‘chirish</button>
+                    <div><strong style="color:#be123c">Kursni öçiriş</strong><div class="small muted">Barcha darslar va öquvçi natijalari ham öçadi. Buni qaytarib bo‘lmaydi.</div></div>
+                    <button type="submit" class="btn btn-danger btn-sm"><?= icon('log-out', '', 14) ?> Öçiriş</button>
                 </div>
             </form>
         <?php endif; ?>

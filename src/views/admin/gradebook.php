@@ -16,13 +16,13 @@
             <table class="tbl gradebook">
                 <thead>
                     <tr>
-                        <th class="col-index">#</th><th>O‘quvchi</th>
+                        <th class="col-index">#</th><th>Öquvçi</th>
                         <?php foreach ($lessons as $l): ?><th class="l-col" title="<?= e($l['title']) ?>"><?= (int) $l['position'] ?>-dars</th><?php endforeach; ?>
-                        <th>O‘rtacha</th>
+                        <th>Örtaça</th>
                     </tr>
                 </thead>
                 <tbody>
-                <?php if (!$students || !$lessons): ?><tr><td colspan="<?= count($lessons) + 3 ?>" class="empty">Ma’lumot yo‘q.</td></tr><?php endif; ?>
+                <?php if (!$students || !$lessons): ?><tr><td colspan="<?= count($lessons) + 3 ?>" class="empty">Ma’lumot yöq.</td></tr><?php endif; ?>
                 <?php foreach ($students as $i => $s): $scores = []; ?>
                     <tr>
                         <td class="col-index"><?= $i + 1 ?></td>
@@ -39,10 +39,10 @@
         </div>
         <div class="legend">
             <span><i class="heat heat-excellent">90+</i> A’lo</span>
-            <span><i class="heat heat-good">80+</i> O‘zlashtirildi</span>
+            <span><i class="heat heat-good">80+</i> Özlaştirildi</span>
             <span><i class="heat heat-mid">50+</i> Rivojlanmoqda</span>
             <span><i class="heat heat-low">1+</i> Qayta ishlash kerak</span>
-            <span><i class="heat heat-none">—</i> Boshlanmagan</span>
+            <span><i class="heat heat-none">—</i> Boşlanmagan</span>
         </div>
     </main>
 </div>

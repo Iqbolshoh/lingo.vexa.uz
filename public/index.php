@@ -133,6 +133,6 @@ try {
     error_log('[lingouz] ' . $e::class . ': ' . $e->getMessage() . ' @ ' . $e->getFile() . ':' . $e->getLine());
     http_response_code(500);
     echo '<!doctype html><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">'
-        . '<title>Kichik nosozlik</title><body style="font-family:system-ui;padding:40px;text-align:center;color:#0c4a6e">'
-        . '<h1>Kichik nosozlik yuz berdi</h1><p>Biz buni allaqachon tuzatyapmiz. Birozdan so‘ng qayta urinib ko‘ring.</p><p><a href="/">Bosh sahifaga qaytish</a></p>';
+        . '<title>Kıçik nosozlik</title><body style="font-family:system-ui;padding:40px;text-align:center;color:#0c4a6e">'
+        . '<h1>Kıçik nosozlik yuz berdi</h1><p>Biz buni allaqaçon tuzatyapmiz. Birozdan söng qayta urinib köring.</p><p><a href="/">Boş sahifaga qaytiş</a></p>';
 }

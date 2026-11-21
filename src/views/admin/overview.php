@@ -4,32 +4,32 @@
         <div class="adm-head">
             <div><div class="crumbs">Admin panel</div><h1>Umumiy ko‘rinish</h1></div>
             <div class="adm-actions">
-                <a href="/admin/courses" class="btn btn-primary btn-sm"><?= icon('book-open', '', 16) ?> Dars qo‘shish</a>
+                <a href="/admin/courses" class="btn btn-primary btn-sm"><?= icon('book-open', '', 16) ?> Dars qöşiş</a>
                 <a href="/admin/export" class="btn btn-ghost btn-sm"><?= icon('download', '', 16) ?> Arizalar CSV</a>
             </div>
         </div>
 
         <div class="stat-grid mt-0">
-            <div class="stat-tile tone-lapis"><span class="stat-ico"><?= icon('users', '', 22) ?></span><div><strong><?= $counts['students'] ?></strong><span>o‘quvchi · 7 kunda faol: <?= $counts['active7'] ?></span></div></div>
+            <div class="stat-tile tone-lapis"><span class="stat-ico"><?= icon('users', '', 22) ?></span><div><strong><?= $counts['students'] ?></strong><span>öquvçi · 7 kunda faol: <?= $counts['active7'] ?></span></div></div>
             <div class="stat-tile tone-gold"><span class="stat-ico"><?= icon('book-open', '', 22) ?></span><div><strong><?= $counts['lessons'] ?></strong><span>dars · <?= $counts['courses'] ?> kurs</span></div></div>
-            <div class="stat-tile tone-emerald"><span class="stat-ico"><?= icon('check-circle', '', 22) ?></span><div><strong><?= $counts['pass_rate'] ?>%</strong><span>testdan o‘tish · o‘rtacha <?= $counts['avg_score'] ?>%</span></div></div>
+            <div class="stat-tile tone-emerald"><span class="stat-ico"><?= icon('check-circle', '', 22) ?></span><div><strong><?= $counts['pass_rate'] ?>%</strong><span>testdan ötiş · örtaça <?= $counts['avg_score'] ?>%</span></div></div>
             <div class="stat-tile tone-ruby"><span class="stat-ico"><?= icon('message-square', '', 22) ?></span><div><strong><?= $counts['pending'] ?></strong><span>yangi ariza</span></div></div>
         </div>
 
         <div class="grid-2">
             <div class="card">
-                <h3 class="card-title"><?= icon('calendar', '', 20) ?> So‘nggi 14 kun faolligi</h3>
+                <h3 class="card-title"><?= icon('calendar', '', 20) ?> Sönggi 14 kun faolligi</h3>
                 <?php $max = max(1, max($daily)); ?>
                 <div class="spark">
                     <?php foreach ($daily as $d => $v): ?><div style="height: <?= max(3, (int) round($v / $max * 100)) ?>%" data-v="<?= $v ?>" title="<?= e($d) ?>: <?= $v ?> ta test"></div><?php endforeach; ?>
                 </div>
                 <div class="spark-labels"><?php foreach (array_keys($daily) as $d): ?><span><?= (int) substr($d, 8) ?></span><?php endforeach; ?></div>
-                <p class="small muted" style="margin-top:8px">Kunlik topshirilgan testlar soni. Jami: <?= $counts['attempts'] ?> ta urinish, <?= $counts['questions'] ?> ta savol, <?= $counts['words'] ?> ta so‘z.</p>
+                <p class="small muted" style="margin-top:8px">Kunlik topşirilgan testlar soni. Jami: <?= $counts['attempts'] ?> ta uriniş, <?= $counts['questions'] ?> ta savol, <?= $counts['words'] ?> ta söz.</p>
             </div>
             <div class="card">
                 <h3 class="card-title"><?= icon('target', '', 20) ?> Eng qiyin savollar</h3>
                 <?php if (!$hardest): ?>
-                    <div class="empty">Hali yetarli ma’lumot yo‘q — o‘quvchilar test topshirgach ko‘rinadi.</div>
+                    <div class="empty">Hali yetarli ma’lumot yöq — öquvçilar test topşirgaç körinadi.</div>
                 <?php else: ?>
                     <div class="stack-sm">
                         <?php foreach ($hardest as $h): ?>
@@ -43,10 +43,10 @@
             </div>
         </div>
 
-        <h2 class="section-h"><?= icon('layers', '', 22) ?> Darslar bo‘yicha o‘zlashtirish</h2>
+        <h2 class="section-h"><?= icon('layers', '', 22) ?> Darslar böyiça özlaştiriş</h2>
         <div class="tbl-wrap">
             <table class="tbl">
-                <thead><tr><th class="col-index">#</th><th>Dars</th><th>Kurs</th><th>Urinib ko‘rgan</th><th>O‘tgan</th><th>O‘rtacha eng yaxshi ball</th></tr></thead>
+                <thead><tr><th class="col-index">#</th><th>Dars</th><th>Kurs</th><th>Urinib ko‘rgan</th><th>Ötgan</th><th>Örtaça eng yaxshi ball</th></tr></thead>
                 <tbody>
                 <?php foreach ($lessonStats as $i => $l): $avg = (int) round((float) $l['avg_best']); ?>
                     <tr>
@@ -62,12 +62,12 @@
             </table>
         </div>
 
-        <h2 class="section-h"><?= icon('check-circle', '', 22) ?> So‘nggi test urinishlari</h2>
+        <h2 class="section-h"><?= icon('check-circle', '', 22) ?> Sönggi test urinişlari</h2>
         <div class="tbl-wrap">
             <table class="tbl">
-                <thead><tr><th class="col-index">#</th><th>O‘quvchi</th><th>Dars</th><th>Natija</th><th>XP</th><th>Sana</th></tr></thead>
+                <thead><tr><th class="col-index">#</th><th>Öquvçi</th><th>Dars</th><th>Natija</th><th>XP</th><th>Sana</th></tr></thead>
                 <tbody>
-                <?php if (!$attempts): ?><tr><td colspan="6" class="empty">Hali test topshirilmagan.</td></tr><?php endif; ?>
+                <?php if (!$attempts): ?><tr><td colspan="6" class="empty">Hali test topşirilmagan.</td></tr><?php endif; ?>
                 <?php foreach ($attempts as $i => $a): ?>
                     <tr>
                         <td class="col-index"><?= $i + 1 ?></td>

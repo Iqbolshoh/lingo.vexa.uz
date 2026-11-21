@@ -10,7 +10,69 @@ declare(strict_types=1);
  * Locale: ?lang=uz|en (remembered in a cookie) → cookie → Accept-Language.
  */
 
-const LOCALES = ['uz' => 'O‘zbekcha', 'en' => 'English'];
+const LOCALES = ['uz' => 'Özbekça', 'en' => 'English'];
+
+/**
+ * Transforms Uzbek text to the new Latin alphabet standard:
+ * O‘ / o‘ -> Ö / ö
+ * Sh / sh -> Ş / ş
+ * Ch / ch -> Ç / ç
+ * G‘ / g‘ -> Ğ / ğ
+ */
+function to_new_latin(string $text): string
+{
+    if ($text === '') {
+        return '';
+    }
+    $apos = "['\x{2018}\x{2019}\x{02BB}\x{0060}\x{201B}]";
+    $text = preg_replace("/O{$apos}/u", 'Ö', $text);
+    $text = preg_replace("/o{$apos}/u", 'ö', $text);
+    $text = preg_replace("/G{$apos}/u", 'Ğ', $text);
+    $text = preg_replace("/g{$apos}/u", 'ğ', $text);
+    // Protect specific English terms
+    $text = str_replace('Children', '##KIDS_ENG##', $text);
+    $text = preg_replace('/CH(?=[A-ZÖĞŞÇ\s\.,!\?:;"\'\)\(\]\}<]|$)/u', 'Ç', $text);
+    $text = preg_replace('/Ch/u', 'Ç', $text);
+    $text = preg_replace('/ch/u', 'ç', $text);
+    $text = preg_replace('/SH(?=[A-ZÖĞŞÇ\s\.,!\?:;"\'\)\(\]\}<]|$)/u', 'Ş', $text);
+    $text = preg_replace('/Sh/u', 'Ş', $text);
+    $text = preg_replace('/sh/u', 'ş', $text);
+    $text = str_replace('##KIDS_ENG##', 'Children', $text);
+    return $text;
+}
+
+function to_new_latin_html(string $html): string
+{
+    if ($html === '') {
+        return '';
+    }
+    // Protect raw blocks like <script> and <style>
+    $rawBlocks = [];
+    $html = preg_replace_callback('/<(script|style)[^>]*>.*?<\/\\1>/si', function ($m) use (&$rawBlocks) {
+        $idx = count($rawBlocks);
+        $rawBlocks[$idx] = $m[0];
+        return "___RAW_BLOCK_{$idx}___";
+    }, $html);
+
+    $parts = preg_split('/(<[^>]+>)/u', $html, -1, PREG_SPLIT_DELIM_CAPTURE);
+    for ($i = 0; $i < count($parts); $i++) {
+        if ($i % 2 === 0) {
+            $parts[$i] = to_new_latin($parts[$i]);
+        } else {
+            $parts[$i] = preg_replace_callback('/(placeholder|title|aria-label|alt)=(["\x27])(.*?)\2/su', function ($attr) {
+                return $attr[1] . '=' . $attr[2] . to_new_latin($attr[3]) . $attr[2];
+            }, $parts[$i]);
+        }
+    }
+    $html = implode('', $parts);
+
+    if (!empty($rawBlocks)) {
+        $html = preg_replace_callback('/___RAW_BLOCK_(\d+)___/', function ($m) use ($rawBlocks) {
+            return $rawBlocks[(int) $m[1]] ?? '';
+        }, $html);
+    }
+    return $html;
+}
 
 function locale(?string $set = null): string
 {
@@ -61,7 +123,9 @@ function t(string $uz, array $params = [], bool $escape = true): string
     $text = $uz;
     if (is_en()) {
         $dict ??= require __DIR__ . '/lang/en.php';
-        $text = $dict[$uz] ?? $uz;
+        $text = $dict[$uz] ?? $dict[to_new_latin_html($uz)] ?? $uz;
+    } else {
+        $text = to_new_latin_html($text);
     }
     foreach ($params as $k => $v) {
         $text = str_replace(':' . $k, $escape ? e((string) $v) : (string) $v, $text);
@@ -75,7 +139,7 @@ function loc(array $row, string $field): string
     if (is_en() && !empty($row[$field . '_en'])) {
         return (string) $row[$field . '_en'];
     }
-    return (string) ($row[$field] ?? '');
+    return to_new_latin_html((string) ($row[$field] ?? ''));
 }
 
 /** The same URL with ?lang= switched, for the language toggle. */
@@ -89,12 +153,12 @@ function lang_url(string $lang): string
 
 /** Strings used by public/assets/*.js; sent as window.I18N in English mode. */
 const JS_STRINGS = [
-    'Tarjimani yashirish', 'Tarjimani ko‘rsatish', '+:n tanga hisobingizga qo‘shildi! Jami: :total.',
-    'Zo‘r takrorlash! Tangalar bu dars uchun avval berilgan.', 'Ba’zi savollarga javob berilmagan. Baribir yakunlaysizmi?',
-    'Tekshirish', 'Tinglang', 'Nima deyildi?', 'Tinglash', 'Tarjima qiling', '«:word» — bu nima?', 'Inglizcha ma’nosini tanlang',
-    'O‘zbekcha toping', 'O‘zbekcha qanday bo‘ladi?', 'Yozing', 'O‘zbekcha yozing', 'Javob…', 'Barakalla!', 'Yaxshi harakat!',
-    ':score / :total to‘g‘ri', 'Endi yakuniy testga tayyorsiz!', 'Lug‘atni yana bir ko‘rib, qayta urinib ko‘ring.', 'Yana mashq qilish',
-    'Barakalla! To‘g‘ri.', 'To‘g‘ri javob:', 'Davom etish', 'Mashq uchun kamida 2 ta so‘z kerak.',
+    'Tarjimani yaşiriş', 'Tarjimani körsatiş', '+:n tanga hisobingizga qöşildi! Jami: :total.',
+    'Zör takrorlaş! Tangalar bu dars uçun avval berilgan.', 'Ba’zi savollarga javob berilmagan. Baribir yakunlaysizmi?',
+    'Tekşiriş', 'Tinglang', 'Nima deyildi?', 'Tinglaş', 'Tarjima qiling', '«:word» — bu nima?', 'Inglizça ma’nosini tanlang',
+    'Özbekça toping', 'Özbekça qanday böladi?', 'Yozing', 'Özbekça yozing', 'Javob…', 'Barakalla!', 'Yaxşi harakat!',
+    ':score / :total töğri', 'Endi yakuniy testga tayyorsiz!', 'Luğatni yana bir körib, qayta urinib köring.', 'Yana maşq qiliş',
+    'Barakalla! Töğri.', 'Töğri javob:', 'Davom etiş', 'Maşq uçun kamida 2 ta söz kerak.',
 ];
 
 function js_translations(): array

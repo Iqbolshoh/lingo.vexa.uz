@@ -87,7 +87,10 @@ $n = 0;
                             <div class="flipper-front">
                                 <div class="vocab-card-header">
                                     <span class="vocab-icon-wrapper"><?= icon($lesson['icon'], '', 22) ?></span>
-                                    <button class="btn-audio-circle" type="button" data-speak="<?= e($v['word_uz']) ?>" title="<?= t('Eshitish') ?>"><?= icon('volume-2', '', 16) ?></button>
+                                    <div class="vocab-card-actions">
+                                        <button class="btn-audio-circle" type="button" data-speak="<?= e($v['word_uz']) ?>" title="<?= t('Eshitish') ?>"><?= icon('volume-2', '', 16) ?></button>
+                                        <button class="btn-audio-circle btn-mic-test" type="button" data-check-speech="<?= e($v['word_uz']) ?>" title="<?= t('Talaffuzingizni tekshiring') ?>"><?= icon('mic', '', 15) ?></button>
+                                    </div>
                                 </div>
                                 <h3 class="vocab-title-uz"><?= e($v['word_uz']) ?></h3>
                                 <?php if (!empty($v['pronunciation'])): ?><div class="vocab-phonetic-badge">[<?= e($v['pronunciation']) ?>]</div><?php endif; ?>
@@ -192,7 +195,7 @@ $n = 0;
                                     <h3 class="ex-prompt"><?= e($promptMain($q)) ?></h3>
                                     <?php if ($promptSub($q) !== ''): ?><p class="ex-sub"><?= e($promptSub($q)) ?></p><?php endif; ?>
                                     <input class="fill-input" type="text" name="q_<?= (int) $q['id'] ?>" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="<?= t('Javobni o‘zbekcha yozing…') ?>">
-                                    <div class="char-keys"><button type="button" data-char="o‘">o‘</button><button type="button" data-char="g‘">g‘</button><button type="button" data-char="sh">sh</button><button type="button" data-char="ch">ch</button></div>
+                                    <div class="char-keys"><button type="button" data-char="ö">ö</button><button type="button" data-char="ğ">ğ</button><button type="button" data-char="ş">ş</button><button type="button" data-char="ç">ç</button></div>
                                 <?php else: ?>
                                     <?php if ($type === 'listen'): ?>
                                         <h3 class="ex-prompt"><?= e($promptMain($q)) ?></h3>

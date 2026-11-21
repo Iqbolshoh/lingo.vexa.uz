@@ -4,7 +4,7 @@
     <main class="adm-main">
         <div class="adm-head">
             <div><div class="crumbs"><a href="/admin">Admin</a> / Arizalar</div><h1>Pilot arizalari</h1></div>
-            <a href="/admin/export" class="btn btn-ghost btn-sm"><?= icon('download', '', 14) ?> CSV yuklab olish</a>
+            <a href="/admin/export" class="btn btn-ghost btn-sm"><?= icon('download', '', 14) ?> CSV yuklab oliş</a>
         </div>
         <nav class="adm-tabs">
             <a href="/admin/enrollments" class="<?= $status === '' ? 'is-active' : '' ?>">Barchasi <span class="n"><?= array_sum($counts) ?></span></a>
@@ -14,14 +14,14 @@
         </nav>
         <div class="tbl-wrap">
             <table class="tbl">
-                <thead><tr><th class="col-index">#</th><th>Ariza beruvchi</th><th>O‘quvchi</th><th>Vaqt zonasi</th><th>Izoh</th><th>Sana</th><th>Holat</th></tr></thead>
+                <thead><tr><th class="col-index">#</th><th>Ariza beruvçi</th><th>Öquvçi</th><th>Vaqt zonasi</th><th>Izoh</th><th>Sana</th><th>Holat</th></tr></thead>
                 <tbody>
-                <?php if (!$enrollments): ?><tr><td colspan="7" class="empty">Ariza yo‘q.</td></tr><?php endif; ?>
+                <?php if (!$enrollments): ?><tr><td colspan="7" class="empty">Ariza yöq.</td></tr><?php endif; ?>
                 <?php foreach ($enrollments as $i => $en): ?>
                     <tr>
                         <td class="col-index"><?= $i + 1 ?></td>
                         <td><span class="t-title"><?= e($en['parent_name']) ?></span><div class="t-sub"><a href="mailto:<?= e($en['parent_email']) ?>"><?= e($en['parent_email']) ?></a><?= $en['parent_phone'] ? ' · ' . e($en['parent_phone']) : '' ?></div></td>
-                        <td><?= e($en['child_name']) ?><div class="t-sub"><?= e($en['child_age']) ?> yosh · <?= e($en['language_level']) ?></div></td>
+                        <td><?= e($en['child_name']) ?><div class="t-sub"><?= e($en['child_age']) ?> yoş · <?= e($en['language_level']) ?></div></td>
                         <td class="t-sub"><?= e($en['timezone']) ?></td>
                         <td class="t-sub" style="max-width:220px"><?= e($en['notes']) ?></td>
                         <td class="t-sub"><?= e(substr((string) $en['created_at'], 0, 10)) ?></td>

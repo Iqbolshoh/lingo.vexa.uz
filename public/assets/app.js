@@ -121,27 +121,125 @@ const Owl = {
 window.Owl = Owl;
 
 /**
- * Uzbek Speech Synthesis via Web Speech API
+ * Natural Uzbek Speech Synthesis via Web Speech API
+ * Automatically selects the best phonetically matching Turkic voice model (Uzbek, Turkish)
+ * and applies phonetic text adaptation so pronunciation matches authentic Uzbek, NOT English!
  */
-function speakUzbek(text) {
-    if (!('speechSynthesis' in window)) return;
+let uzVoiceInfo = null;
 
-    window.speechSynthesis.cancel();
-    const utterance = new SpeechSynthesisUtterance(text);
-    utterance.rate = 0.85; // pleasant natural pacing for kids
-    utterance.pitch = 1.08;
+function getBestUzbekVoice() {
+    if (!('speechSynthesis' in window)) return null;
+    const voices = window.speechSynthesis.getVoices() || [];
+    if (!voices.length) return null;
 
-    const voices = window.speechSynthesis.getVoices();
-    const uzVoice = voices.find(v => v.lang.startsWith('uz') || v.lang.includes('uz_UZ'));
-    if (uzVoice) {
-        utterance.voice = uzVoice;
-    } else {
-        utterance.lang = 'uz-UZ';
+    // 1. Native Uzbek voice if available
+    let v = voices.find(v => v.lang && v.lang.toLowerCase().startsWith('uz'));
+    if (v) return { voice: v, lang: 'uz-UZ' };
+
+    // 2. Turkish voice (built into Chrome, Edge, Safari, Windows, Mac, Android, iOS)
+    // Closest Turkic phonetics: pure vowels, rolled r, matching consonants (ş, ç, ö, ğ)
+    v = voices.find(v => v.lang && v.lang.toLowerCase().startsWith('tr'));
+    if (v) return { voice: v, lang: 'tr-TR' };
+
+    // 3. Azerbaijani
+    v = voices.find(v => v.lang && v.lang.toLowerCase().startsWith('az'));
+    if (v) return { voice: v, lang: 'az-AZ' };
+
+    // 4. Kazakh / Tatar
+    v = voices.find(v => v.lang && (v.lang.toLowerCase().startsWith('kk') || v.lang.toLowerCase().startsWith('tt')));
+    if (v) return { voice: v, lang: v.lang };
+
+    // 5. Russian (good phonetic consonant/vowel accuracy)
+    v = voices.find(v => v.lang && v.lang.toLowerCase().startsWith('ru'));
+    if (v) return { voice: v, lang: 'ru-RU' };
+
+    // 6. Italian or Spanish (pure Latin vowels)
+    v = voices.find(v => v.lang && (v.lang.toLowerCase().startsWith('it') || v.lang.toLowerCase().startsWith('es')));
+    if (v) return { voice: v, lang: v.lang };
+
+    return null;
+}
+
+if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
+    window.speechSynthesis.onvoiceschanged = () => {
+        uzVoiceInfo = getBestUzbekVoice();
+    };
+}
+
+function prepareUzbekSpeech(text, targetLang) {
+    if (!text || typeof text !== 'string') return '';
+    let s = text.replace(/<[^>]+>/g, '').trim();
+
+    // Standardize to new Latin alphabet first
+    s = s.replace(/o['‘`ʻ’]/gi, m => m[0] === 'O' ? 'Ö' : 'ö')
+         .replace(/g['‘`ʻ’]/gi, m => m[0] === 'G' ? 'Ğ' : 'ğ')
+         .replace(/sh/gi, m => m[0] === 'S' ? 'Ş' : 'ş')
+         .replace(/ch/gi, m => m[0] === 'C' ? 'Ç' : 'ç');
+
+    const lang = (targetLang || 'tr-TR').toLowerCase();
+
+    if (lang.startsWith('uz')) {
+        return s;
     }
 
-    Owl.talk(utterance);
-    window.speechSynthesis.speak(utterance);
+    if (lang.startsWith('tr') || lang.startsWith('az')) {
+        return s
+            .replace(/q/g, 'k').replace(/Q/g, 'K')
+            .replace(/x/g, 'h').replace(/X/g, 'H')
+            .replace(/['‘`ʻ’]/g, '');
+    }
+
+    if (lang.startsWith('ru')) {
+        const cyr = {
+            'Ö': 'Ў', 'ö': 'ў', 'Ğ': 'Ғ', 'ğ': 'ғ', 'Ş': 'Ш', 'ş': 'ш', 'Ç': 'Ч', 'ç': 'ч',
+            'A': 'А', 'a': 'а', 'B': 'Б', 'b': 'б', 'D': 'Д', 'd': 'д', 'E': 'Е', 'e': 'е',
+            'F': 'Ф', 'f': 'ф', 'G': 'Г', 'g': 'г', 'H': 'Ҳ', 'h': 'ҳ', 'I': 'И', 'i': 'и',
+            'J': 'Ж', 'j': 'ж', 'K': 'К', 'k': 'к', 'L': 'Л', 'l': 'л', 'M': 'М', 'm': 'м',
+            'N': 'Н', 'n': 'н', 'O': 'О', 'o': 'о', 'P': 'П', 'p': 'п', 'Q': 'Қ', 'q': 'қ',
+            'R': 'Р', 'r': 'р', 'S': 'С', 's': 'с', 'T': 'Т', 't': 'т', 'U': 'У', 'u': 'у',
+            'V': 'В', 'v': 'в', 'X': 'Х', 'x': 'х', 'Y': 'Й', 'y': 'й', 'Z': 'З', 'z': 'з'
+        };
+        return s.split('').map(c => cyr[c] || c).join('');
+    }
+
+    // Default fallback
+    return s
+        .replace(/['‘`ʻ’]/g, '')
+        .replace(/ö/g, 'u').replace(/Ö/g, 'U')
+        .replace(/ğ/g, 'g').replace(/Ğ/g, 'G')
+        .replace(/ş/g, 'sh').replace(/Ş/g, 'Sh')
+        .replace(/ç/g, 'ch').replace(/Ç/g, 'Ch')
+        .replace(/x/g, 'h').replace(/X/g, 'H')
+        .replace(/q/g, 'k').replace(/Q/g, 'K');
 }
+
+function speakUzbek(text, slow = false) {
+    if (!text || !('speechSynthesis' in window)) return null;
+
+    window.speechSynthesis.cancel();
+
+    const info = uzVoiceInfo || getBestUzbekVoice();
+    const targetLang = info ? info.lang : 'tr-TR';
+    const spokenText = prepareUzbekSpeech(text, targetLang);
+
+    const utterance = new SpeechSynthesisUtterance(spokenText);
+    utterance.rate = slow ? 0.6 : 0.88;
+    utterance.pitch = 1.05;
+
+    if (info && info.voice) {
+        utterance.voice = info.voice;
+        utterance.lang = info.voice.lang;
+    } else {
+        utterance.lang = 'tr-TR';
+    }
+
+    if (window.Owl && typeof window.Owl.talk === 'function') {
+        window.Owl.talk(utterance);
+    }
+    window.speechSynthesis.speak(utterance);
+    return utterance;
+}
+window.speakUzbek = speakUzbek;
 
 document.addEventListener('DOMContentLoaded', () => {
     // 1. Mobile Menu Toggle
@@ -509,4 +607,241 @@ if (document.readyState === 'loading') {
 document.addEventListener('click', (e) => {
     const el = e.target.closest('[data-speak]');
     if (el) speakUzbek(el.dataset.speak);
+});
+
+// ============================================================================
+// Uzbek Speech Recognition & Pronunciation Evaluator (Web Speech API)
+// ============================================================================
+
+function normalizeSpeech(s) {
+    if (!s) return '';
+    s = String(s).toLowerCase().trim();
+    // Convert Cyrillic Uzbek to Latin if speech engine outputs Cyrillic
+    const cyr = {
+        'а': 'a', 'б': 'b', 'в': 'v', 'г': 'g', 'ғ': 'ğ', 'д': 'd',
+        'е': 'e', 'ё': 'yo', 'ж': 'j', 'з': 'z', 'и': 'i', 'й': 'y',
+        'к': 'k', 'қ': 'q', 'л': 'l', 'м': 'm', 'н': 'n', 'о': 'o',
+        'п': 'p', 'р': 'r', 'с': 's', 'т': 't', 'у': 'u', 'ў': 'ö',
+        'ф': 'f', 'х': 'h', 'ҳ': 'h', 'ч': 'ç', 'ш': 'ş', 'ъ': '',
+        'ь': '', 'э': 'e', 'ю': 'yu', 'я': 'ya'
+    };
+    for (const [c, l] of Object.entries(cyr)) {
+        s = s.replaceAll(c, l);
+    }
+    s = s.replace(/o['‘`ʻ’]/g, 'ö')
+         .replace(/g['‘`ʻ’]/g, 'ğ')
+         .replace(/sh/g, 'ş')
+         .replace(/ch/g, 'ç')
+         .replace(/x/g, 'h'); // smooth x and h for speech recognition
+    s = s.replace(/[.,!?«»"“”:;()\[\]\-_/\\]/g, '');
+    return s.replace(/\s+/g, ' ').trim();
+}
+
+function levenshteinDistance(a, b) {
+    const m = a.length, n = b.length;
+    if (m === 0) return n;
+    if (n === 0) return m;
+    const dp = Array.from({ length: m + 1 }, () => new Array(n + 1).fill(0));
+    for (let i = 0; i <= m; i++) dp[i][0] = i;
+    for (let j = 0; j <= n; j++) dp[0][j] = j;
+    for (let i = 1; i <= m; i++) {
+        for (let j = 1; j <= n; j++) {
+            const cost = a[i - 1] === b[j - 1] ? 0 : 1;
+            dp[i][j] = Math.min(
+                dp[i - 1][j] + 1,
+                dp[i][j - 1] + 1,
+                dp[i - 1][j - 1] + cost
+            );
+        }
+    }
+    return dp[m][n];
+}
+
+function evaluateSpeech(target, recognized, alternatives = []) {
+    const candidates = [recognized, ...alternatives].filter(Boolean);
+    const normTarget = normalizeSpeech(target);
+    if (!normTarget || !candidates.length) {
+        return { score: 0, ok: false, normTarget, recognized: recognized || '' };
+    }
+
+    let bestScore = 0;
+    let bestRec = recognized;
+
+    for (const cand of candidates) {
+        const normCand = normalizeSpeech(cand);
+        if (normCand === normTarget) {
+            bestScore = 100;
+            bestRec = cand;
+            break;
+        }
+        if (normCand.includes(normTarget) || normTarget.includes(normCand)) {
+            const sc = Math.min(100, Math.round((Math.min(normTarget.length, normCand.length) / Math.max(normTarget.length, normCand.length)) * 100) + 15);
+            if (sc > bestScore) {
+                bestScore = Math.min(98, sc);
+                bestRec = cand;
+            }
+        }
+        const maxLen = Math.max(normTarget.length, normCand.length);
+        const dist = levenshteinDistance(normTarget, normCand);
+        const sim = Math.max(0, (maxLen - dist) / maxLen);
+        const sc = Math.round(sim * 100);
+        if (sc > bestScore) {
+            bestScore = sc;
+            bestRec = cand;
+        }
+    }
+
+    const ok = bestScore >= 70; // 70% match is passing
+    return {
+        score: bestScore,
+        ok,
+        normTarget,
+        recognized: bestRec,
+        target
+    };
+}
+
+class SpeechChecker {
+    constructor() {
+        const SpeechRec = window.SpeechRecognition || window.webkitSpeechRecognition;
+        this.isSupported = !!SpeechRec;
+        this.activeRecognition = null;
+    }
+
+    start({ onStart, onResult, onError, onEnd, lang = 'uz-UZ' } = {}) {
+        if (!this.isSupported) {
+            onError && onError({ error: 'not_supported', message: 'Brauzeringiz ovoz tanishni qo‘llab-quvvatlamaydi' });
+            return null;
+        }
+        if (this.activeRecognition) {
+            try { this.activeRecognition.abort(); } catch (_) {}
+        }
+        const SpeechRec = window.SpeechRecognition || window.webkitSpeechRecognition;
+        const rec = new SpeechRec();
+        rec.lang = lang;
+        rec.continuous = false;
+        rec.interimResults = false;
+        rec.maxAlternatives = 5;
+
+        let hasResult = false;
+
+        rec.onstart = () => {
+            onStart && onStart();
+        };
+
+        rec.onresult = (event) => {
+            hasResult = true;
+            const alternatives = [];
+            for (let i = 0; i < event.results[0].length; i++) {
+                alternatives.push(event.results[0][i].transcript);
+            }
+            const primary = event.results[0][0].transcript;
+            onResult && onResult(primary, alternatives);
+        };
+
+        rec.onerror = (e) => {
+            onError && onError(e);
+        };
+
+        rec.onend = () => {
+            this.activeRecognition = null;
+            onEnd && onEnd(hasResult);
+        };
+
+        try {
+            rec.start();
+            this.activeRecognition = rec;
+        } catch (err) {
+            onError && onError(err);
+        }
+        return rec;
+    }
+
+    stop() {
+        if (this.activeRecognition) {
+            try { this.activeRecognition.stop(); } catch (_) {}
+            this.activeRecognition = null;
+        }
+    }
+}
+
+window.normalizeSpeech = normalizeSpeech;
+window.levenshteinDistance = levenshteinDistance;
+window.evaluateSpeech = evaluateSpeech;
+window.SpeechChecker = SpeechChecker;
+window.speechChecker = new SpeechChecker();
+
+function showSpeechToast(message, type = 'info', duration = 3500) {
+    let toast = document.getElementById('lingoSpeechToast');
+    if (!toast) {
+        toast = document.createElement('div');
+        toast.id = 'lingoSpeechToast';
+        toast.className = 'speech-toast';
+        document.body.appendChild(toast);
+    }
+    toast.className = 'speech-toast ' + (type === 'success' ? 'is-success' : type === 'retry' ? 'is-retry' : '');
+    toast.innerHTML = message;
+    toast.classList.add('show');
+    clearTimeout(toast._timer);
+    toast._timer = setTimeout(() => {
+        toast.classList.remove('show');
+    }, duration);
+}
+window.showSpeechToast = showSpeechToast;
+
+// Global handler for [data-check-speech] buttons
+document.addEventListener('click', (e) => {
+    const btn = e.target.closest('[data-check-speech]');
+    if (!btn) return;
+    e.stopPropagation();
+
+    const targetWord = btn.dataset.checkSpeech;
+    if (!targetWord) return;
+
+    if (!window.speechChecker.isSupported) {
+        showSpeechToast('⚠️ Brauzeringiz mikrofon orqali ovozni tanishni qo‘llab-quvvatlamaydi (Chrome yoki Edge tavsiya etiladi).', 'retry', 4000);
+        return;
+    }
+
+    if (btn.classList.contains('is-recording')) {
+        window.speechChecker.stop();
+        btn.classList.remove('is-recording');
+        return;
+    }
+
+    btn.classList.add('is-recording');
+    showSpeechToast('🎙️ Tinglanmoqda... «<strong>' + targetWord + '</strong>» deb ayting!', 'info', 5000);
+
+    window.speechChecker.start({
+        lang: 'uz-UZ',
+        onStart: () => {},
+        onResult: (primary, alternatives) => {
+            btn.classList.remove('is-recording');
+            const res = evaluateSpeech(targetWord, primary, alternatives);
+            if (res.ok) {
+                showSpeechToast(`🎉 <strong>${res.score}% moslik!</strong> Ajoyib talaffuz: «${res.recognized}»`, 'success', 3500);
+                if (typeof SoundFX !== 'undefined') SoundFX.coin();
+                const owl = document.querySelector('[data-owl]');
+                if (window.Owl && owl) Owl.play(owl, 'celebrate', 1500);
+            } else {
+                showSpeechToast(`🤔 <strong>${res.score}%</strong>. Eshitildi: «${res.recognized}». Qayta urinib ko‘ring!`, 'retry', 3500);
+                if (typeof SoundFX !== 'undefined') SoundFX.encourage();
+                const owl = document.querySelector('[data-owl]');
+                if (window.Owl && owl) Owl.play(owl, 'encourage', 1500);
+            }
+        },
+        onError: (err) => {
+            btn.classList.remove('is-recording');
+            if (err.error === 'no-speech') {
+                showSpeechToast('Ovoz eshitilmadi. Qayta urinib ko‘ring.', 'retry', 2500);
+            } else if (err.error === 'not-allowed') {
+                showSpeechToast('⚠️ Mikrofonga ruxsat berilmadi. Iltimos, brauzerda mikrofonni yoqing.', 'retry', 3500);
+            } else {
+                showSpeechToast('Xatolik yuz berdi. Qayta urinib ko‘ring.', 'retry', 2500);
+            }
+        },
+        onEnd: () => {
+            btn.classList.remove('is-recording');
+        }
+    });
 });
