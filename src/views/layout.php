@@ -43,11 +43,11 @@ $user = auth_user();
                     <a href="/parent-tips"><?= icon('users', '', 16) ?> <?= t('Qo‘llanma') ?></a>
                 <?php else: ?>
                     <!-- Guest Navigation -->
-                    <a href="/"><?= t('Bosh sahifa') ?></a>
-                    <a href="/#metodika"><?= t('Metodika') ?></a>
-                    <a href="/#darslar"><?= t('Darslar') ?></a>
-                    <a href="/parent-tips"><?= t('Qo‘llanma') ?></a>
-                    <a href="/register" class="nav-highlight"><?= t('Ro‘yxatdan o‘tish') ?></a>
+                    <a href="/"><?= icon('registon', '', 16) ?> <?= t('Bosh sahifa') ?></a>
+                    <a href="/#metodika"><?= icon('sparkles', '', 16) ?> <?= t('Metodika') ?></a>
+                    <a href="/#darslar"><?= icon('book-open', '', 16) ?> <?= t('Darslar') ?></a>
+                    <a href="/parent-tips"><?= icon('users', '', 16) ?> <?= t('Qo‘llanma') ?></a>
+                    <a href="/register" class="nav-highlight"><?= icon('arrow-right', '', 16) ?> <?= t('Ro‘yxatdan o‘tish') ?></a>
                 <?php endif; ?>
             </nav>
 

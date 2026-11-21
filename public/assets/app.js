@@ -274,6 +274,17 @@ document.addEventListener('DOMContentLoaded', () => {
         initMatchGame();
     }
 
+    // 5. Interactive Hero Mascot (Lingo) click reaction
+    const heroMascotWrap = document.getElementById('heroMascotWrap');
+    if (heroMascotWrap) {
+        heroMascotWrap.addEventListener('click', () => {
+            const owl = document.getElementById('heroOwlMascot') || heroMascotWrap.querySelector('.owl');
+            if (window.Owl && owl) Owl.play(owl, 'celebrate', 2200);
+            if (typeof SoundFX !== 'undefined') SoundFX.click();
+            speakUzbek('Assalomu alaykum! Men Lingoman — sizning o‘zbek tili do‘stingiz. Birga o‘rganamiz!');
+        });
+    }
+
     // 5. Initialize Interactive Scene Player
     if (document.getElementById('playerCanvas') && window.LESSON_VOCAB) {
         initScenePlayer();

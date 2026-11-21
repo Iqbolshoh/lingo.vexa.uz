@@ -1050,4 +1050,6 @@ return array (
   'Engliş' => 'English',
   'Talaffuzni tekshirish' => 'Check pronunciation',
   'Talaffuzni tekşiriş' => 'Check pronunciation',
+  'Lingo bilan gaplashish uchun bosing!' => 'Tap to chat with Lingo!',
+  'Lingo bilan gaplaşiş uçun bosing!' => 'Tap to chat with Lingo!',
 );
