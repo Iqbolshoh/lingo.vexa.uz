@@ -24,7 +24,7 @@ $user = auth_user();
     <header class="site-header">
         <div class="container header-inner">
             <a href="/" class="brand-logo">
-                <span class="logo-mark"><img src="/assets/mascot-owl.svg" alt="Boyo‘g‘li" width="40" height="46" class="brand-mascot-img"></span>
+                <span class="logo-mark"><img src="/assets/mascot-owl.svg" alt="Lingo" width="40" height="46" class="brand-mascot-img"></span>
                 <span class="logo-text">
                     <span class="brand-name">Lingo<span class="highlight">Uz</span></span>
                     <span class="brand-sub">by Gulomov’s Academy</span>
@@ -94,7 +94,7 @@ $user = auth_user();
     <div class="nav-drawer" id="mobileDrawer">
         <div class="drawer-header">
             <div class="drawer-brand">
-                <img src="/assets/mascot-owl.svg" alt="Boyo‘g‘li" width="36" height="41">
+                <img src="/assets/mascot-owl.svg" alt="Lingo" width="36" height="41">
                 <div>
                     <div class="brand-name" style="font-size:20px;">Lingo<span class="highlight">Uz</span></div>
                     <div class="brand-sub">Gulomov’s Academy</div>
@@ -224,7 +224,7 @@ $user = auth_user();
         <div class="container footer-inner">
             <div class="footer-col brand-col">
                 <div class="footer-logo">
-                    <img src="/assets/mascot-owl.svg" alt="Boyo‘g‘li" width="34" height="39" style="vertical-align:middle;">
+                    <img src="/assets/mascot-owl.svg" alt="Lingo" width="34" height="39" style="vertical-align:middle;">
                     <span class="brand-name">Lingo<span class="highlight">Uz</span></span>
                 </div>
                 <p class="footer-desc">

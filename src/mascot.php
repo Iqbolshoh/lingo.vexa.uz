@@ -3,7 +3,7 @@
 declare(strict_types=1);
 
 /**
- * Boyo‘g‘li — the LingoUz owl mascot. A layered inline SVG whose parts (eyes,
+ * Lingo — the LingoUz owl mascot. A layered inline SVG whose parts (eyes,
  * eyelids, beak, wings, scarf, book) are animated by CSS in mascot.css.
  *
  * States: idle, welcome, thinking, learning, success, celebrate, mistake,
@@ -11,7 +11,7 @@ declare(strict_types=1);
  */
 
 const MASCOT_STATES = ['idle', 'welcome', 'thinking', 'learning', 'success', 'celebrate', 'mistake', 'encourage', 'sleeping', 'speaking'];
-const MASCOT_NAME = 'Boyo‘g‘li';
+const MASCOT_NAME = 'Lingo';
 
 function mascot(string $state = 'idle', int $size = 120, string $class = '', array $attrs = []): string
 {

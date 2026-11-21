@@ -43,7 +43,7 @@
                 <div class="mascot-hero-wrap">
                     <?= mascot('welcome', 120, 'hero-owl') ?>
                     <div class="mascot-speech-bubble">
-                        <?= t('«Assalomu alaykum! Men <strong>Boyo‘g‘li</strong>man — sizning o‘zbek tili do‘stingiz. Birga o‘rganamiz!»') ?>
+                        <?= t('«Assalomu alaykum! Men <strong>Lingo</strong>man — sizning o‘zbek tili do‘stingiz. Birga o‘rganamiz!»') ?>
                     </div>
                 </div>
 
@@ -154,7 +154,7 @@
 
         <div class="feature-trio">
             <?php foreach ([
-                ['video', 'tone-lapis', t('Mikro-sahna'), t('3–5 daqiqalik qisqa sahna: Boyo‘g‘li iboralarni aytadi, siz takrorlaysiz.')],
+                ['video', 'tone-lapis', t('Mikro-sahna'), t('3–5 daqiqalik qisqa sahna: Lingo iboralarni aytadi, siz takrorlaysiz.')],
                 ['volume-2', 'tone-gold', t('Ovozli lug‘at'), t('Ag‘dariluvchi kartalar, talaffuz va misol gaplar — har biri ovoz bilan.')],
                 ['message-square', 'tone-emerald', t('O‘qish + «Bilasizmi?»'), t('Qisqa hikoya gapma-gap o‘qiladi, yonida o‘zbek madaniyati haqida qiziq fakt.')],
                 ['coins', 'tone-ruby', t('O‘yin va tangalar'), t('Juftlik o‘yini, tangalar, XP, ketma-ket kunlar olovi va nishonlar.')],

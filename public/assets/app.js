@@ -85,7 +85,7 @@ const SoundFX = {
 };
 
 /**
- * Boyo‘g‘li mascot API: Owl.set(el, state) switches the base state,
+ * Lingo mascot API: Owl.set(el, state) switches the base state,
  * Owl.play(el, state, ms) shows a state briefly and returns to the base one.
  */
 const Owl = {

@@ -48,7 +48,7 @@ $n = 0;
 
         <!-- 1. Scene / video -->
         <section class="l-section" id="sahna">
-            <div class="l-head"><span class="l-num"><?= ++$n ?></span><div><h2><?= t('Mikro-sahna') ?></h2><p><?= t('Boyo‘g‘li bilan birga iboralarni tinglang va baland ovozda takrorlang.') ?></p></div></div>
+            <div class="l-head"><span class="l-num"><?= ++$n ?></span><div><h2><?= t('Mikro-sahna') ?></h2><p><?= t('Lingo bilan birga iboralarni tinglang va baland ovozda takrorlang.') ?></p></div></div>
             <?php if (!empty($lesson['video_url'])): ?>
                 <div class="video-frame" style="margin-bottom:16px">
                     <?php if (preg_match('~\.(mp4|webm)$~i', $lesson['video_url'])): ?>
@@ -108,7 +108,7 @@ $n = 0;
         <!-- 3. Reading + culture -->
         <?php if ($hasReading): ?>
             <section class="l-section" id="oqish">
-                <div class="l-head"><span class="l-num"><?= ++$n ?></span><div><h2><?= t('O‘qish va madaniyat') ?></h2><p><?= t('Har bir gapni bosing — Boyo‘g‘li uni o‘qib beradi. So‘ng o‘zingiz baland ovozda takrorlang.') ?></p></div></div>
+                <div class="l-head"><span class="l-num"><?= ++$n ?></span><div><h2><?= t('O‘qish va madaniyat') ?></h2><p><?= t('Har bir gapni bosing — Lingo uni o‘qib beradi. So‘ng o‘zingiz baland ovozda takrorlang.') ?></p></div></div>
                 <div class="reading-card">
                     <?php if ($readingUz): ?>
                         <div class="reading-text<?= is_en() ? ' show-en' : '' ?>" id="readingText">

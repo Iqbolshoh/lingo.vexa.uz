@@ -50,7 +50,7 @@ FILES = {
     ],
     'src/views/not_found.php': [
         ('Sahifa topilmadi (404)', 'Page not found (404)'),
-        ('Boyo‘g‘li ham bu sahifani topa olmadi. U mavjud emas yoki boshqa manzilga ko‘chirilgan bo‘lishi mumkin.', 'Even Boyo‘g‘li couldn’t find this page. It may not exist or may have moved.'),
+        ('Lingo ham bu sahifani topa olmadi. U mavjud emas yoki boshqa manzilga ko‘chirilgan bo‘lishi mumkin.', 'Even Lingo couldn’t find this page. It may not exist or may have moved.'),
         ('Bosh sahifaga qaytish', 'Back to home'),
     ],
 }
