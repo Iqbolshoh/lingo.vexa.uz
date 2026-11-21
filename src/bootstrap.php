@@ -14,7 +14,6 @@ function db(): PDO
         if (!is_dir($dbDir)) {
             mkdir($dbDir, 0775, true);
         }
-        $isNew = !file_exists($dbPath) || filesize($dbPath) === 0;
         $pdo = new PDO('sqlite:' . $dbPath, null, null, [
             PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
             PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
@@ -24,13 +23,9 @@ function db(): PDO
         $pdo->exec('PRAGMA journal_mode = WAL');
         $pdo->exec('PRAGMA synchronous = NORMAL');
 
+        // migrate() also seeds an empty database (see seed_v2_content()).
         require_once __DIR__ . '/schema.php';
         migrate($pdo);
-
-        if ($isNew) {
-            require_once __DIR__ . '/content.php';
-            seed_initial_data($pdo);
-        }
     }
     return $pdo;
 }

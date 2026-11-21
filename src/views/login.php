@@ -16,9 +16,10 @@
                         <a href="<?= $currentUser['role'] === 'admin' ? '/admin' : '/dashboard' ?>" class="btn btn-primary btn-sm">
                             <?= icon('layers', '', 14) ?> Panelga o‘tish
                         </a>
-                        <a href="/logout" class="btn btn-outline btn-sm" style="color:#e11d48; border-color:#fecaca; background:#fff1f2;">
-                            <?= icon('log-out', '', 14) ?> Tizimdan chiqish
-                        </a>
+                        <form action="/logout" method="POST" class="inline-form">
+                            <?= csrf_field() ?>
+                            <button type="submit" class="btn btn-danger btn-sm"><?= icon('log-out', '', 14) ?> Tizimdan chiqish</button>
+                        </form>
                     </div>
                 </div>
             <?php endif; ?>

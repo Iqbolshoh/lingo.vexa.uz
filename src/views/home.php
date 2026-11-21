@@ -4,13 +4,13 @@
         <div class="hero-content">
             <div class="hero-badge">
                 <span class="badge-icon-wrap"><?= icon('registon', 'icon-registon-svg', 18) ?></span>
-                <span>AQShdagi 7–11 yoshli o‘zbek bolalari uchun</span>
+                <span>Bolalar, kattalar va sayyohlar — o‘zbek tilini o‘rganmoqchi bo‘lgan hamma uchun</span>
             </div>
             <h1 class="hero-title">
                 O‘zbek tili — <span class="text-gradient-registon">sehrli sarguzashtga</span> aylanadi!
             </h1>
             <p class="hero-subtitle">
-                Samarqand va Buxoro qadimiy madaniyati ruhida yaratilgan zamonaviy maktab. 3–5 daqiqalik qiziqarli darslar, interaktiv o‘yinlar, 80% testlar va haftalik jonli Zoom muloqotlari bilan o‘zbek tilida gapirishni odatga aylantiramiz.
+                Samarqand va Buxoro ruhida yaratilgan zamonaviy onlayn maktab. Xorijda ulg‘ayayotgan farzandingiz, O‘zbekistonga sayohatga otlangan mehmon yoki tilni noldan boshlagan katta yoshli — har kim 3–5 daqiqalik darslar, ovozli mashqlar va jonli muloqot bilan o‘zbekcha gapira boshlaydi.
             </p>
 
             <div class="hero-cta-group">
@@ -72,7 +72,7 @@
                     <?= icon('trophy', '', 18) ?> <span>80%+ ball — keyingi dars ochildi!</span>
                 </div>
                 <div class="floating-badge badge-zoom">
-                    <?= icon('video', '', 18) ?> <span>Shanba 11:00 AM EST • Zoom Live</span>
+                    <?= icon('video', '', 18) ?> <span>Jonli Zoom • Toshkent, Yevropa, AQSh vaqtida</span>
                 </div>
             </div>
         </div>
@@ -80,12 +80,37 @@
 </section>
 
 <!-- Muammo va Yechim -->
+<!-- Kimlar uchun -->
+<section class="section" id="kimlar-uchun">
+    <div class="container">
+        <div class="section-header text-center">
+            <span class="section-tag">KIMLAR UCHUN?</span>
+            <h2 class="section-title">O‘zbek tilini o‘rganmoqchi bo‘lgan hamma uchun</h2>
+            <p class="section-desc">Uzbek for everyone — kids, adults and travellers. Har bir so‘z ovoz va inglizcha tarjima bilan.</p>
+        </div>
+        <div class="feature-trio">
+            <?php foreach ([
+                ['users', 'tone-lapis', 'Xorijdagi oilalar', 'AQSh, Yevropa, Koreya yoki Rossiyada ulg‘ayayotgan farzandlar ona tilini o‘yin orqali o‘rganadi va buvisi bilan o‘zbekcha gaplashadi.'],
+                ['map-pin', 'tone-emerald', 'Sayyohlar', 'Samarqand, Buxoro, Xivaga sayohatdan oldin: bozorda savdolashish, taksi, choyxona va mehmonxona iboralari.'],
+                ['book-open', 'tone-gold', 'Kattalar', 'Ishi, oilasi yoki qiziqishi uchun o‘zbek tilini noldan boshlayotganlar — kuniga 5 daqiqa yetarli.'],
+                ['heart', 'tone-ruby', 'Madaniyat ixlosmandlari', 'Osh, non, Navro‘z, mehmondo‘stlik va qadimiy shaharlar — til bilan birga madaniyatni ham his qilasiz.'],
+            ] as [$ico, $tone, $h, $p]): ?>
+                <div class="feature-box <?= $tone ?>">
+                    <span class="stat-ico"><?= icon($ico, '', 22) ?></span>
+                    <h3><?= $h ?></h3>
+                    <p><?= $p ?></p>
+                </div>
+            <?php endforeach; ?>
+        </div>
+    </div>
+</section>
+
 <section class="section section-problem-solution" id="muammo">
     <div class="container">
         <div class="section-header text-center">
             <span class="section-tag">MUAMMO VA YECHIM</span>
-            <h2 class="section-title">Nega an’anaviy darslar xorijdagi bolalarga to‘g‘ri kelmaydi?</h2>
-            <p class="section-desc">AQShda ulg‘ayayotgan bolalar uchun maxsus ishlab chiqilgan ta’lim modeli</p>
+            <h2 class="section-title">Nega o‘zbek tilini o‘rganish qiyin tuyuladi?</h2>
+            <p class="section-desc">Bolalar, kattalar va sayyohlar uchun bir xil qulay, qisqa va qiziqarli ta’lim modeli</p>
         </div>
 
         <div class="problem-solution-grid">
@@ -96,9 +121,9 @@
                 <h3>Eski an’anaviy usul</h3>
                 <ul class="comparison-list">
                     <li>40–60 daqiqalik zerikarli grammatika qoidalari</li>
-                    <li>Bolaning diqqati 10 daqiqada tarqab ketadi</li>
-                    <li>Ona tili faqat darslikda qolib, nutqda ishlatilmaydi</li>
-                    <li>Ota-ona bolaning rivojlanishini kuzata olmaydi</li>
+                    <li>O‘zbek tili uchun sifatli onlayn materiallar juda kam</li>
+                    <li>Darslikdagi so‘zlar bozorda, taksida, mehmonda ishlatilmaydi</li>
+                    <li>O‘rganuvchi o‘z rivojlanishini ko‘ra olmaydi</li>
                 </ul>
             </div>
 
@@ -111,7 +136,7 @@
                     <li><strong>3–5 daqiqalik mikro-darslar:</strong> animatsiya va rangli tasvirlar</li>
                     <li><strong>O‘yinlashtirilgan mashqlar:</strong> so‘zlarni moslashtirish va flesh-kartalar</li>
                     <li><strong>80% Content Locking:</strong> mavzuni o‘zlashtirmay keyingi darsga o‘tmaydi</li>
-                    <li><strong>Haftalik Zoom Speaking Room:</strong> tengdoshlar bilan jonli suhbat</li>
+                    <li><strong>Hayotiy mavzular:</strong> oila, bozor, choyxona, sayohat, bayramlar va madaniyat</li>
                 </ul>
             </div>
         </div>
@@ -124,79 +149,84 @@
         <div class="section-header text-center">
             <span class="section-tag">TA’LIM METODIKASI</span>
             <h2 class="section-title">Darslar qanday tizimda o‘tiladi?</h2>
-            <p class="section-desc">Har bir dars takrorlanuvchi, qiziqarli va o‘lchanadigan 4 ta bosqichdan iborat:</p>
+            <p class="section-desc">Har bir dars — qisqa, qiziqarli va o‘lchanadigan bosqichlar zanjiri. O‘ynab o‘rganasiz, natijangizni har kuni ko‘rasiz.</p>
         </div>
 
-        <div class="steps-grid">
-            <div class="step-card registon-peshtaq-step">
-                <div class="step-num">1</div>
-                <div class="step-icon-svg"><?= icon('video', 'step-svg', 36) ?></div>
-                <h4>Mikro-Video</h4>
-                <p>3–5 daqiqalik professional ovozli video. Qisqa, lo‘nda va vizual tasvirlarga boy.</p>
-            </div>
-
-            <div class="step-card registon-peshtaq-step">
-                <div class="step-num">2</div>
-                <div class="step-icon-svg"><?= icon('book-open', 'step-svg', 36) ?></div>
-                <h4>Vizual Lug‘at</h4>
-                <p>5–10 ta yangi so‘z: rasm, inglizcha tarjimasi va to‘g‘ri ovozli talaffuzi bilan.</p>
-            </div>
-
-            <div class="step-card registon-peshtaq-step">
-                <div class="step-num">3</div>
-                <div class="step-icon-svg"><?= icon('sparkles', 'step-svg', 36) ?></div>
-                <h4>Interaktiv O‘yin</h4>
-                <p>So‘zlarni moslashtirish va flesh-kartalar orqali bilimni o‘yin bilan mustahkamlash.</p>
-            </div>
-
-            <div class="step-card registon-peshtaq-step">
-                <div class="step-num">4</div>
-                <div class="step-icon-svg"><?= icon('trophy', 'step-svg', 36) ?></div>
-                <h4>80% Test & Zoom</h4>
-                <p>Yakuniy testdan 80%+ to‘planganda keyingi dars ochiladi va haftalik Zoomda suhbatlashiladi.</p>
-            </div>
+        <div class="feature-trio">
+            <?php foreach ([
+                ['video', 'tone-lapis', 'Mikro-sahna', '3–5 daqiqalik qisqa sahna: Lingo iboralarni aytadi, siz takrorlaysiz.'],
+                ['volume-2', 'tone-gold', 'Ovozli lug‘at', 'Ag‘dariluvchi kartalar, talaffuz va misol gaplar — har biri ovoz bilan.'],
+                ['message-square', 'tone-emerald', 'O‘qish + «Bilasizmi?»', 'Qisqa hikoya gapma-gap o‘qiladi, yonida o‘zbek madaniyati haqida qiziq fakt.'],
+                ['coins', 'tone-ruby', 'O‘yin va tangalar', 'Juftlik o‘yini, tangalar, XP, ketma-ket kunlar olovi va nishonlar.'],
+                ['layers', 'tone-lapis', 'Englify uslubidagi mashq', 'Tinglab top, so‘z bloklaridan gap tuz, o‘zbekcha yoz — darhol javob bilan.'],
+                ['trophy', 'tone-gold', '80% test va diplom', 'Testdan 80%+ — keyingi dars ochiladi. Kurs oxirida diplom chop etiladi.'],
+                ['video', 'tone-emerald', 'Haftalik Zoom', 'Ustoz bilan jonli suhbat; vaqt Toshkent, Yevropa va AQSh bo‘yicha avtomatik ko‘rsatiladi.'],
+                ['shield-check', 'tone-ruby', 'Shaxsiy kuzatuv', 'Har bir dars natijasi va o‘zlashtirish foizi sizga ham, ustozga ham, ota-onaga ham ko‘rinadi.'],
+            ] as [$ico, $tone, $h, $p]): ?>
+                <div class="feature-box <?= $tone ?>">
+                    <span class="stat-ico"><?= icon($ico, '', 22) ?></span>
+                    <h3><?= $h ?></h3>
+                    <p><?= $p ?></p>
+                </div>
+            <?php endforeach; ?>
         </div>
     </div>
 </section>
 
-<!-- MVP Darslar rejasi -->
+<!-- Kurslar -->
 <section class="section section-lessons" id="darslar">
     <div class="container">
         <div class="section-header text-center">
-            <span class="section-tag">MVP KURSI REJASI</span>
-            <h2 class="section-title">Dastlabki 5 ta Asosiy Dars</h2>
-            <p class="section-desc">Pilot guruh uchun tanlab olingan eng muhim boshlang‘ich mavzular:</p>
+            <span class="section-tag">KURSLAR</span>
+            <h2 class="section-title">Nimalarni o‘rganasiz?</h2>
+            <p class="section-desc">Hozircha <?= (int) $stats['lessons'] ?> ta dars, <?= (int) $stats['words'] ?> ta so‘z va <?= (int) $stats['exercises'] ?> ta mashq. Ustozlar har hafta yangi darslar qo‘shib boradi.</p>
         </div>
 
-        <div class="lessons-grid">
-            <?php foreach ($lessons as $l): ?>
-                <div class="lesson-preview-card registon-border-top">
-                    <div class="lesson-card-header">
-                        <span class="lesson-num"><?= $l['sequence_number'] ?>-Dars</span>
-                        <span class="lesson-duration"><?= icon('clock', '', 14) ?> <?= $l['duration_min'] ?> daqiqa</span>
+        <div class="course-grid">
+            <?php foreach ($courses as $c): ?>
+                <div class="course-card theme-<?= e($c['theme']) ?>">
+                    <div class="course-cover">
+                        <div class="cover-tags"><span class="tag"><?= e($c['level']) ?></span><span class="tag"><?= count($c['lessons']) ?> dars</span></div>
+                        <div class="cover-ico"><?= icon($c['icon'], '', 26) ?></div>
+                        <h3><?= e($c['title']) ?></h3>
+                        <?php if (!empty($c['subtitle'])): ?><p><?= e($c['subtitle']) ?></p><?php endif; ?>
                     </div>
-                    <h3 class="lesson-title"><?= e($l['title']) ?></h3>
-                    <p class="lesson-en-title"><?= e($l['title_en']) ?></p>
-                    <p class="lesson-obj"><strong>Maqsad:</strong> <?= e($l['objective']) ?></p>
-
-                    <div class="lesson-footer">
-                        <?php if ($l['sequence_number'] == 1): ?>
-                            <span class="badge-status open"><?= icon('check-circle', '', 14) ?> Boshlash uchun ochiq</span>
-                        <?php else: ?>
-                            <span class="badge-status locked"><?= icon('lock', '', 14) ?> Testdan 80%+ talab etiladi</span>
-                        <?php endif; ?>
+                    <div class="course-body">
+                        <ul class="lock-list" style="margin-top:0">
+                            <?php foreach (array_slice($c['lessons'], 0, 6) as $l): ?>
+                                <li><?= icon($l['icon'], '', 16) ?> <span style="flex:1"><?= e($l['title']) ?></span> <span class="small muted"><?= (int) $l['duration_min'] ?> daq</span></li>
+                            <?php endforeach; ?>
+                        </ul>
+                        <a href="/register" class="btn btn-primary btn-block"><?= icon('play', '', 16) ?> Bepul boshlash</a>
                     </div>
                 </div>
             <?php endforeach; ?>
         </div>
+    </div>
+</section>
 
-        <div class="text-center" style="margin-top: 32px;">
-            <a href="/login" class="btn btn-secondary btn-lg">
-                <?= icon('layers', '', 18) ?> O‘quvchi kabineti orqali darslarni boshlash
-            </a>
+<?php if ($culture): ?>
+<!-- Madaniyat burchagi -->
+<section class="section" id="madaniyat">
+    <div class="container">
+        <div class="section-header text-center">
+            <span class="section-tag">MADANIYAT BURCHAGI</span>
+            <h2 class="section-title">Ildizlarini faxr bilan o‘rganadi</h2>
+            <p class="section-desc">Osh nega YUNESKO merosi? Nonni nega teskari qo‘ymaymiz? Navro‘z va Thanksgiving qanchalik o‘xshash? Ikki madaniyat — bitta ko‘prik.</p>
+        </div>
+        <div class="culture-strip">
+            <?php foreach ($culture as $l): ?>
+                <div class="culture-tile">
+                    <div class="ct-ico"><?= icon($l['icon'], '', 24) ?></div>
+                    <h3><?= e($l['title']) ?></h3>
+                    <div class="ct-en"><?= e($l['title_en']) ?></div>
+                    <p><?= e($l['culture_title'] ? $l['culture_title'] . ' — ' : '') ?><?= e(mb_strimwidth((string) $l['culture_note'], 0, 120, '…')) ?></p>
+                </div>
+            <?php endforeach; ?>
         </div>
     </div>
 </section>
+<?php endif; ?>
 
 <!-- Interaktiv namunaviy lug'at -->
 <section class="section section-demo-interactive">
@@ -210,7 +240,7 @@
 
             <div class="vocab-interactive-grid">
                 <?php foreach ($sampleVocab as $v): ?>
-                    <div class="vocab-demo-card" onclick="speakUzbek('<?= e($v['word_uz']) ?>')">
+                    <div class="vocab-demo-card" data-speak="<?= e($v['word_uz']) ?>" role="button" tabindex="0">
                         <div class="vocab-word"><?= e($v['word_uz']) ?></div>
                         <div class="vocab-phonetic">[<?= e($v['pronunciation']) ?>]</div>
                         <div class="vocab-en"><?= e($v['word_en']) ?></div>
@@ -232,7 +262,7 @@
                     <h2 class="section-title">9 Haftalik Sinov Bosqichi (0 so‘m)</h2>
                 </div>
                 <div class="pilot-badge-target">
-                    <?= icon('users', '', 16) ?> 5–10 nafar o‘quvchi (AQSh)
+                    <?= icon('users', '', 16) ?> Butun dunyodan o‘quvchilar
                 </div>
             </div>
 
@@ -247,23 +277,23 @@
                     <tbody>
                         <tr>
                             <td><strong>Maqsadli guruh</strong></td>
-                            <td>AQShda yashovchi 7–11 yoshli 5–10 nafar o‘zbek bolasi</td>
+                            <td>Xorijdagi o‘zbek oilalari farzandlari, O‘zbekistonga keladigan sayyohlar, o‘zbek tilini o‘rganayotgan kattalar</td>
                         </tr>
                         <tr>
                             <td><strong>O‘quv kontenti</strong></td>
-                            <td>Dastlabki 5 ta animatsion dars, vizual lug‘atlar, 80% testlar va Zoom suhbat</td>
+                            <td>3 ta kurs: «Ilk qadamlar», «Ikki madaniyat ko‘prigi», «Sayohatchilar uchun» — ovozli lug‘at, o‘qish, mashqlar, 80% testlar va Zoom suhbat</td>
                         </tr>
                         <tr>
                             <td><strong>Pilot qiymati</strong></td>
-                            <td><strong>0 so‘m (Mutlaqo bepul)</strong> — MVP sinovi va ota-onalar fikrini o‘rganish uchun</td>
+                            <td><strong>0 so‘m (Mutlaqo bepul)</strong> — MVP sinovi va o‘quvchilar fikrini o‘rganish uchun</td>
                         </tr>
                         <tr>
                             <td><strong>Xavfsizlik (COPPA)</strong></td>
-                            <td>Ortiqcha shaxsiy ma’lumotlar yig‘ilmaydi, ota-ona roziligi bilan xavfsiz boshqariladi</td>
+                            <td>Ortiqcha shaxsiy ma’lumotlar yig‘ilmaydi; 13 yoshgacha bolalar faqat ota-ona roziligi bilan qatnashadi</td>
                         </tr>
                         <tr>
                             <td><strong>Vaqt zonalari</strong></td>
-                            <td>AQSh vaqti bo‘yicha: EST (Nyu-York), CST (Chikago), MST, PST</td>
+                            <td>Toshkent, Yevropa va AQSh vaqtlari — jadval har bir o‘quvchiga o‘z vaqtida ko‘rsatiladi</td>
                         </tr>
                     </tbody>
                 </table>
@@ -277,17 +307,17 @@
     <div class="container">
         <div class="section-header text-center">
             <span class="section-tag">SAVOL-JAVOBLAR</span>
-            <h2 class="section-title">Ota-onalar nimalarni bilishi kerak?</h2>
+            <h2 class="section-title">Ko‘p beriladigan savollar</h2>
         </div>
 
         <div class="faq-list">
             <details class="faq-item">
                 <summary class="faq-question">
-                    <span>Farzandim o‘zbek tilida umuman gapirmaydi, kurs mos keladimi?</span>
+                    <span>Men o‘zbek tilini umuman bilmayman. Kurs mos keladimi?</span>
                     <span class="faq-toggle">+</span>
                 </summary>
                 <div class="faq-answer">
-                    <p>Ha, albatta! Dastlabki darslarimiz A0 darajasidagi, ya’ni tilni kam tushunadigan yoki gapirmaydigan bolalar uchun mo‘ljallangan. Barcha tushuntirishlar vizual belgilar, emojilar va inglizcha tarjimalari bilan birga beriladi.</p>
+                    <p>Ha, albatta! Kurslar A0 darajasidan — noldan boshlanadi. Har bir so‘z ovoz, talaffuz va inglizcha tarjima bilan beriladi. Bolalar ham, kattalar ham, O‘zbekistonga sayohatga kelayotgan xorijliklar ham bemalol o‘rganadi. Yes — every word comes with audio and an English translation.</p>
                 </div>
             </details>
 
@@ -297,7 +327,7 @@
                     <span class="faq-toggle">+</span>
                 </summary>
                 <div class="faq-answer">
-                    <p>Har bir dars oxirida 5 ta qiziqarli test savoli bo‘ladi. Bola kamida 4 tasiga (80%) to‘g‘ri javob bermaguncha, keyingi dars ochilmaydi. Agar bola 80% dan kam to‘plasa, tizim: «Yana bir bor urinib ko‘r!» deb darsni qayta o‘rganishni taklif qiladi.</p>
+                    <p>Har bir dars oxirida 5–7 ta qiziqarli savol bo‘ladi: tinglab topish, gap tuzish, so‘z yozish va variant tanlash. Kamida 80% to‘planmaguncha keyingi dars ochilmaydi. Agar 80% dan kam to‘plasa, tizim: «Yana bir bor urinib ko‘r!» deb darsni qayta o‘rganishni taklif qiladi.</p>
                 </div>
             </details>
 
@@ -340,8 +370,8 @@
         <div class="enrollment-card registon-portal-card">
             <div class="enrollment-header text-center">
                 <span class="section-tag tag-white">BEPUL PILOTGA QO‘SHILISH</span>
-                <h2 class="title-white">Farzandingizni LingoUz Pilotiga yozing!</h2>
-                <p class="desc-white">Kichik 5–10 kishilik pilot guruhimizga qo‘shiling va bepul o‘zbek tili ta’limini boshlang.</p>
+                <h2 class="title-white">LingoUz pilotiga qo‘shiling!</h2>
+                <p class="desc-white">O‘zingiz yoki farzandingiz uchun ariza qoldiring va o‘zbek tilini bepul o‘rganishni boshlang.</p>
             </div>
 
             <form action="/enroll" method="POST" class="enrollment-form">
@@ -349,12 +379,12 @@
 
                 <div class="form-row">
                     <div class="form-group">
-                        <label for="parent_name">Ota-onaning ismi-sharifi *</label>
+                        <label for="parent_name">Ismingiz (ariza beruvchi) *</label>
                         <input type="text" id="parent_name" name="parent_name" required placeholder="Masalan: Dilshod Qodirov">
                     </div>
 
                     <div class="form-group">
-                        <label for="parent_email">Ota-onaning elektron pochtasi (Email) *</label>
+                        <label for="parent_email">Elektron pochta (Email) *</label>
                         <input type="email" id="parent_email" name="parent_email" required placeholder="example@gmail.com">
                     </div>
                 </div>
@@ -366,18 +396,16 @@
                     </div>
 
                     <div class="form-group">
-                        <label for="child_name">Bolaning ismi yoki taxallusi (Nickname) *</label>
-                        <input type="text" id="child_name" name="child_name" required placeholder="Masalan: Jasurbek">
+                        <label for="child_name">O‘quvchi ismi (o‘zingiz yoki farzandingiz) *</label>
+                        <input type="text" id="child_name" name="child_name" required placeholder="Masalan: Jasurbek yoki Emily">
                     </div>
                 </div>
 
                 <div class="form-row three-cols">
                     <div class="form-group">
-                        <label for="child_age">Bolaning yoshi *</label>
+                        <label for="child_age">O‘quvchining yoshi *</label>
                         <select id="child_age" name="child_age">
-                            <option value="7-8">7–8 yosh</option>
-                            <option value="9-10" selected>9–10 yosh</option>
-                            <option value="11">11 yosh</option>
+                            <?php foreach (AGE_LABELS as $ageKey => $ageLabel): ?><option value="<?= $ageKey ?>" <?= $ageKey === '18+' ? 'selected' : '' ?>><?= $ageLabel ?></option><?php endforeach; ?>
                         </select>
                     </div>
 
@@ -391,37 +419,34 @@
                     </div>
 
                     <div class="form-group">
-                        <label for="timezone">AQSh Vaqt zonasi *</label>
+                        <label for="timezone">Vaqt zonasi *</label>
                         <select id="timezone" name="timezone">
-                            <option value="America/New_York (EST)">Eastern Time (New York, FL)</option>
-                            <option value="America/Chicago (CST)">Central Time (Chicago, TX)</option>
-                            <option value="America/Denver (MST)">Mountain Time (Denver)</option>
-                            <option value="America/Los_Angeles (PST)">Pacific Time (Los Angeles, WA)</option>
+                            <?php foreach (TIMEZONES as $tzKey => $tzLabel): ?><option value="<?= $tzKey ?>"><?= $tzLabel ?></option><?php endforeach; ?>
                         </select>
                     </div>
                 </div>
 
                 <div class="form-group">
-                    <label for="notes">Qo‘shimcha istaklaringiz yoki bolangiz haqida izoh:</label>
-                    <textarea id="notes" name="notes" rows="2" placeholder="Masalan: bolam multfilmlarni yaxshi ko‘radi..."></textarea>
+                    <label for="notes">Maqsadingiz yoki istaklaringiz:</label>
+                    <textarea id="notes" name="notes" rows="2" placeholder="Masalan: bahorda Samarqandga sayohat qilmoqchiman / farzandim buvisi bilan gaplashsin..."></textarea>
                 </div>
 
                 <div class="card-option-box">
                     <label class="checkbox-label">
                         <input type="checkbox" name="create_account" value="1" checked id="createAccountCheck" onchange="togglePasswordField()">
-                        <span><strong>Bolam uchun hoziroq bepul o‘quvchi profili yaratilsin</strong> (darhol darslarni boshlash uchun)</span>
+                        <span><strong>Hoziroq bepul o‘quvchi profili yaratilsin</strong> (darhol darslarni boshlash uchun)</span>
                     </label>
 
                     <div class="form-group" id="passwordGroup" style="margin-top: 12px;">
-                        <label for="password">Profil uchun parol yarating (kamida 4 ta belgi):</label>
-                        <input type="password" id="password" name="password" value="demo123" placeholder="Parol kiriting">
+                        <label for="password">Profil uchun parol yarating (kamida 6 ta belgi):</label>
+                        <input type="password" id="password" name="password" minlength="6" placeholder="Parol kiriting" autocomplete="new-password">
                     </div>
                 </div>
 
                 <div class="form-group consent-box">
                     <label class="checkbox-label">
                         <input type="checkbox" name="consent" value="1" required checked>
-                        <span>Men farzandimning qonuniy vasiysi sifatida LingoUz pilot dasturida ishtirok etishiga va <a href="/privacy" target="_blank" style="text-decoration:underline; color:#fff;">Maxfiylik siyosatiga</a> rozilik bildiraman. (COPPA)</span>
+                        <span><a href="/privacy" target="_blank" style="text-decoration:underline; color:#fff;">Maxfiylik siyosatiga</a> roziman. Agar farzandim uchun yozayotgan bo‘lsam, men uning ota-onasi yoki qonuniy vasiysiman.</span>
                     </label>
                 </div>
 

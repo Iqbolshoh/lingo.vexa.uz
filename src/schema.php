@@ -2,13 +2,20 @@
 
 declare(strict_types=1);
 
-const SCHEMA_VERSION = 1;
+const SCHEMA_VERSION = 3;
 
 function migrate(PDO $pdo): void
 {
     $pdo->exec('CREATE TABLE IF NOT EXISTS startup_meta (key TEXT PRIMARY KEY, value TEXT)');
     $version = (int) ($pdo->query("SELECT value FROM startup_meta WHERE key = 'schema_version'")->fetchColumn() ?: 0);
     if ($version >= SCHEMA_VERSION) {
+        return;
+    }
+    if ($version >= 1) {
+        if ($version < 2) {
+            migrate_v2($pdo);
+        }
+        migrate_v3($pdo);
         return;
     }
 
@@ -144,6 +151,87 @@ function migrate(PDO $pdo): void
         );
     ");
 
+    $pdo->prepare("INSERT OR REPLACE INTO startup_meta (key, value) VALUES ('schema_version', '1')")->execute();
+    $pdo->commit();
+
+    migrate_v2($pdo);
+    migrate_v3($pdo);
+}
+
+/**
+ * Version 2: multi-course catalogue, reading + culture blocks, Englify-style
+ * exercise types, persisted quiz details, XP/coins/streak and login throttling.
+ */
+function migrate_v2(PDO $pdo): void
+{
+    $pdo->beginTransaction();
+
+    $addColumn = static function (string $table, string $definition) use ($pdo): void {
+        $name = strtok($definition, ' ');
+        $columns = array_column($pdo->query("PRAGMA table_info({$table})")->fetchAll(PDO::FETCH_ASSOC), 'name');
+        if (!in_array($name, $columns, true)) {
+            $pdo->exec("ALTER TABLE {$table} ADD COLUMN {$definition}");
+        }
+    };
+
+    $addColumn('courses', "subtitle TEXT");
+    $addColumn('courses', "category TEXT NOT NULL DEFAULT 'language'");
+    $addColumn('courses', "icon TEXT NOT NULL DEFAULT 'book-open'");
+    $addColumn('courses', "theme TEXT NOT NULL DEFAULT 'lapis'");
+    $addColumn('courses', "sort_order INTEGER NOT NULL DEFAULT 0");
+    $addColumn('courses', "created_at DATETIME");
+
+    $addColumn('lessons', "course_id INTEGER NOT NULL DEFAULT 1");
+    $addColumn('lessons', "position INTEGER NOT NULL DEFAULT 0");
+    $addColumn('lessons', "reading_uz TEXT");
+    $addColumn('lessons', "reading_en TEXT");
+    $addColumn('lessons', "culture_title TEXT");
+    $addColumn('lessons', "culture_note TEXT");
+    $addColumn('lessons', "icon TEXT NOT NULL DEFAULT 'book-open'");
+
+    $addColumn('questions', "type TEXT NOT NULL DEFAULT 'choice'");
+    $addColumn('questions', "answer_text TEXT");
+    $addColumn('questions', "audio_text TEXT");
+
+    $addColumn('quiz_attempts', "details_json TEXT");
+    $addColumn('quiz_attempts', "xp_earned INTEGER NOT NULL DEFAULT 0");
+
+    $addColumn('lesson_progress', "game_done INTEGER NOT NULL DEFAULT 0");
+
+    $addColumn('users', "xp INTEGER NOT NULL DEFAULT 0");
+    $addColumn('users', "coins INTEGER NOT NULL DEFAULT 0");
+    $addColumn('users', "streak_days INTEGER NOT NULL DEFAULT 0");
+    $addColumn('users', "last_active_date TEXT");
+
+    $pdo->exec("
+        CREATE TABLE IF NOT EXISTS login_attempts (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            ip TEXT NOT NULL,
+            identifier TEXT,
+            created_at INTEGER NOT NULL
+        );
+        CREATE INDEX IF NOT EXISTS idx_login_attempts_ip ON login_attempts (ip, created_at);
+        CREATE INDEX IF NOT EXISTS idx_lessons_course ON lessons (course_id, position);
+        CREATE INDEX IF NOT EXISTS idx_attempts_user ON quiz_attempts (user_id, lesson_id);
+    ");
+
+    // Existing lessons belong to course 1 in their old order.
+    $pdo->exec("UPDATE lessons SET position = sequence_number WHERE position = 0");
+
+    require_once __DIR__ . '/content_v2.php';
+    seed_v2_content($pdo);
+
+    $pdo->prepare("INSERT OR REPLACE INTO startup_meta (key, value) VALUES ('schema_version', '2')")->execute();
+    $pdo->commit();
+}
+
+/** Version 3: audience is everyone (kids, adults, tourists) + the travellers course. */
+function migrate_v3(PDO $pdo): void
+{
+    $pdo->beginTransaction();
+    require_once __DIR__ . '/content_v2.php';
+    require_once __DIR__ . '/content_v3.php';
+    seed_v3_content($pdo);
     $pdo->prepare("INSERT OR REPLACE INTO startup_meta (key, value) VALUES ('schema_version', ?)")
         ->execute([(string) SCHEMA_VERSION]);
     $pdo->commit();

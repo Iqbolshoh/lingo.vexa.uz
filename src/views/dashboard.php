@@ -1,206 +1,133 @@
-<div class="dashboard-page">
+<?php
+$totalDone = array_sum(array_column($courseStates, 'completed'));
+$totalLessons = array_sum(array_column($courseStates, 'total'));
+$overall = $totalLessons > 0 ? (int) round($totalDone / $totalLessons * 100) : 0;
+$earned = array_filter($badges, fn ($b) => $b['earned_at']);
+?>
+<div class="pg">
     <div class="container">
-        <!-- Top Welcome Card -->
-        <div class="welcome-card registon-welcome">
-            <div class="welcome-text">
-                <span class="welcome-badge"><?= icon('registon', '', 14) ?> O‘quvchi Fazosi</span>
-                <h1 class="welcome-title">
-                    Assalomu alaykum, <span class="student-name"><?= e($user['display_name']) ?></span>!
-                </h1>
-                <p class="welcome-sub">
-                    Bugun qaysi yangi o‘zbekcha so‘zlarni o‘rganamiz? Sarguzashtni davom ettirishga tayyormisiz?
-                </p>
-
-                <div class="dashboard-cta-row">
-                    <a href="/lessons/<?= $nextLessonId ?>" class="btn btn-primary btn-lg pulse-hover">
-                        <?= icon('play', '', 18) ?> Darsni Davom Ettirish (<?= $nextLessonId ?>-Dars)
-                    </a>
-                    <a href="/live" class="btn btn-secondary btn-lg">
-                        <?= icon('video', '', 18) ?> Jonli Zoom Xonasi
-                    </a>
-                    <a href="/certificate" class="btn btn-accent btn-lg">
-                        <?= icon('award', '', 18) ?> Diplomingizni ko‘rish
-                    </a>
+        <section class="pg-hero">
+            <div class="hero-split">
+                <div>
+                    <span class="hero-chip"><?= icon('registon', '', 14) ?> O‘quvchi fazosi</span>
+                    <h1>Assalomu alaykum, <span style="color:#fde68a"><?= e($user['display_name']) ?></span>!</h1>
+                    <p>
+                        <?php if ($continue): ?>
+                            Bugun «<?= e($continue['title']) ?>» darsini davom ettiramiz. Har kuni 5 daqiqa — va o‘zbek tili sizniki!
+                        <?php else: ?>
+                            Barcha ochiq darslarni tugatdingiz. Ajoyib! Diplomingizni yuklab oling yoki darslarni takrorlang.
+                        <?php endif; ?>
+                    </p>
+                    <div class="xp-strip">
+                        <span class="xp-chip"><span class="ico-flame"><?= icon('flame', '', 18) ?></span> <?= $streak ?> kun <small>ketma-ket</small></span>
+                        <span class="xp-chip"><span class="ico-star"><?= icon('star', '', 18) ?></span> <?= (int) $user['xp'] ?> XP <small><?= $level['level'] ?>-daraja</small></span>
+                        <span class="xp-chip"><span class="ico-coins"><?= icon('coins', '', 18) ?></span> <?= (int) $user['coins'] ?> <small>tanga</small></span>
+                    </div>
+                    <div class="dashboard-cta-row" style="margin-top:20px">
+                        <?php if ($continue): ?>
+                            <a href="/lessons/<?= (int) $continue['id'] ?>" class="btn btn-gold btn-lg"><?= icon('play', '', 18) ?> Darsni davom ettirish</a>
+                        <?php endif; ?>
+                        <a href="/courses" class="btn btn-glass btn-lg"><?= icon('book-open', '', 18) ?> Barcha kurslar</a>
+                    </div>
+                </div>
+                <div class="ring" style="--p: <?= $overall ?>">
+                    <div><strong><?= $overall ?>%</strong><span>umumiy yo‘l</span></div>
                 </div>
             </div>
+        </section>
 
-            <div class="welcome-progress-box">
-                <div class="progress-circle-wrap">
-                    <div class="progress-stat-header">
-                        <span class="stat-number-big"><?= $progressPercent ?>%</span>
-                        <span class="stat-subtitle">Umumiy o‘zlashtirish</span>
-                    </div>
-                    <div class="progress-bar-track">
-                        <div class="progress-bar-fill" style="width: <?= $progressPercent ?>%;"></div>
-                    </div>
-                    <div class="progress-subtext">
-                        <strong><?= $completedCount ?></strong> / <?= $totalLessons ?> ta dars a’lo yakunlandi
-                    </div>
+        <div class="stat-grid">
+            <div class="stat-tile tone-lapis">
+                <span class="stat-ico"><?= icon('check-circle', '', 22) ?></span>
+                <div><strong><?= $totalDone ?> / <?= $totalLessons ?></strong><span>o‘zlashtirilgan darslar</span></div>
+            </div>
+            <div class="stat-tile tone-emerald">
+                <span class="stat-ico"><?= icon('book-open', '', 22) ?></span>
+                <div><strong><?= $wordsLearned ?></strong><span>o‘rganilgan so‘zlar</span></div>
+            </div>
+            <div class="stat-tile tone-gold">
+                <span class="stat-ico"><?= icon('star', '', 22) ?></span>
+                <div style="flex:1">
+                    <strong><?= $level['level'] ?>-daraja</strong><span><?= $level['into'] ?> / <?= $level['need'] ?> XP</span>
+                    <div class="bar bar-gold"><i style="width: <?= $level['percent'] ?>%"></i></div>
                 </div>
+            </div>
+            <div class="stat-tile tone-ruby">
+                <span class="stat-ico"><?= icon('award', '', 22) ?></span>
+                <div><strong><?= count($earned) ?> / <?= count($badges) ?></strong><span>nishonlar</span></div>
             </div>
         </div>
 
-        <div class="dashboard-grid">
-            <!-- Left: 5 Lessons List -->
-            <div class="dashboard-main-col">
-                <div class="section-heading-row">
-                    <h2><?= icon('book-open', '', 22) ?> Darslar Xaritasi (MVP Kursi)</h2>
-                    <span class="rule-hint">Qoida: Keyingi dars ochilishi uchun testdan <strong>80%+</strong> kerak!</span>
+        <div class="layout-main-side">
+            <div>
+                <h2 class="section-h mt-0"><?= icon('layers', '', 24) ?> Mening kurslarim <small>Keyingi dars uchun testdan 80%+ kerak</small></h2>
+                <div class="course-grid">
+                    <?php foreach ($courseStates as $cs): $c = $cs['course']; ?>
+                        <?php require __DIR__ . '/partials/course_card.php'; ?>
+                    <?php endforeach; ?>
                 </div>
 
-                <div class="lessons-track">
-                    <?php foreach ($lessons as $l): ?>
-                        <?php
-                            $status = $l['user_status'];
-                            $isCompleted = ($status === 'completed');
-                            $isAvailable = ($status === 'available');
-                            $isLocked = ($status === 'locked');
-                        ?>
-                        <div class="lesson-track-card status-<?= $status ?>">
-                            <div class="card-seq-col">
-                                <div class="seq-circle">
-                                    <?php if ($isCompleted): ?>
-                                        <?= icon('check-circle', 'icon-green', 22) ?>
-                                    <?php elseif ($isAvailable): ?>
-                                        <?= $l['sequence_number'] ?>
-                                    <?php else: ?>
-                                        <?= icon('lock', 'icon-gray', 20) ?>
-                                    <?php endif; ?>
-                                </div>
-                                <div class="seq-connector"></div>
-                            </div>
-
-                            <div class="card-body-col">
-                                <div class="card-meta">
-                                    <span class="meta-seq"><?= $l['sequence_number'] ?>-DARS</span>
-                                    <span class="meta-time"><?= icon('clock', '', 13) ?> <?= $l['duration_min'] ?> daqiqa</span>
-                                    <?php if ($isCompleted): ?>
-                                        <span class="badge-status completed">
-                                            <?= icon('trophy', '', 14) ?> A’lo natija: <?= $l['best_score'] ?>%
-                                        </span>
-                                    <?php elseif ($isAvailable): ?>
-                                        <span class="badge-status open">
-                                            <?= icon('sparkles', '', 14) ?> Boshlashga tayyor
-                                        </span>
-                                    <?php else: ?>
-                                        <span class="badge-status locked">
-                                            <?= icon('lock', '', 14) ?> Qulflangan
-                                        </span>
-                                    <?php endif; ?>
-                                </div>
-
-                                <h3 class="track-lesson-title"><?= e($l['title']) ?></h3>
-                                <p class="track-lesson-en"><?= e($l['title_en']) ?></p>
-                                <p class="track-lesson-obj"><?= icon('target', '', 14) ?> <?= e($l['objective']) ?></p>
-
-                                <div class="card-actions">
-                                    <?php if ($isCompleted): ?>
-                                        <a href="/lessons/<?= $l['id'] ?>" class="btn btn-sm btn-outline">
-                                            <?= icon('rotate-cw', '', 14) ?> Darsni qayta ko‘rish
-                                        </a>
-                                        <a href="/lessons/<?= $l['id'] ?>#test" class="btn btn-sm btn-secondary">
-                                            <?= icon('check-circle', '', 14) ?> Test natijalari
-                                        </a>
-                                    <?php elseif ($isAvailable): ?>
-                                        <a href="/lessons/<?= $l['id'] ?>" class="btn btn-sm btn-primary">
-                                            <?= icon('play', '', 14) ?> Darsni boshlash
-                                        </a>
-                                    <?php else: ?>
-                                        <div class="locked-note">
-                                            <span><?= icon('lock', '', 13) ?> Ushbu darsni ochish uchun avval <strong><?= $l['sequence_number'] - 1 ?>-dars</strong> testidan kamida <strong>80%</strong> to‘plang.</span>
-                                        </div>
-                                    <?php endif; ?>
-                                </div>
-                            </div>
+                <h2 class="section-h"><?= icon('target', '', 24) ?> So‘nggi natijalar</h2>
+                <div class="card">
+                    <?php if (!$recent): ?>
+                        <div class="empty">
+                            <div class="e-ico"><?= icon('sparkles', '', 26) ?></div>
+                            Hali test topshirilmagan. Birinchi darsni boshlang — natijalar shu yerda ko‘rinadi!
                         </div>
-                    <?php endforeach; ?>
+                    <?php else: ?>
+                        <div class="review-list">
+                            <?php foreach ($recent as $r): ?>
+                                <a class="review-item <?= $r['passed'] ? '' : 'is-wrong' ?>" href="/lessons/<?= (int) $r['lesson_id'] ?>/result?attempt=<?= (int) $r['id'] ?>" style="color:inherit">
+                                    <span class="mark"><?= $r['passed'] ? icon('check-circle', '', 18) : icon('rotate-cw', '', 16) ?></span>
+                                    <div class="row-between">
+                                        <div>
+                                            <h4><?= e($r['lesson_title']) ?></h4>
+                                            <div class="small muted"><?= e(substr((string) $r['created_at'], 0, 16)) ?> · +<?= (int) $r['xp_earned'] ?> XP</div>
+                                        </div>
+                                        <span class="heat heat-<?= mastery_label((int) $r['percent'])[1] ?>"><?= (int) $r['percent'] ?>%</span>
+                                    </div>
+                                </a>
+                            <?php endforeach; ?>
+                        </div>
+                    <?php endif; ?>
                 </div>
             </div>
 
-            <!-- Right: Badges & Live Session -->
-            <div class="dashboard-side-col">
-                <!-- Mascot Lingo Daily Tip -->
-                <div class="side-card mascot-tip-card">
-                    <div class="mascot-tip-inner">
-                        <img src="/assets/mascot-lingo.svg" alt="Lingo" width="68" height="68">
-                        <div>
-                            <div class="mascot-tip-title">Lingo maslahati <?= icon('sparkles', '', 14) ?></div>
-                            <p class="mascot-tip-text">
-                                «Har kuni 1 marta yangi so‘zning ovozini eshitib, baland ovozda qaytarsang, xotirang yanada mustahkam bo‘ladi!»
-                            </p>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Badges Box -->
-                <div class="side-card badges-card">
-                    <div class="side-card-header">
-                        <h3><?= icon('award', '', 18) ?> Yutuqlar va Nishonlar</h3>
-                        <span class="badge-count">
-                            <?= count(array_filter($badges, fn($b) => !empty($b['earned_at']))) ?> / <?= count($badges) ?>
-                        </span>
-                    </div>
-
-                    <div class="badges-list">
+            <aside class="stack-sm">
+                <div class="card tone-gold">
+                    <h3 class="card-title"><span class="icon-wrap"><?= icon('trophy', '', 20) ?></span> Nishonlar</h3>
+                    <div class="bdg-grid">
                         <?php foreach ($badges as $b): ?>
-                            <?php $isEarned = !empty($b['earned_at']); ?>
-                            <div class="badge-item <?= $isEarned ? 'earned' : 'locked' ?>" title="<?= e($b['description']) ?>">
-                                <div class="badge-icon-wrap">
-                                    <span class="badge-svg-wrap"><?= $isEarned ? icon('trophy', 'icon-gold', 22) : icon('lock', 'icon-gray', 20) ?></span>
-                                </div>
-                                <div class="badge-text-wrap">
-                                    <div class="badge-title">
-                                        <?= e($b['title']) ?>
-                                        <?php if ($isEarned): ?>
-                                            <span class="check-mark"><?= icon('check-circle', '', 14) ?></span>
-                                        <?php endif; ?>
-                                    </div>
-                                    <div class="badge-desc"><?= e($b['description']) ?></div>
-                                    <?php if ($isEarned): ?>
-                                        <div class="badge-date">Olingan: <?= date('d.m.Y', strtotime($b['earned_at'])) ?></div>
-                                    <?php else: ?>
-                                        <div class="badge-lock-hint"><?= icon('lock', '', 11) ?> Hali olinmadi</div>
-                                    <?php endif; ?>
-                                </div>
+                            <div class="bdg-item <?= $b['earned_at'] ? '' : 'is-off' ?>" title="<?= e($b['description']) ?>">
+                                <div class="b-ico"><?= icon($b['icon'], '', 20) ?></div>
+                                <strong><?= e($b['title']) ?></strong>
                             </div>
                         <?php endforeach; ?>
                     </div>
                 </div>
 
-                <!-- Live Zoom Session Reminder -->
-                <?php if ($liveSession): ?>
-                    <div class="side-card live-reminder-card">
-                        <div class="live-tag">
-                            <span class="pulse-dot red"></span>
-                            <span>JONLI MULOQOT XONASI</span>
+                <div class="card tone-lapis">
+                    <h3 class="card-title"><span class="icon-wrap"><?= icon('video', '', 20) ?></span> Jonli muloqot</h3>
+                    <?php if ($liveSession): ?>
+                        <strong style="display:block;color:var(--ink)"><?= e($liveSession['title']) ?></strong>
+                        <p class="small muted" style="margin:4px 0 10px"><?= e(uz_date($liveSession['starts_at'], normalize_timezone($user['timezone']))) ?></p>
+                        <div class="course-meta" style="margin-bottom:12px">
+                            <?php foreach (live_time_labels($liveSession['starts_at']) as $zone => $time): ?>
+                                <span class="tag tag-lapis"><?= e($time) ?> <?= e($zone) ?></span>
+                            <?php endforeach; ?>
                         </div>
-                        <h4><?= e($liveSession['title']) ?></h4>
-                        <p class="live-desc"><?= e($liveSession['description']) ?></p>
-
-                        <div class="live-meta-row">
-                            <div><?= icon('calendar', '', 14) ?> <strong>Sana:</strong> <?= date('d-M, H:i', strtotime($liveSession['starts_at'])) ?></div>
-                            <div><?= icon('clock', '', 14) ?> <strong>Vaqt:</strong> <?= e($liveSession['timezone']) ?></div>
-                            <div><?= icon('user', '', 14) ?> <strong>Ustoz:</strong> <?= e($liveSession['mentor_name']) ?></div>
-                        </div>
-
-                        <a href="/live" class="btn btn-accent btn-block" style="margin-top: 14px;">
-                            <?= icon('video', '', 16) ?> Zoom Xonasiga Kirish
-                        </a>
-                    </div>
-                <?php endif; ?>
-
-                <!-- User profile info -->
-                <div class="side-card profile-mini-card">
-                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
-                        <h4 style="margin:0;"><?= icon('user', '', 16) ?> O‘quvchi Ma’lumoti</h4>
-                        <a href="/profile" class="btn btn-xs btn-outline" title="Tahrirlash"><?= icon('settings', '', 12) ?> Sozlamalar</a>
-                    </div>
-                    <p><strong>Ism:</strong> <?= e($user['display_name']) ?></p>
-                    <p><strong>Yoshi:</strong> <?= e($user['age_band']) ?> yosh</p>
-                    <p><strong>Daraja:</strong> <?= e($user['language_level']) ?></p>
-                    <p><strong>Vaqt zonasi:</strong> <?= e($user['timezone']) ?></p>
+                        <a href="/live" class="btn btn-primary btn-sm btn-block"><?= icon('video', '', 16) ?> Xonaga o‘tish</a>
+                    <?php else: ?>
+                        <p class="small muted">Yaqin kunlarda jonli dars rejalashtirilmagan. Ustoz yangi vaqt e’lon qilganda shu yerda ko‘rinadi.</p>
+                    <?php endif; ?>
                 </div>
-            </div>
+
+                <div class="card tone-emerald">
+                    <h3 class="card-title"><span class="icon-wrap"><?= icon('heart', '', 20) ?></span> Kunlik maslahat</h3>
+                    <p class="small muted">Har kuni 5 daqiqa yetarli: o‘qish bo‘limidagi gaplarni baland ovozda takrorlang. Farzandingiz bilan o‘qisangiz — navbatma-navbat ayting.</p>
+                    <a href="/parent-tips" class="btn btn-ghost btn-sm btn-block" style="margin-top:10px">Samarali o‘rganish qo‘llanmasi</a>
+                </div>
+            </aside>
         </div>
     </div>
 </div>

@@ -2,21 +2,54 @@
 
 declare(strict_types=1);
 
-// LingoUz by Gulomov's Academy - Route Handlers
+// LingoUz by Gulomov's Academy - public and student route handlers
+
+function require_login(string $message = 'Iltimos, avval tizimga kiring.'): array
+{
+    if (!auth_check()) {
+        flash('info', $message);
+        redirect('/login');
+    }
+    return auth_user();
+}
+
+function not_found(string $title = 'Sahifa topilmadi'): void
+{
+    http_response_code(404);
+    render('not_found', ['title' => $title]);
+}
+
+function client_ip(): string
+{
+    return (string) ($_SERVER['REMOTE_ADDR'] ?? '0.0.0.0');
+}
 
 function page_home(): void
 {
     $pdo = db();
-    $stmt = $pdo->query('SELECT * FROM lessons ORDER BY sequence_number ASC LIMIT 5');
-    $lessons = $stmt->fetchAll();
-
-    // Sample lesson vocab for demo
-    $sampleVocab = $pdo->query('SELECT * FROM vocabulary WHERE lesson_id = 1 LIMIT 4')->fetchAll();
+    $courses = [];
+    foreach (published_courses() as $course) {
+        $course['lessons'] = course_lessons((int) $course['id']);
+        $courses[] = $course;
+    }
+    $sampleVocab = $pdo->query('SELECT v.* FROM vocabulary v JOIN lessons l ON l.id = v.lesson_id ORDER BY l.course_id, l.position, v.id LIMIT 4')->fetchAll();
+    $culture = $pdo->query("
+        SELECT l.* FROM lessons l JOIN courses c ON c.id = l.course_id
+        WHERE c.category = 'culture' AND c.status = 'published' AND l.status = 'published'
+        ORDER BY c.sort_order, l.position LIMIT 6
+    ")->fetchAll();
+    $stats = [
+        'lessons' => (int) $pdo->query("SELECT count(*) FROM lessons WHERE status = 'published'")->fetchColumn(),
+        'words' => (int) $pdo->query('SELECT count(*) FROM vocabulary')->fetchColumn(),
+        'exercises' => (int) $pdo->query('SELECT count(*) FROM questions')->fetchColumn(),
+    ];
 
     render('home', [
-        'title' => 'LingoUz by Gulomov’s Academy — Onlayn O‘zbek Tili Maktabi',
-        'lessons' => $lessons,
+        'title' => 'LingoUz — O‘zbek tilini hamma uchun onlayn o‘rganish | Learn Uzbek online',
+        'courses' => $courses,
         'sampleVocab' => $sampleVocab,
+        'culture' => $culture,
+        'stats' => $stats,
     ]);
 }
 
@@ -26,175 +59,83 @@ function action_enroll(): void
     $parentEmail = trim($_POST['parent_email'] ?? '');
     $parentPhone = trim($_POST['parent_phone'] ?? '');
     $childName = trim($_POST['child_name'] ?? '');
-    $childAge = trim($_POST['child_age'] ?? '7-8');
-    $languageLevel = trim($_POST['language_level'] ?? 'A0');
-    $timezone = trim($_POST['timezone'] ?? 'America/New_York (EST)');
-    $notes = trim($_POST['notes'] ?? '');
+    $childAge = in_array($_POST['child_age'] ?? '', AGE_BANDS, true) ? $_POST['child_age'] : '7-8';
+    $languageLevel = in_array($_POST['language_level'] ?? '', LEVELS, true) ? $_POST['language_level'] : 'A0';
+    $timezone = normalize_timezone($_POST['timezone'] ?? '');
+    $notes = mb_substr(trim($_POST['notes'] ?? ''), 0, 1000);
     $createAccount = !empty($_POST['create_account']);
-    $password = trim($_POST['password'] ?? '');
+    $password = (string) ($_POST['password'] ?? '');
 
-    if ($parentName === '' || $parentEmail === '' || $childName === '') {
-        flash('error', 'Iltimos, barcha majburiy maydonlarni to‘ldiring.');
+    if ($parentName === '' || $childName === '' || !filter_var($parentEmail, FILTER_VALIDATE_EMAIL)) {
+        flash('error', 'Iltimos, ota-ona ismi, to‘g‘ri email va bola ismini kiriting.');
+        redirect('/#ariza');
+    }
+    if ($createAccount && mb_strlen($password) < 6) {
+        flash('error', 'Akkaunt uchun parol kamida 6 ta belgidan iborat bo‘lishi kerak.');
         redirect('/#ariza');
     }
 
     $pdo = db();
-    $stmt = $pdo->prepare('
+    $pdo->prepare('
         INSERT INTO enrollments (parent_name, parent_email, parent_phone, child_name, child_age, language_level, timezone, notes, status)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, "pending")
-    ');
-    $stmt->execute([$parentName, $parentEmail, $parentPhone, $childName, $childAge, $languageLevel, $timezone, $notes]);
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, \'pending\')
+    ')->execute([mb_substr($parentName, 0, 120), $parentEmail, mb_substr($parentPhone, 0, 40), mb_substr($childName, 0, 80), $childAge, $languageLevel, $timezone, $notes]);
 
-    // Optionally create student user right away
-    if ($createAccount && $password !== '') {
+    if ($createAccount) {
         $existing = $pdo->prepare('SELECT id FROM users WHERE email = ?');
         $existing->execute([$parentEmail]);
         if (!$existing->fetch()) {
-            $hash = password_hash($password, PASSWORD_DEFAULT);
-            $userStmt = $pdo->prepare('
+            $pdo->prepare('
                 INSERT INTO users (role, display_name, email, password_hash, age_band, language_level, timezone)
-                VALUES ("student", ?, ?, ?, ?, ?, ?)
-            ');
-            $userStmt->execute([$childName, $parentEmail, $hash, $childAge, $languageLevel, $timezone]);
-            $newUserId = (int)$pdo->lastInsertId();
-
-            // Unlock Lesson 1
-            $pdo->prepare('INSERT OR IGNORE INTO lesson_progress (user_id, lesson_id, status) VALUES (?, 1, "available")')
-                ->execute([$newUserId]);
-            for ($i = 2; $i <= 5; $i++) {
-                $pdo->prepare('INSERT OR IGNORE INTO lesson_progress (user_id, lesson_id, status) VALUES (?, ?, "locked")')
-                    ->execute([$newUserId, $i]);
-            }
-
-            // Auto login
-            login_user(['id' => $newUserId, 'role' => 'student', 'display_name' => $childName, 'email' => $parentEmail]);
-            flash('success', 'Arizangiz qabul qilindi va o‘quvchi profilingiz yaratildi! Darslarni boshlashingiz mumkin.');
+                VALUES (\'student\', ?, ?, ?, ?, ?, ?)
+            ')->execute([mb_substr($childName, 0, 80), $parentEmail, password_hash($password, PASSWORD_DEFAULT), $childAge, $languageLevel, $timezone]);
+            login_user(['id' => (int) $pdo->lastInsertId()]);
+            flash('success', 'Arizangiz qabul qilindi va o‘quvchi profili yaratildi! Darslarni boshlashingiz mumkin.');
             redirect('/dashboard');
         }
+        flash('info', 'Ariza qabul qilindi. Bu email bilan akkaunt allaqachon bor — tizimga kiring.');
+        redirect('/login');
     }
 
-    flash('success', 'Rahmat! Arizangiz muvaffaqiyatli qabul qilindi. Tez orada mentorlarimiz siz bilan bog‘lanishadi.');
+    flash('success', 'Rahmat! Arizangiz qabul qilindi. Tez orada mentorlarimiz siz bilan bog‘lanishadi.');
     redirect('/#ariza');
 }
 
 function page_login(): void
 {
-    render('login', [
-        'title' => 'Tizimga kirish — LingoUz',
-        'currentUser' => auth_user(),
-    ]);
+    render('login', ['title' => 'Tizimga kirish — LingoUz', 'currentUser' => auth_user()]);
 }
 
 function action_login(): void
 {
     $identifier = trim($_POST['email'] ?? '');
-    $password = trim($_POST['password'] ?? '');
+    $password = (string) ($_POST['password'] ?? '');
+    $ip = client_ip();
 
+    if (login_throttled($ip)) {
+        flash('error', 'Juda ko‘p noto‘g‘ri urinish. 15 daqiqadan so‘ng qayta urinib ko‘ring.');
+        redirect('/login');
+    }
     if ($identifier === '' || $password === '') {
         flash('error', 'Email yoki login va parolni kiriting.');
         redirect('/login');
     }
 
     $altEmail = str_contains($identifier, '@') ? $identifier : $identifier . '@lingo.uz';
-
     $stmt = db()->prepare('SELECT * FROM users WHERE email = ? OR email = ?');
     $stmt->execute([$identifier, $altEmail]);
     $user = $stmt->fetch();
 
     if (!$user || !password_verify($password, $user['password_hash'])) {
+        record_login_failure($ip, $identifier);
         flash('error', 'Login yoki parol noto‘g‘ri kiritildi.');
         redirect('/login');
     }
 
+    clear_login_failures($ip);
     login_user($user);
-    flash('success', 'Xush kelibsiz, ' . e($user['display_name']) . '!');
+    flash('success', 'Xush kelibsiz, ' . $user['display_name'] . '!');
     redirect($user['role'] === 'admin' ? '/admin' : '/dashboard');
-}
-
-function page_profile(): void
-{
-    if (!auth_check()) {
-        redirect('/login');
-    }
-    $user = auth_user();
-    $pdo = db();
-
-    // User's quiz stats
-    $stats = $pdo->prepare('
-        SELECT count(*) as attempts,
-               sum(CASE WHEN passed = 1 THEN 1 ELSE 0 END) as passed_count,
-               max(percent) as best_percent
-        FROM quiz_attempts
-        WHERE user_id = ?
-    ');
-    $stats->execute([$user['id']]);
-    $userStats = $stats->fetch();
-
-    render('profile', [
-        'title' => 'Mening Profilim — ' . e($user['display_name']),
-        'user' => $user,
-        'stats' => $userStats,
-    ]);
-}
-
-function action_update_profile(): void
-{
-    if (!auth_check()) {
-        redirect('/login');
-    }
-    $user = auth_user();
-    $displayName = trim($_POST['display_name'] ?? '');
-    $ageBand = trim($_POST['age_band'] ?? $user['age_band']);
-    $languageLevel = trim($_POST['language_level'] ?? $user['language_level']);
-    $timezone = trim($_POST['timezone'] ?? $user['timezone']);
-    $newPassword = trim($_POST['new_password'] ?? '');
-
-    if ($displayName === '') {
-        flash('error', 'Ism yoki taxallus bo‘sh bo‘lishi mumkin emas.');
-        redirect('/profile');
-    }
-
-    $pdo = db();
-    if ($newPassword !== '') {
-        if (strlen($newPassword) < 4) {
-            flash('error', 'Yangi parol kamida 4 ta belgidan iborat bo‘lishi kerak.');
-            redirect('/profile');
-        }
-        $hash = password_hash($newPassword, PASSWORD_DEFAULT);
-        $stmt = $pdo->prepare('
-            UPDATE users SET display_name = ?, age_band = ?, language_level = ?, timezone = ?, password_hash = ?
-            WHERE id = ?
-        ');
-        $stmt->execute([$displayName, $ageBand, $languageLevel, $timezone, $hash, $user['id']]);
-    } else {
-        $stmt = $pdo->prepare('
-            UPDATE users SET display_name = ?, age_band = ?, language_level = ?, timezone = ?
-            WHERE id = ?
-        ');
-        $stmt->execute([$displayName, $ageBand, $languageLevel, $timezone, $user['id']]);
-    }
-
-    flash('success', 'Profilingiz muvaffaqiyatli yangilandi!');
-    redirect('/profile');
-}
-
-function action_admin_enrollment_status(): void
-{
-    if (!is_admin()) {
-        http_response_code(403);
-        exit('Ruxsat berilmagan');
-    }
-
-    $id = (int)($_POST['enrollment_id'] ?? 0);
-    $status = trim($_POST['status'] ?? 'pending');
-
-    if ($id > 0 && in_array($status, ['pending', 'contacted', 'approved', 'rejected'], true)) {
-        $stmt = db()->prepare('UPDATE enrollments SET status = ? WHERE id = ?');
-        $stmt->execute([$status, $id]);
-        flash('success', "Ariza #{$id} holati '{$status}' ga o‘zgartirildi.");
-    }
-
-    redirect('/admin');
 }
 
 function action_logout(): void
@@ -209,22 +150,20 @@ function page_register(): void
     if (auth_check()) {
         redirect('/dashboard');
     }
-    render('register', [
-        'title' => 'O‘quvchini ro‘yxatdan o‘tkazish — LingoUz',
-    ]);
+    render('register', ['title' => 'O‘quvchini ro‘yxatdan o‘tkazish — LingoUz']);
 }
 
 function action_register(): void
 {
     $displayName = trim($_POST['display_name'] ?? '');
     $email = trim($_POST['email'] ?? '');
-    $password = trim($_POST['password'] ?? '');
-    $ageBand = trim($_POST['age_band'] ?? '7-8');
-    $languageLevel = trim($_POST['language_level'] ?? 'A0');
-    $timezone = trim($_POST['timezone'] ?? 'America/New_York (EST)');
+    $password = (string) ($_POST['password'] ?? '');
+    $ageBand = in_array($_POST['age_band'] ?? '', AGE_BANDS, true) ? $_POST['age_band'] : '7-8';
+    $languageLevel = in_array($_POST['language_level'] ?? '', LEVELS, true) ? $_POST['language_level'] : 'A0';
+    $timezone = normalize_timezone($_POST['timezone'] ?? '');
 
-    if ($displayName === '' || $email === '' || strlen($password) < 4) {
-        flash('error', 'Iltimos, barcha maydonlarni to‘ldiring (parol kamida 4 belgi).');
+    if ($displayName === '' || !filter_var($email, FILTER_VALIDATE_EMAIL) || mb_strlen($password) < 6) {
+        flash('error', 'Ism, to‘g‘ri email va kamida 6 belgili parol kiriting.');
         redirect('/register');
     }
 
@@ -236,510 +175,375 @@ function action_register(): void
         redirect('/login');
     }
 
-    $hash = password_hash($password, PASSWORD_DEFAULT);
-    $stmt = $pdo->prepare('
+    $pdo->prepare('
         INSERT INTO users (role, display_name, email, password_hash, age_band, language_level, timezone)
-        VALUES ("student", ?, ?, ?, ?, ?, ?)
-    ');
-    $stmt->execute([$displayName, $email, $hash, $ageBand, $languageLevel, $timezone]);
-    $userId = (int)$pdo->lastInsertId();
+        VALUES (\'student\', ?, ?, ?, ?, ?, ?)
+    ')->execute([mb_substr($displayName, 0, 80), $email, password_hash($password, PASSWORD_DEFAULT), $ageBand, $languageLevel, $timezone]);
+    login_user(['id' => (int) $pdo->lastInsertId()]);
 
-    // Initialize progress: Lesson 1 open, 2-5 locked
-    $pdo->prepare('INSERT INTO lesson_progress (user_id, lesson_id, status) VALUES (?, 1, "available")')
-        ->execute([$userId]);
-    for ($i = 2; $i <= 5; $i++) {
-        $pdo->prepare('INSERT INTO lesson_progress (user_id, lesson_id, status) VALUES (?, ?, "locked")')
-            ->execute([$userId, $i]);
+    flash('success', 'Xush kelibsiz! Birinchi darsni boshlashga tayyormisiz?');
+    redirect('/dashboard');
+}
+
+function page_profile(): void
+{
+    $user = require_login();
+    $stats = db()->prepare('
+        SELECT count(*) AS attempts, sum(CASE WHEN passed = 1 THEN 1 ELSE 0 END) AS passed_count, max(percent) AS best_percent
+        FROM quiz_attempts WHERE user_id = ?
+    ');
+    $stats->execute([$user['id']]);
+
+    render('profile', [
+        'title' => 'Mening Profilim — ' . $user['display_name'],
+        'user' => $user,
+        'stats' => $stats->fetch(),
+    ]);
+}
+
+function action_update_profile(): void
+{
+    $user = require_login();
+    $displayName = trim($_POST['display_name'] ?? '');
+    $ageBand = in_array($_POST['age_band'] ?? '', AGE_BANDS, true) ? $_POST['age_band'] : $user['age_band'];
+    $languageLevel = in_array($_POST['language_level'] ?? '', LEVELS, true) ? $_POST['language_level'] : $user['language_level'];
+    $timezone = normalize_timezone($_POST['timezone'] ?? $user['timezone']);
+    $newPassword = (string) ($_POST['new_password'] ?? '');
+
+    if ($displayName === '' || mb_strlen($displayName) > 80) {
+        flash('error', 'Ism 1–80 belgidan iborat bo‘lishi kerak.');
+        redirect('/profile');
+    }
+    if ($newPassword !== '' && mb_strlen($newPassword) < 6) {
+        flash('error', 'Yangi parol kamida 6 ta belgidan iborat bo‘lishi kerak.');
+        redirect('/profile');
     }
 
-    $user = ['id' => $userId, 'role' => 'student', 'display_name' => $displayName, 'email' => $email];
-    login_user($user);
+    $pdo = db();
+    $pdo->prepare('UPDATE users SET display_name = ?, age_band = ?, language_level = ?, timezone = ? WHERE id = ?')
+        ->execute([$displayName, $ageBand, $languageLevel, $timezone, $user['id']]);
+    if ($newPassword !== '') {
+        $pdo->prepare('UPDATE users SET password_hash = ? WHERE id = ?')->execute([password_hash($newPassword, PASSWORD_DEFAULT), $user['id']]);
+    }
 
-    flash('success', 'Xush kelibsiz! Siz LingoUz akademiyasining ilk darsini boshlashga tayyorsiz!');
-    redirect('/dashboard');
+    flash('success', 'Profilingiz yangilandi!');
+    redirect('/profile');
 }
 
 function page_dashboard(): void
 {
-    if (!auth_check()) {
-        flash('info', 'Iltimos, avval tizimga kiring yoki demo akkaunt orqali sinab ko‘ring.');
-        redirect('/login');
-    }
-
-    $user = auth_user();
+    $user = require_login('Iltimos, avval tizimga kiring yoki demo akkaunt orqali sinab ko‘ring.');
     $pdo = db();
 
-    // Fetch all lessons
-    $lessons = $pdo->query('SELECT * FROM lessons ORDER BY sequence_number ASC')->fetchAll();
-
-    // Fetch progress for this user
-    $progStmt = $pdo->prepare('SELECT * FROM lesson_progress WHERE user_id = ?');
-    $progStmt->execute([$user['id']]);
-    $progressRows = $progStmt->fetchAll();
-
-    $progressMap = [];
-    foreach ($progressRows as $p) {
-        $progressMap[$p['lesson_id']] = $p;
-    }
-
-    // Determine state for each lesson
-    $completedCount = 0;
-    $firstPendingLessonId = null;
-
-    foreach ($lessons as &$l) {
-        $lid = $l['id'];
-        $p = $progressMap[$lid] ?? null;
-
-        if ($p && $p['status'] === 'completed') {
-            $l['user_status'] = 'completed';
-            $l['best_score'] = $p['best_score'];
-            $completedCount++;
-        } elseif ($lid === 1 || ($p && ($p['status'] === 'available' || $p['manual_override'] == 1))) {
-            $l['user_status'] = 'available';
-            $l['best_score'] = $p['best_score'] ?? 0;
-            if ($firstPendingLessonId === null) {
-                $firstPendingLessonId = $lid;
-            }
-        } else {
-            // Check if previous lesson was completed with >= 80%
-            $prevLid = $lid - 1;
-            $prevP = $progressMap[$prevLid] ?? null;
-            if ($prevP && $prevP['status'] === 'completed') {
-                $l['user_status'] = 'available';
-                $l['best_score'] = $p['best_score'] ?? 0;
-                if ($firstPendingLessonId === null) {
-                    $firstPendingLessonId = $lid;
-                }
-            } else {
-                $l['user_status'] = 'locked';
-                $l['best_score'] = 0;
-            }
+    $courseStates = array_map(fn ($c) => course_state($c, (int) $user['id'], is_admin()), published_courses());
+    $continue = null;
+    foreach ($courseStates as $cs) {
+        if ($cs['next']) {
+            $continue = $cs['next'] + ['course_title' => $cs['course']['title']];
+            break;
         }
     }
-    unset($l);
 
-    $totalLessons = count($lessons);
-    $progressPercent = $totalLessons > 0 ? (int)round(($completedCount / $totalLessons) * 100) : 0;
-    $nextLessonId = $firstPendingLessonId ?? 1;
-
-    // Badges
-    $badgesStmt = $pdo->prepare('
-        SELECT b.*, ub.earned_at
-        FROM badges b
+    $badges = $pdo->prepare('
+        SELECT b.*, ub.earned_at FROM badges b
         LEFT JOIN user_badges ub ON ub.badge_code = b.code AND ub.user_id = ?
-        ORDER BY b.id ASC
+        ORDER BY ub.earned_at IS NULL, b.id
     ');
-    $badgesStmt->execute([$user['id']]);
-    $badges = $badgesStmt->fetchAll();
+    $badges->execute([$user['id']]);
 
-    // Upcoming Live Speaking Session
-    $liveSession = $pdo->query('SELECT * FROM live_sessions WHERE status = "scheduled" ORDER BY starts_at ASC LIMIT 1')->fetch();
+    $recent = $pdo->prepare('
+        SELECT qa.*, l.title AS lesson_title FROM quiz_attempts qa JOIN lessons l ON l.id = qa.lesson_id
+        WHERE qa.user_id = ? ORDER BY qa.id DESC LIMIT 5
+    ');
+    $recent->execute([$user['id']]);
+
+    $words = $pdo->prepare("
+        SELECT count(*) FROM vocabulary v JOIN lesson_progress lp ON lp.lesson_id = v.lesson_id
+        WHERE lp.user_id = ? AND lp.status = 'completed'
+    ");
+    $words->execute([$user['id']]);
+
+    $liveSession = $pdo->query("SELECT * FROM live_sessions WHERE status = 'scheduled' AND starts_at >= datetime('now', '-1 hour') ORDER BY starts_at LIMIT 1")->fetch();
 
     render('dashboard', [
-        'title' => 'O‘quvchi Paneli — ' . e($user['display_name']),
+        'title' => 'O‘quvchi Paneli — ' . $user['display_name'],
         'user' => $user,
-        'lessons' => $lessons,
-        'completedCount' => $completedCount,
-        'totalLessons' => $totalLessons,
-        'progressPercent' => $progressPercent,
-        'nextLessonId' => $nextLessonId,
-        'badges' => $badges,
+        'courseStates' => $courseStates,
+        'continue' => $continue,
+        'badges' => $badges->fetchAll(),
+        'recent' => $recent->fetchAll(),
+        'wordsLearned' => (int) $words->fetchColumn(),
+        'streak' => current_streak($user),
+        'level' => xp_level((int) $user['xp']),
         'liveSession' => $liveSession,
     ]);
 }
 
+function page_courses(): void
+{
+    $user = require_login();
+    render('courses', [
+        'title' => 'Kurslar — LingoUz',
+        'courseStates' => array_map(fn ($c) => course_state($c, (int) $user['id'], is_admin()), published_courses()),
+    ]);
+}
+
+function page_course(int $courseId): void
+{
+    $user = require_login();
+    $course = find_course($courseId);
+    if (!$course || ($course['status'] !== 'published' && !is_admin())) {
+        not_found('Kurs topilmadi');
+        return;
+    }
+    render('course', [
+        'title' => $course['title'] . ' — LingoUz',
+        'state' => course_state($course, (int) $user['id'], is_admin()),
+    ]);
+}
+
+/** Loads a lesson the user may open, or redirects with a friendly reason. */
+function accessible_lesson(int $lessonId, array $user): ?array
+{
+    $lesson = find_lesson($lessonId);
+    if (!$lesson || ($lesson['status'] !== 'published' && !is_admin())) {
+        not_found('Dars topilmadi');
+        return null;
+    }
+    $state = lesson_state_for_user($lesson, (int) $user['id'], is_admin());
+    if ($state['user_status'] === 'locked') {
+        $prev = $state['prev_lesson'];
+        flash('error', 'Bu dars hali qulflangan. Avval «' . ($prev['title'] ?? 'oldingi dars') . '» testidan kamida ' . ($prev['passing_score'] ?? 80) . '% to‘plang.');
+        redirect('/courses/' . $lesson['course_id']);
+    }
+    return $state;
+}
+
 function page_lesson(int $lessonId): void
 {
-    if (!auth_check()) {
-        flash('info', 'Darsni ko‘rish uchun avval tizimga kiring.');
-        redirect('/login');
-    }
-
-    $user = auth_user();
-    $pdo = db();
-
-    // Lesson
-    $stmt = $pdo->prepare('SELECT * FROM lessons WHERE id = ?');
-    $stmt->execute([$lessonId]);
-    $lesson = $stmt->fetch();
-
+    $user = require_login('Darsni ko‘rish uchun avval tizimga kiring.');
+    $lesson = accessible_lesson($lessonId, $user);
     if (!$lesson) {
-        http_response_code(404);
-        render('not_found', ['title' => 'Dars topilmadi']);
         return;
     }
 
-    // PRD 8.1 - 8.3: 80% Content Locking Check
-    if ($lessonId > 1 && !is_admin()) {
-        $prevId = $lessonId - 1;
-        $prevProgStmt = $pdo->prepare('SELECT * FROM lesson_progress WHERE user_id = ? AND lesson_id = ?');
-        $prevProgStmt->execute([$user['id'], $prevId]);
-        $prevProg = $prevProgStmt->fetch();
-
-        // Check if current lesson has manual override by admin
-        $curProgStmt = $pdo->prepare('SELECT * FROM lesson_progress WHERE user_id = ? AND lesson_id = ?');
-        $curProgStmt->execute([$user['id'], $lessonId]);
-        $curProg = $curProgStmt->fetch();
-
-        $hasOverride = $curProg && !empty($curProg['manual_override']);
-        $prevPassed = $prevProg && $prevProg['status'] === 'completed' && $prevProg['best_score'] >= 80;
-
-        if (!$prevPassed && !$hasOverride) {
-            flash('error', "Ushbu dars qulflangan! Darsni ochish uchun avval {$prevId}-dars testidan kamida 80% to‘plashingiz kerak.");
-            redirect('/dashboard');
-            return;
-        }
-    }
-
-    // Vocabulary
-    $vocabStmt = $pdo->prepare('SELECT * FROM vocabulary WHERE lesson_id = ? ORDER BY id ASC');
-    $vocabStmt->execute([$lessonId]);
-    $vocabulary = $vocabStmt->fetchAll();
-
-    // Quiz and Questions
-    $quizStmt = $pdo->prepare('SELECT * FROM quizzes WHERE lesson_id = ?');
-    $quizStmt->execute([$lessonId]);
-    $quiz = $quizStmt->fetch();
-
-    $questions = [];
-    if ($quiz) {
-        $qStmt = $pdo->prepare('SELECT * FROM questions WHERE quiz_id = ? ORDER BY order_num ASC');
-        $qStmt->execute([$quiz['id']]);
-        $questions = $qStmt->fetchAll();
-        foreach ($questions as &$q) {
-            $q['options'] = json_decode($q['options_json'], true) ?: [];
-        }
-        unset($q);
-    }
-
-    // User's best score for this lesson
-    $curProgStmt = $pdo->prepare('SELECT * FROM lesson_progress WHERE user_id = ? AND lesson_id = ?');
-    $curProgStmt->execute([$user['id'], $lessonId]);
-    $currentProgress = $curProgStmt->fetch();
+    $vocab = db()->prepare('SELECT id, word_uz, word_en, pronunciation, example FROM vocabulary WHERE lesson_id = ? ORDER BY id');
+    $vocab->execute([$lessonId]);
+    $progress = user_progress_map((int) $user['id'])[$lessonId] ?? null;
+    $course = find_course((int) $lesson['course_id']);
 
     render('lesson', [
-        'title' => e($lesson['title']) . ' — LingoUz',
+        'title' => $lesson['title'] . ' — LingoUz',
         'lesson' => $lesson,
-        'vocabulary' => $vocabulary,
-        'quiz' => $quiz,
-        'questions' => $questions,
-        'currentProgress' => $currentProgress,
+        'course' => $course,
+        'lessonCount' => count(course_lessons((int) $lesson['course_id'])),
+        'vocabulary' => $vocab->fetchAll(),
+        'quiz' => lesson_quiz($lessonId),
+        'questions' => lesson_questions($lessonId),
+        'currentProgress' => $progress,
         'user' => $user,
     ]);
 }
 
 function action_submit_quiz(int $lessonId): void
 {
-    if (!auth_check()) {
-        flash('error', 'Iltimos, avval tizimga kiring.');
-        redirect('/login');
+    $user = require_login();
+    $lesson = accessible_lesson($lessonId, $user);
+    if (!$lesson) {
+        return;
     }
-
-    $user = auth_user();
     $pdo = db();
-
-    $quizStmt = $pdo->prepare('SELECT * FROM quizzes WHERE lesson_id = ?');
-    $quizStmt->execute([$lessonId]);
-    $quiz = $quizStmt->fetch();
-
-    if (!$quiz) {
-        flash('error', 'Test topilmadi.');
-        redirect('/dashboard');
+    $quiz = lesson_quiz($lessonId);
+    $questions = lesson_questions($lessonId);
+    if (!$questions) {
+        flash('error', 'Bu darsda hali test savollari yo‘q.');
+        redirect('/lessons/' . $lessonId);
     }
 
-    $qStmt = $pdo->prepare('SELECT * FROM questions WHERE quiz_id = ? ORDER BY order_num ASC');
-    $qStmt->execute([$quiz['id']]);
-    $questions = $qStmt->fetchAll();
-
-    $total = count($questions);
     $correct = 0;
     $details = [];
-
     foreach ($questions as $q) {
-        $submittedAns = isset($_POST['q_' . $q['id']]) ? (int)$_POST['q_' . $q['id']] : -1;
-        $isCorrect = ($submittedAns === (int)$q['correct_index']);
-        if ($isCorrect) {
-            $correct++;
-        }
-        $options = json_decode($q['options_json'], true) ?: [];
+        [$ok, $chosen, $right] = grade_question($q, $_POST['q_' . $q['id']] ?? null);
+        $correct += $ok ? 1 : 0;
         $details[] = [
+            'question_id' => (int) $q['id'],
+            'type' => $q['type'],
             'prompt' => $q['prompt'],
-            'chosen' => $options[$submittedAns] ?? 'Tanlanmadi',
-            'correct' => $options[$q['correct_index']] ?? '',
-            'is_correct' => $isCorrect,
+            'prompt_en' => $q['prompt_en'],
+            'chosen' => $chosen,
+            'correct' => $right,
+            'is_correct' => $ok,
             'explanation' => $q['explanation'],
         ];
     }
 
-    $percent = $total > 0 ? (int)round(($correct / $total) * 100) : 0;
-    $passed = $percent >= 80 ? 1 : 0;
+    $total = count($questions);
+    $percent = (int) round($correct / $total * 100);
+    $passScore = (int) $lesson['passing_score'];
+    $passed = $percent >= $passScore;
+    $wasCompleted = $lesson['user_status'] === 'completed';
 
-    // Save Quiz Attempt
-    $attStmt = $pdo->prepare('
-        INSERT INTO quiz_attempts (user_id, quiz_id, lesson_id, score, total, percent, passed)
-        VALUES (?, ?, ?, ?, ?, ?, ?)
-    ');
-    $attStmt->execute([$user['id'], $quiz['id'], $lessonId, $correct, $total, $percent, $passed]);
-    $attemptId = (int)$pdo->lastInsertId();
+    // XP: points per correct answer, a bonus the first time the lesson is passed.
+    $xp = $correct * XP_PER_CORRECT + ($passed && !$wasCompleted ? XP_PASS_BONUS : 0);
 
-    // Update Lesson Progress
-    $curProgStmt = $pdo->prepare('SELECT * FROM lesson_progress WHERE user_id = ? AND lesson_id = ?');
-    $curProgStmt->execute([$user['id'], $lessonId]);
-    $curProg = $curProgStmt->fetch();
+    $pdo->beginTransaction();
+    $pdo->prepare('
+        INSERT INTO quiz_attempts (user_id, quiz_id, lesson_id, score, total, percent, passed, details_json, xp_earned)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+    ')->execute([$user['id'], $quiz['id'], $lessonId, $correct, $total, $percent, $passed ? 1 : 0, json_encode($details, JSON_UNESCAPED_UNICODE), $xp]);
+    $attemptId = (int) $pdo->lastInsertId();
 
-    $newBest = max($percent, (int)($curProg['best_score'] ?? 0));
-    $newStatus = ($curProg && $curProg['status'] === 'completed') ? 'completed' : ($passed ? 'completed' : 'available');
-
-    $progUpsert = $pdo->prepare('
+    $status = ($wasCompleted || $passed) ? 'completed' : 'available';
+    $pdo->prepare('
         INSERT INTO lesson_progress (user_id, lesson_id, status, best_score, completed_at)
-        VALUES (?, ?, ?, ?, datetime("now"))
+        VALUES (?, ?, ?, ?, CASE WHEN ? = \'completed\' THEN datetime(\'now\') END)
         ON CONFLICT(user_id, lesson_id) DO UPDATE SET
             status = excluded.status,
-            best_score = excluded.best_score,
-            completed_at = CASE WHEN excluded.status = "completed" THEN datetime("now") ELSE completed_at END
-    ');
-    $progUpsert->execute([$user['id'], $lessonId, $newStatus, $newBest]);
+            best_score = MAX(best_score, excluded.best_score),
+            completed_at = COALESCE(completed_at, excluded.completed_at)
+    ')->execute([$user['id'], $lessonId, $status, $percent, $status]);
 
-    // If passed 80%, unlock the NEXT lesson automatically! (PRD 8.1 - 8.3)
+    $reward = reward_user((int) $user['id'], $xp);
+    $pdo->commit();
+
     if ($passed) {
-        $nextLessonId = $lessonId + 1;
-        if ($nextLessonId <= 5) {
-            $unlockStmt = $pdo->prepare('
-                INSERT INTO lesson_progress (user_id, lesson_id, status)
-                VALUES (?, ?, "available")
-                ON CONFLICT(user_id, lesson_id) DO UPDATE SET
-                    status = CASE WHEN status = "locked" THEN "available" ELSE status END
-            ');
-            $unlockStmt->execute([$user['id'], $nextLessonId]);
+        award_badge((int) $user['id'], 'smart_kid');
+        if ((int) $lesson['position'] === 1 && (int) $lesson['course_id'] === 1) {
+            award_badge((int) $user['id'], 'first_step');
         }
-
-        // Award Badges
-        $awardBadge = function (string $badgeCode) use ($pdo, $user) {
-            $pdo->prepare('INSERT OR IGNORE INTO user_badges (user_id, badge_code) VALUES (?, ?)')
-                ->execute([$user['id'], $badgeCode]);
-        };
-
-        if ($lessonId === 1) {
-            $awardBadge('first_step');
+        if ($percent === 100) {
+            award_badge((int) $user['id'], 'perfect_score');
         }
-        $awardBadge('smart_kid');
-
-        // Check if 3 lessons completed
-        $compCount = (int)$pdo->query("SELECT count(*) FROM lesson_progress WHERE user_id = {$user['id']} AND status = 'completed'")->fetchColumn();
-        if ($compCount >= 3) {
-            $awardBadge('halfway_hero');
+        $course = find_course((int) $lesson['course_id']);
+        if (($course['category'] ?? '') === 'culture') {
+            award_badge((int) $user['id'], 'culture_explorer');
         }
-        if ($compCount >= 5) {
-            $awardBadge('lingo_master');
+        $state = course_state($course, (int) $user['id']);
+        $allDone = (int) $pdo->query("SELECT count(*) FROM lesson_progress WHERE user_id = {$user['id']} AND status = 'completed'")->fetchColumn();
+        if ($allDone >= 3) {
+            award_badge((int) $user['id'], 'halfway_hero');
+        }
+        if ((int) $course['id'] === 1 && $state['completed'] === $state['total']) {
+            award_badge((int) $user['id'], 'lingo_master');
         }
     }
+    if ($reward['streak'] >= 3) {
+        award_badge((int) $user['id'], 'streak_3');
+    }
+    if ($reward['xp'] >= 500) {
+        award_badge((int) $user['id'], 'xp_500');
+    }
 
-    $_SESSION['last_quiz_result'] = [
-        'attempt_id' => $attemptId,
-        'lesson_id' => $lessonId,
-        'score' => $correct,
-        'total' => $total,
-        'percent' => $percent,
-        'passed' => (bool)$passed,
-        'details' => $details,
-    ];
+    redirect("/lessons/{$lessonId}/result?attempt={$attemptId}");
+}
 
-    redirect("/lessons/{$lessonId}/result");
+function action_game_complete(int $lessonId): void
+{
+    $user = require_login();
+    $lesson = accessible_lesson($lessonId, $user);
+    if (!$lesson) {
+        return;
+    }
+    $pdo = db();
+    $pdo->prepare('INSERT OR IGNORE INTO lesson_progress (user_id, lesson_id, status) VALUES (?, ?, \'available\')')->execute([$user['id'], $lessonId]);
+    $stmt = $pdo->prepare('UPDATE lesson_progress SET game_done = 1 WHERE user_id = ? AND lesson_id = ? AND game_done = 0');
+    $stmt->execute([$user['id'], $lessonId]);
+    $awarded = $stmt->rowCount() > 0 ? GAME_COINS : 0;
+    if ($awarded) {
+        reward_user((int) $user['id'], 5, $awarded);
+    }
+    json_response(['ok' => true, 'coins_awarded' => $awarded, 'coins' => (int) $pdo->query("SELECT coins FROM users WHERE id = {$user['id']}")->fetchColumn()]);
 }
 
 function page_quiz_result(int $lessonId): void
 {
-    if (!auth_check()) {
-        redirect('/login');
+    $user = require_login();
+    $lesson = find_lesson($lessonId);
+    if (!$lesson) {
+        not_found('Dars topilmadi');
+        return;
     }
-
-    $result = $_SESSION['last_quiz_result'] ?? null;
-    $lesson = db()->query("SELECT * FROM lessons WHERE id = {$lessonId}")->fetch();
-
-    if (!$result || (int)$result['lesson_id'] !== $lessonId) {
-        // Fallback to latest attempt
-        $stmt = db()->prepare('
-            SELECT * FROM quiz_attempts
-            WHERE user_id = ? AND lesson_id = ?
-            ORDER BY id DESC LIMIT 1
-        ');
-        $stmt->execute([auth_user()['id'], $lessonId]);
-        $latest = $stmt->fetch();
-        if ($latest) {
-            $result = [
-                'score' => $latest['score'],
-                'total' => $latest['total'],
-                'percent' => $latest['percent'],
-                'passed' => (bool)$latest['passed'],
-                'details' => [],
-            ];
-        } else {
-            redirect("/lessons/{$lessonId}");
-            return;
-        }
+    $attemptId = (int) ($_GET['attempt'] ?? 0);
+    $stmt = db()->prepare('
+        SELECT * FROM quiz_attempts WHERE user_id = ? AND lesson_id = ? AND (? = 0 OR id = ?)
+        ORDER BY id DESC LIMIT 1
+    ');
+    $stmt->execute([$user['id'], $lessonId, $attemptId, $attemptId]);
+    $attempt = $stmt->fetch();
+    if (!$attempt) {
+        redirect("/lessons/{$lessonId}");
     }
 
     render('quiz_result', [
         'title' => 'Test Natijasi — LingoUz',
         'lesson' => $lesson,
-        'result' => $result,
-        'nextLessonId' => $lessonId < 5 ? ($lessonId + 1) : null,
+        'course' => find_course((int) $lesson['course_id']),
+        'result' => [
+            'score' => (int) $attempt['score'],
+            'total' => (int) $attempt['total'],
+            'percent' => (int) $attempt['percent'],
+            'passed' => (bool) $attempt['passed'],
+            'xp' => (int) $attempt['xp_earned'],
+            'details' => json_decode((string) $attempt['details_json'], true) ?: [],
+        ],
+        'nextLesson' => next_lesson_in_course($lesson),
     ]);
 }
 
 function page_live(): void
 {
-    if (!auth_check()) {
-        flash('info', 'Jonli muloqot xonasiga kirish uchun avval ro‘yxatdan o‘ting.');
-        redirect('/login');
-    }
-
-    $user = auth_user();
-    $sessions = db()->query('SELECT * FROM live_sessions ORDER BY starts_at ASC')->fetchAll();
-
-    // Mark badge for visiting live room
-    db()->prepare('INSERT OR IGNORE INTO user_badges (user_id, badge_code) VALUES (?, "speaker")')
-        ->execute([$user['id']]);
+    $user = require_login('Jonli muloqot xonasiga kirish uchun avval tizimga kiring.');
+    $sessions = db()->query("
+        SELECT * FROM live_sessions WHERE status = 'scheduled' AND starts_at >= datetime('now', '-1 hour')
+        ORDER BY starts_at LIMIT 8
+    ")->fetchAll();
+    award_badge((int) $user['id'], 'speaker');
 
     render('live', [
-        'title' => 'Live Speaking Room (Zoom) — LingoUz',
+        'title' => 'Jonli Muloqot Xonasi (Zoom) — LingoUz',
         'sessions' => $sessions,
         'user' => $user,
     ]);
 }
 
-function page_admin(): void
-{
-    if (!is_admin()) {
-        http_response_code(403);
-        flash('error', 'Bu sahifaga faqat administratorlar kira oladi.');
-        redirect('/dashboard');
-        return;
-    }
-
-    $pdo = db();
-
-    // Students with progress
-    $students = $pdo->query('
-        SELECT u.*,
-               (SELECT count(*) FROM lesson_progress lp WHERE lp.user_id = u.id AND lp.status = "completed") as completed_lessons,
-               (SELECT max(score) FROM quiz_attempts qa WHERE qa.user_id = u.id) as max_score
-        FROM users u
-        WHERE u.role = "student"
-        ORDER BY u.id DESC
-    ')->fetchAll();
-
-    // Parent Enrollments
-    $enrollments = $pdo->query('SELECT * FROM enrollments ORDER BY id DESC')->fetchAll();
-
-    // Recent Quiz Attempts
-    $attempts = $pdo->query('
-        SELECT qa.*, u.display_name, l.title as lesson_title
-        FROM quiz_attempts qa
-        JOIN users u ON u.id = qa.user_id
-        JOIN lessons l ON l.id = qa.lesson_id
-        ORDER BY qa.id DESC LIMIT 20
-    ')->fetchAll();
-
-    // Lessons overview
-    $lessons = $pdo->query('SELECT * FROM lessons ORDER BY sequence_number ASC')->fetchAll();
-
-    render('admin', [
-        'title' => 'Loyiha Boshqaruvi (Admin Panel) — LingoUz',
-        'students' => $students,
-        'enrollments' => $enrollments,
-        'attempts' => $attempts,
-        'lessons' => $lessons,
-    ]);
-}
-
-function action_admin_unlock(): void
-{
-    if (!is_admin()) {
-        http_response_code(403);
-        exit('Ruxsat berilmagan');
-    }
-
-    $userId = (int)($_POST['user_id'] ?? 0);
-    $lessonId = (int)($_POST['lesson_id'] ?? 0);
-
-    if ($userId > 0 && $lessonId > 0) {
-        $pdo = db();
-        $stmt = $pdo->prepare('
-            INSERT INTO lesson_progress (user_id, lesson_id, status, manual_override)
-            VALUES (?, ?, "available", 1)
-            ON CONFLICT(user_id, lesson_id) DO UPDATE SET
-                status = "available",
-                manual_override = 1
-        ');
-        $stmt->execute([$userId, $lessonId]);
-        flash('success', "Foydalanuvchi ID {$userId} uchun {$lessonId}-dars muvaffaqiyatli ochildi (Manual Override).");
-    }
-
-    redirect('/admin');
-}
-
-function action_admin_export(): void
-{
-    if (!is_admin()) {
-        http_response_code(403);
-        exit('Ruxsat berilmagan');
-    }
-
-    $enrollments = db()->query('SELECT * FROM enrollments ORDER BY id DESC')->fetchAll();
-
-    header('Content-Type: text/csv; charset=utf-8');
-    header('Content-Disposition: attachment; filename="lingouz_enrollments_' . date('Y-m-d') . '.csv"');
-
-    $out = fopen('php://output', 'w');
-    // UTF-8 BOM for Excel compatibility
-    fprintf($out, chr(0xEF) . chr(0xBB) . chr(0xBF));
-    fputcsv($out, ['ID', 'Ota-ona Ismi', 'Email', 'Telefon', 'Bola Ismi', 'Yoshi', 'Darajasi', 'Vaqt Zonasi', 'Izoh', 'Holat', 'Sana']);
-
-    foreach ($enrollments as $e) {
-        fputcsv($out, [
-            $e['id'],
-            $e['parent_name'],
-            $e['parent_email'],
-            $e['parent_phone'] ?? '',
-            $e['child_name'],
-            $e['child_age'],
-            $e['language_level'],
-            $e['timezone'],
-            $e['notes'] ?? '',
-            $e['status'],
-            $e['created_at'],
-        ]);
-    }
-    fclose($out);
-    exit;
-}
-
 function page_privacy(): void
 {
-    render('privacy', [
-        'title' => 'Bolalar Maxfiyligi va Xavfsizlik Siyosati (COPPA) — LingoUz',
-    ]);
+    render('privacy', ['title' => 'Bolalar Maxfiyligi va Xavfsizlik Siyosati (COPPA) — LingoUz']);
 }
 
 function page_certificate(): void
 {
-    if (!auth_check()) {
-        flash('info', 'Sertifikatni ko‘rish uchun avval tizimga kiring.');
-        redirect('/login');
+    $user = require_login('Diplomni ko‘rish uchun avval tizimga kiring.');
+    $courseId = (int) ($_GET['course'] ?? 1);
+    $course = find_course($courseId);
+    if (!$course) {
+        not_found('Kurs topilmadi');
+        return;
     }
+    $state = course_state($course, (int) $user['id']);
+    if (($state['total'] === 0 || $state['completed'] < $state['total']) && !is_admin()) {
+        render('certificate_locked', [
+            'title' => 'Diplom hali yopiq — LingoUz',
+            'state' => $state,
+        ]);
+        return;
+    }
+    $completedAt = db()->prepare('
+        SELECT MAX(lp.completed_at) FROM lesson_progress lp JOIN lessons l ON l.id = lp.lesson_id
+        WHERE lp.user_id = ? AND l.course_id = ?
+    ');
+    $completedAt->execute([$user['id'], $courseId]);
 
-    $user = auth_user();
     render('certificate', [
-        'title' => 'O‘zbek Tili Bilimdoni Diplomi — ' . e($user['display_name']),
+        'title' => 'Diplom — ' . $user['display_name'],
         'student' => $user,
+        'course' => $course,
+        'state' => $state,
+        'completedAt' => $completedAt->fetchColumn() ?: date('Y-m-d'),
     ]);
 }
 
 function page_parent_tips(): void
 {
-    render('parent_tips', [
-        'title' => 'Ota-onalar uchun 5 ta Oltin Qoida — LingoUz',
-    ]);
+    render('parent_tips', ['title' => 'Samarali o‘rganish qo‘llanmasi — LingoUz']);
 }
-

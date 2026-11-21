@@ -7,7 +7,7 @@ $user = auth_user();
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?= e($title ?? 'LingoUz by Gulomov’s Academy') ?></title>
-    <meta name="description" content="AQShda yashovchi 7–11 yoshli o‘zbek bolalari uchun o‘yinlashtirilgan, interaktiv o‘zbek tili maktabi.">
+    <meta name="description" content="O‘zbek tilini o‘rganmoqchi bo‘lgan hamma uchun — bolalar, kattalar va sayyohlar. Ovozli lug‘at, mashqlar, madaniyat va jonli darslar. Learn Uzbek online.">
     <link rel="icon" type="image/svg+xml" href="/favicon.svg?v=1">
     <link rel="icon" type="image/x-icon" href="/favicon.ico?v=1">
     <link rel="apple-touch-icon" href="/favicon.svg?v=1">
@@ -15,6 +15,8 @@ $user = auth_user();
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="/assets/style.css?v=<?= filemtime(__DIR__ . '/../../public/assets/style.css') ?>">
+    <link rel="stylesheet" href="/assets/app-v3.css?v=<?= filemtime(__DIR__ . '/../../public/assets/app-v3.css') ?>">
+    <meta name="csrf-token" content="<?= e(csrf_token()) ?>">
 </head>
 <body class="registon-theme">
     <!-- Site Header -->
@@ -32,20 +34,19 @@ $user = auth_user();
             <nav class="main-nav desktop-nav">
                 <?php if ($user): ?>
                     <!-- Logged in (Student / Admin): Priority app navigation -->
-                    <a href="/dashboard" class="nav-pill"><?= icon('layers', '', 16) ?> Darslar Xaritasi</a>
+                    <a href="/dashboard" class="nav-pill"><?= icon('layers', '', 16) ?> Mening sahifam</a>
+                    <a href="/courses"><?= icon('book-open', '', 16) ?> Kurslar</a>
                     <a href="/live"><?= icon('video', '', 16) ?> Jonli Muloqot</a>
-                    <a href="/certificate" class="nav-cert"><?= icon('award', '', 16) ?> Diplom</a>
                     <?php if (is_admin()): ?>
                         <a href="/admin" class="nav-admin"><?= icon('shield-check', '', 16) ?> Admin</a>
                     <?php endif; ?>
-                    <a href="/parent-tips"><?= icon('book-open', '', 16) ?> Qo‘llanma</a>
-                    <a href="/">Bosh sahifa</a>
+                    <a href="/parent-tips"><?= icon('users', '', 16) ?> Qo‘llanma</a>
                 <?php else: ?>
                     <!-- Guest Navigation -->
                     <a href="/">Bosh sahifa</a>
                     <a href="/#metodika">Metodika</a>
                     <a href="/#darslar">Darslar</a>
-                    <a href="/parent-tips">Ota-onalarga</a>
+                    <a href="/parent-tips">Qo‘llanma</a>
                     <a href="/#ariza" class="nav-highlight">Pilotga ariza</a>
                 <?php endif; ?>
             </nav>
@@ -58,9 +59,12 @@ $user = auth_user();
                             <span class="user-avatar-icon"><?= icon('user', '', 16) ?></span>
                             <span class="user-name"><?= e($user['display_name']) ?></span>
                         </a>
-                        <a href="/logout" class="btn-header-logout" title="Tizimdan chiqish">
-                            <?= icon('log-out', '', 13) ?> <span>Chiqish</span>
-                        </a>
+                        <form action="/logout" method="POST" class="inline-form">
+                            <?= csrf_field() ?>
+                            <button type="submit" class="btn-header-logout" title="Tizimdan chiqish">
+                                <?= icon('log-out', '', 13) ?> <span>Chiqish</span>
+                            </button>
+                        </form>
                     </div>
                 <?php else: ?>
                     <a href="/login" class="btn btn-outline btn-sm desktop-only">Kirish</a>
@@ -105,7 +109,7 @@ $user = auth_user();
                 </div>
                 <div class="drawer-user-details">
                     <div class="drawer-user-name"><?= e($user['display_name']) ?></div>
-                    <div class="drawer-user-role"><?= strtoupper(e($user['role'])) ?> • <a href="/profile">Sozlamalar</a> • <a href="/logout" style="color:var(--ruby); font-weight:700;">Chiqish</a></div>
+                    <div class="drawer-user-role"><?= $user['role'] === 'admin' ? 'Administrator' : 'O‘quvchi' ?> • <a href="/profile">Sozlamalar</a></div>
                 </div>
             </div>
         <?php endif; ?>
@@ -115,15 +119,15 @@ $user = auth_user();
                 <div class="drawer-section-label">O‘quv Xonasi</div>
                 <a href="/dashboard" class="drawer-link active">
                     <span class="drawer-icon"><?= icon('layers', '', 18) ?></span>
-                    <span>O‘quvchi Paneli (Darslar)</span>
+                    <span>Mening sahifam</span>
+                </a>
+                <a href="/courses" class="drawer-link">
+                    <span class="drawer-icon"><?= icon('book-open', '', 18) ?></span>
+                    <span>Kurslar va darslar</span>
                 </a>
                 <a href="/live" class="drawer-link">
                     <span class="drawer-icon"><?= icon('video', '', 18) ?></span>
                     <span>Zoom Jonli Muloqot</span>
-                </a>
-                <a href="/certificate" class="drawer-link">
-                    <span class="drawer-icon"><?= icon('award', '', 18) ?></span>
-                    <span>O‘zbek Tili Diplomi</span>
                 </a>
                 <?php if (is_admin()): ?>
                     <a href="/admin" class="drawer-link admin-link">
@@ -134,10 +138,6 @@ $user = auth_user();
                 <a href="/profile" class="drawer-link">
                     <span class="drawer-icon"><?= icon('settings', '', 18) ?></span>
                     <span>Profil Sozlamalari</span>
-                </a>
-                <a href="/logout" class="drawer-link drawer-logout-link" style="color:var(--ruby);">
-                    <span class="drawer-icon" style="color:var(--ruby);"><?= icon('log-out', '', 18) ?></span>
-                    <span style="font-weight:700;">Tizimdan Chiqish</span>
                 </a>
 
                 <div class="drawer-section-label" style="margin-top:16px;">Akademiya</div>
@@ -161,7 +161,7 @@ $user = auth_user();
                 </a>
                 <a href="/#darslar" class="drawer-link">
                     <span class="drawer-icon"><?= icon('book-open', '', 18) ?></span>
-                    <span>5 ta MVP Darsi</span>
+                    <span>Kurslar va darslar</span>
                 </a>
                 <a href="/parent-tips" class="drawer-link">
                     <span class="drawer-icon"><?= icon('users', '', 18) ?></span>
@@ -176,9 +176,10 @@ $user = auth_user();
 
         <div class="drawer-footer">
             <?php if ($user): ?>
-                <a href="/logout" class="btn btn-outline btn-block" style="color:var(--ruby); border-color:#fecaca; background:#fff1f2; font-weight:700;">
-                    <?= icon('log-out', '', 16) ?> Tizimdan Chiqish (Log out)
-                </a>
+                <form action="/logout" method="POST">
+                    <?= csrf_field() ?>
+                    <button type="submit" class="btn btn-danger btn-block"><?= icon('log-out', '', 16) ?> Tizimdan chiqish</button>
+                </form>
             <?php else: ?>
                 <div class="drawer-auth-buttons">
                     <a href="/login" class="btn btn-outline btn-block">Kirish</a>
@@ -223,9 +224,9 @@ $user = auth_user();
                     <span class="brand-name">Lingo<span class="highlight">Uz</span></span>
                 </div>
                 <p class="footer-desc">
-                    Gulomov’s Academy tashabbusi bilan AQShda yashovchi 7–11 yoshli o‘zbek bolalari uchun yaratilgan zamonaviy, interaktiv o‘zbek tili akademiyasi.
+                    Gulomov’s Academy tashabbusi: bolalar, kattalar va sayyohlar — o‘zbek tilini o‘rganmoqchi bo‘lgan hamma uchun zamonaviy, interaktiv onlayn akademiya.
                 </p>
-                <div class="badge-safe"><?= icon('shield-check', '', 16) ?> COPPA va bolalar xavfsizligi talablariga mos</div>
+                <div class="badge-safe"><?= icon('shield-check', '', 16) ?> Bolalar uchun ham xavfsiz (COPPA)</div>
             </div>
 
             <div class="footer-col">
@@ -233,16 +234,17 @@ $user = auth_user();
                 <ul>
                     <li><a href="/">Bosh sahifa</a></li>
                     <li><a href="/#metodika">Ta’lim metodikasi</a></li>
-                    <li><a href="/#darslar">5 ta darslik MVP rejasi</a></li>
+                    <li><a href="/#darslar">Kurslar va darslar</a></li>
+                    <li><a href="/#madaniyat">Madaniyat burchagi</a></li>
                     <li><a href="/#ariza">Pilot dasturiga yozilish</a></li>
                     <li><a href="/live">Zoom Speaking Room</a></li>
                 </ul>
             </div>
 
             <div class="footer-col">
-                <h4>Ota-onalar va Qoidalar</h4>
+                <h4>Qo‘llanma va Qoidalar</h4>
                 <ul>
-                    <li><a href="/parent-tips">Ota-onalar uchun qo‘llanma</a></li>
+                    <li><a href="/parent-tips">Samarali o‘rganish qo‘llanmasi</a></li>
                     <li><a href="/privacy">Maxfiylik siyosati (COPPA)</a></li>
                     <li><a href="/#faq">Ko‘p beriladigan savollar</a></li>
                     <li><a href="/login">Tizimga kirish</a></li>
@@ -251,10 +253,10 @@ $user = auth_user();
 
             <div class="footer-col contact-col">
                 <h4>Aloqa va Pilot</h4>
-                <p><?= icon('map-pin', '', 14) ?> Toshkent — Nyu-York</p>
+                <p><?= icon('map-pin', '', 14) ?> Toshkent — butun dunyo</p>
                 <p>gulomov@vexa.uz</p>
                 <p>Telegram: @gulomovs_academy</p>
-                <div class="timezones-pill">🇺🇸 EST • CST • MST • PST</div>
+                <div class="timezones-pill">Toshkent • London • Nyu-York • LA</div>
             </div>
         </div>
 

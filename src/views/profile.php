@@ -27,7 +27,7 @@
                     </div>
 
                     <div class="form-group">
-                        <label for="email">Ota-ona Emaili (O‘zgartirib bo‘lmaydi)</label>
+                        <label for="email">Email (o‘zgartirib bo‘lmaydi)</label>
                         <input type="email" id="email" value="<?= e($user['email']) ?>" disabled style="background:#f1f5f9; cursor:not-allowed;">
                     </div>
                 </div>
@@ -36,9 +36,7 @@
                     <div class="form-group">
                         <label for="age_band">Yoshi</label>
                         <select id="age_band" name="age_band">
-                            <option value="7-8" <?= $user['age_band'] === '7-8' ? 'selected' : '' ?>>7–8 yosh</option>
-                            <option value="9-10" <?= $user['age_band'] === '9-10' ? 'selected' : '' ?>>9–10 yosh</option>
-                            <option value="11" <?= $user['age_band'] === '11' ? 'selected' : '' ?>>11 yosh</option>
+                            <?php foreach (AGE_LABELS as $ageKey => $ageLabel): ?><option value="<?= $ageKey ?>" <?= $user['age_band'] === $ageKey ? 'selected' : '' ?>><?= $ageLabel ?></option><?php endforeach; ?>
                         </select>
                     </div>
 
@@ -54,10 +52,7 @@
                     <div class="form-group">
                         <label for="timezone">Vaqt Zonasi</label>
                         <select id="timezone" name="timezone">
-                            <option value="America/New_York (EST)" <?= str_contains($user['timezone'], 'New_York') ? 'selected' : '' ?>>Eastern (NY, FL)</option>
-                            <option value="America/Chicago (CST)" <?= str_contains($user['timezone'], 'Chicago') ? 'selected' : '' ?>>Central (Chicago, TX)</option>
-                            <option value="America/Denver (MST)" <?= str_contains($user['timezone'], 'Denver') ? 'selected' : '' ?>>Mountain (Denver)</option>
-                            <option value="America/Los_Angeles (PST)" <?= str_contains($user['timezone'], 'Los_Angeles') ? 'selected' : '' ?>>Pacific (LA, WA)</option>
+                            <?php foreach (TIMEZONES as $tzKey => $tzLabel): ?><option value="<?= $tzKey ?>" <?= normalize_timezone($user['timezone']) === $tzKey ? 'selected' : '' ?>><?= $tzLabel ?></option><?php endforeach; ?>
                         </select>
                     </div>
                 </div>

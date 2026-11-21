@@ -1,86 +1,64 @@
-<div class="result-page">
-    <div class="container">
-        <div class="result-card <?= $result['passed'] ? 'passed-card' : 'failed-card' ?>">
-            <div class="result-badge-icon">
-                <?= $result['passed'] ? icon('trophy', 'icon-gold', 56) : icon('sparkles', 'icon-amber', 56) ?>
+<?php
+$passScore = (int) $lesson['passing_score'];
+$passed = $result['passed'];
+?>
+<div class="pg">
+    <div class="container pg-narrow">
+        <section class="pg-hero result-hero <?= $passed ? '' : 'theme-gold' ?>">
+            <span class="hero-chip"><?= icon($passed ? 'trophy' : 'sparkles', '', 14) ?> <?= e($lesson['title']) ?></span>
+            <h1><?= $passed ? 'Barakalla! Dars o‘zlashtirildi' : 'Yaxshi harakat! Yana bir urinish' ?></h1>
+            <div class="ring" style="--p: <?= (int) $result['percent'] ?>">
+                <div><strong><?= (int) $result['percent'] ?>%</strong><span><?= (int) $result['score'] ?> / <?= (int) $result['total'] ?> to‘g‘ri</span></div>
             </div>
-
-            <h1 class="result-title">
-                <?= $result['passed'] ? 'Tabriklaymiz, ajoyib natija!' : 'Yaxshi harakat! Qaytadan urinib ko‘ring' ?>
-            </h1>
-
-            <div class="result-score-circle">
-                <span class="score-percent"><?= $result['percent'] ?>%</span>
-                <span class="score-fraction"><?= $result['score'] ?> / <?= $result['total'] ?> to‘g‘ri javob</span>
+            <div class="xp-strip" style="justify-content:center">
+                <span class="xp-chip"><span class="ico-star"><?= icon('star', '', 18) ?></span> +<?= (int) $result['xp'] ?> XP</span>
+                <span class="xp-chip"><?= icon('target', '', 16) ?> O‘tish bali: <?= $passScore ?>%</span>
             </div>
-
-            <div class="result-message-box">
-                <?php if ($result['passed']): ?>
-                    <p class="pass-text">
-                        Siz 80% qoidasini bajardingiz! <strong><?= e($lesson['title']) ?></strong> mavzusi to‘liq o‘zlashtirildi.
-                        <?php if ($nextLessonId): ?>
-                            <strong><?= $nextLessonId ?>-dars muvaffaqiyatli ochildi! <?= icon('unlock', '', 18) ?></strong>
-                        <?php else: ?>
-                            <strong>Barcha 5 ta MVP darslari tugatildi! Siz haqiqiy o‘zbek tili bilimdonisiz! <?= icon('award', '', 18) ?></strong>
-                        <?php endif; ?>
-                    </p>
+            <p style="margin:16px auto 0">
+                <?php if ($passed && $nextLesson): ?>
+                    «<?= e($nextLesson['title']) ?>» darsi ochildi!
+                <?php elseif ($passed): ?>
+                    Kursning barcha darslari tugadi — diplomingizni ko‘ring!
                 <?php else: ?>
-                    <p class="fail-text">
-                        Keyingi dars ochilishi uchun kamida <strong>80%</strong> to‘plashingiz kerak. Xafa bo‘lmang, dars so‘zlarini yana bir bor eshitib ko‘rib, qaytadan topshirishingiz mumkin!
-                    </p>
+                    Keyingi dars uchun <?= $passScore ?>% kerak. Lug‘at va mashqni yana bir ko‘rib chiqing — albatta uddalaysiz!
                 <?php endif; ?>
-            </div>
-
-            <div class="result-actions-row">
-                <?php if ($result['passed']): ?>
-                    <?php if ($nextLessonId): ?>
-                        <a href="/lessons/<?= $nextLessonId ?>" class="btn btn-primary btn-lg pulse-hover">
-                            Keyingi darsga o‘tish (<?= $nextLessonId ?>-Dars) <?= icon('arrow-right', '', 18) ?>
-                        </a>
-                    <?php endif; ?>
-                    <a href="/dashboard" class="btn btn-outline btn-lg">
-                        <?= icon('layers', '', 18) ?> O‘quvchi paneliga qaytish
-                    </a>
+            </p>
+            <div class="dashboard-cta-row" style="justify-content:center;margin-top:18px">
+                <?php if ($passed && $nextLesson): ?>
+                    <a href="/lessons/<?= (int) $nextLesson['id'] ?>" class="btn btn-gold btn-lg">Keyingi dars <?= icon('arrow-right', '', 18) ?></a>
+                <?php elseif ($passed): ?>
+                    <a href="/certificate?course=<?= (int) $course['id'] ?>" class="btn btn-gold btn-lg"><?= icon('award', '', 18) ?> Diplomni ochish</a>
                 <?php else: ?>
-                    <a href="/lessons/<?= $lesson['id'] ?>" class="btn btn-primary btn-lg">
-                        <?= icon('rotate-cw', '', 18) ?> Darsni qayta ko‘rish va qayta topshirish
-                    </a>
-                    <a href="/dashboard" class="btn btn-outline btn-lg">
-                        <?= icon('layers', '', 18) ?> O‘quvchi paneliga qaytish
-                    </a>
+                    <a href="/lessons/<?= (int) $lesson['id'] ?>#mashq" class="btn btn-gold btn-lg"><?= icon('rotate-cw', '', 18) ?> Mashq qilib, qayta topshirish</a>
                 <?php endif; ?>
+                <a href="/courses/<?= (int) $course['id'] ?>" class="btn btn-glass btn-lg"><?= icon('map-pin', '', 18) ?> Darslar yo‘li</a>
             </div>
-        </div>
+        </section>
 
-        <?php if (!empty($result['details'])): ?>
-            <div class="review-section">
-                <h2><?= icon('check-circle', '', 20) ?> Savollarni birgalikda tekshiramiz:</h2>
-                <div class="review-list">
-                    <?php foreach ($result['details'] as $idx => $d): ?>
-                        <div class="review-item <?= $d['is_correct'] ? 'review-correct' : 'review-incorrect' ?>">
-                            <div class="review-item-header">
-                                <span class="review-icon">
-                                    <?= $d['is_correct'] ? icon('check-circle', 'icon-green', 18) . ' To‘g‘ri' : icon('shield-check', 'icon-red', 18) . ' Noto‘g‘ri' ?>
-                                </span>
-                                <h4><?= $idx + 1 ?>. <?= e($d['prompt']) ?></h4>
-                            </div>
-
-                            <div class="review-answers">
-                                <div>Sizning javobingiz: <strong><?= e($d['chosen']) ?></strong></div>
-                                <?php if (!$d['is_correct']): ?>
-                                    <div class="correct-answer-text">To‘g‘ri javob: <strong><?= e($d['correct']) ?></strong></div>
+        <?php if ($result['details']): ?>
+            <h2 class="section-h"><?= icon('check-circle', '', 24) ?> Javoblar tahlili</h2>
+            <div class="review-list">
+                <?php foreach ($result['details'] as $i => $d): ?>
+                    <div class="review-item <?= $d['is_correct'] ? '' : 'is-wrong' ?>">
+                        <span class="mark"><?= $d['is_correct'] ? icon('check-circle', '', 18) : icon('rotate-cw', '', 16) ?></span>
+                        <div>
+                            <h4><?= $i + 1 ?>. <?= e($d['prompt']) ?></h4>
+                            <?php if (!empty($d['prompt_en']) && ($d['type'] ?? '') === 'build'): ?><div class="small muted"><?= e($d['prompt_en']) ?></div><?php endif; ?>
+                            <div class="ans">
+                                <?php if ($d['is_correct']): ?>
+                                    Javobingiz: <b class="ok"><?= e($d['chosen']) ?></b>
+                                <?php else: ?>
+                                    Javobingiz: <b class="no"><?= e($d['chosen']) ?></b> · To‘g‘risi: <b class="ok"><?= e($d['correct']) ?></b>
                                 <?php endif; ?>
                             </div>
-
-                            <?php if (!empty($d['explanation'])): ?>
-                                <div class="review-exp">
-                                    <em><?= e($d['explanation']) ?></em>
-                                </div>
-                            <?php endif; ?>
+                            <?php if (!empty($d['explanation'])): ?><div class="why"><?= icon('sparkles', '', 12) ?> <?= e($d['explanation']) ?></div><?php endif; ?>
                         </div>
-                    <?php endforeach; ?>
-                </div>
+                    </div>
+                <?php endforeach; ?>
             </div>
         <?php endif; ?>
     </div>
 </div>
+<?php if ($passed): ?>
+<script>document.addEventListener('DOMContentLoaded', () => { if (typeof triggerConfetti === 'function') triggerConfetti(); if (typeof SoundFX !== 'undefined') SoundFX.fanfare(); });</script>
+<?php endif; ?>

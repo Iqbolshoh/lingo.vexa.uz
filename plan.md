@@ -1,13 +1,13 @@
 # LingoUz by Gulomov’s Academy — plan.md
 
-AQShda yashovchi 7–11 yoshli o‘zbek bolalari uchun onlayn o‘zbek tili maktabi (startap).
+O‘zbek tilini o‘rganmoqchi bo‘lgan **hamma uchun** onlayn maktab (startap): xorijdagi o‘zbek oilalari farzandlari, kattalar, O‘zbekistonga keladigan sayyohlar va madaniyat ixlosmandlari (owner qarori 2026-11-21).
 URL: https://lingo.vexa.uz · Yo‘l: `/var/www/startups/lingo` · Oxirgi to‘liq tekshiruv: **2026-11-21**
 
 ---
 
 ## 0. Umumiy holat — qay darajada tayyor
 
-**Umumiy tayyorlik: ~67% (ishlaydigan MVP / pilot bosqichi).**
+**Umumiy tayyorlik: ~85% (v3: ko‘p kursli platforma + to‘liq admin panel, 2026-11-21).**
 Sayt to‘liq dinamik: barcha ma’lumot (foydalanuvchilar, darslar, lug‘at, testlar, natijalar, nishonlar, arizalar, jonli darslar) **SQLite** bazasida saqlanadi va har so‘rovda bazadan o‘qiladi. Hozircha SQLite yetarli (owner qarori 2026-11-21: MySQL/Laravel'ga ko‘chirish shart emas).
 
 | # | Qism | Tayyorlik | Holat |
@@ -166,3 +166,13 @@ Sinov jonli saytning nusxasida o‘tkazildi (jonli bazaga test yozuvi tushmadi).
 ## 6. O‘zgarishlar tarixi
 - **2026-11-18:** MVP, Registon dizayni, SVG ikonkalar, flip-kartalar, diplom, admin, mobil drawer, login/logout tuzatishlari (1–9 bosqichlar).
 - **2026-11-21:** To‘liq tekshiruv o‘tkazildi, plan.md qayta yozildi (haqiqiy holat, tayyorlik foizlari, topilgan 16 muammo). MySQL/Laravel’ga ko‘chirish bekor qilindi — SQLite qoladi. Dizayn sayqallandi (10-bosqich).
+
+- **2026-11-21 (v3):** Platforma qayta qurildi (SQLite qoldi, sxema v2 avtomatik migratsiya):
+  - **Ko‘p kurs:** `courses` (kategoriya, rang, belgi, tartib), darslar `course_id + position` bo‘yicha. Yangi kurs «Ikki madaniyat ko‘prigi» — 6 dars: osh, non/somsa/choy, Navro‘z, mehmondo‘stlik, Samarqand/Buxoro/Xiva, do‘ppi/atlas/o‘yinlar (O‘zbekiston ↔ Amerika solishtirish).
+  - **Dars ichida:** mikro-sahna/video, ovozli lug‘at, **O‘qish** (gapma-gap ovoz, tarjima tugmasi), **«Bilasizmi?»** madaniyat kartasi, juftlik o‘yini (tanga bazaga yoziladi, bir marta), **Englify uslubidagi mashq** (tinglab top, tarjima, yoz — darhol javob), **bosqichli test**.
+  - **Savol turlari:** `choice`, `listen` (TTS), `build` (so‘z bloklaridan gap), `fill` (yozish; o‘/oʻ/katta-kichik harf farqi yo‘q).
+  - **O‘zlashtirish (cloudnova’dan):** dars bo‘yicha eng yaxshi ball, kurs o‘zlashtirish %, natija sahifasida har savol tahlili (`quiz_attempts.details_json`), XP + daraja, ketma-ket kunlar, 9 nishon.
+  - **Admin panel (cloudnova uslubida):** kurslar CRUD → darslar CRUD (tartiblash, qoralama/ochiq, o‘tish bali, video, o‘qish matni, madaniyat fakti) → lug‘at CRUD → savollar CRUD (4 tur, tartiblash); o‘quvchilar ro‘yxati + kartasi (kurslar bo‘yicha o‘zlashtirish, qo‘lda ochish, parol, o‘chirish); baholar jurnali (heatmap); arizalar (filtr, holat, CSV); jonli darslar CRUD (vaqt 4 zonada); umumiy ko‘rinish (14 kun faolligi, eng qiyin savollar).
+  - **Tuzatilgan audit muammolari:** 1 (quiz POST qulfi), 2 (diplom faqat kurs tugaganda, kurs bo‘yicha), 3 (login: 15 daqiqada 5 xato), 4/6 (ariza/ro‘yxat/profil validatsiyasi, parol ≥6), 5 (jonli vaqt `starts_at` UTC → ET/CT/MT/PT, o‘tganlar yashiriladi), 7 (dars soni/qulf `position` + `passing_score`), 9 (xato sahifasida texnik matn yo‘q), 11 (logout faqat POST), 12, 13, 15.
+  - Fayllar: `src/learning.php` (domen), `src/admin.php`, `src/content_v2.php`, `src/views/admin/*`, `public/assets/app-v3.css`, `public/assets/lesson.js`.
+- **2026-11-21 (v3.1, sxema v3):** Auditoriya kengaytirildi — faqat AQShdagi 7–11 yoshli bolalar emas, **hamma uchun** (bolalar, kattalar, sayyohlar). Bosh sahifaga «Kimlar uchun?» bo‘limi; barcha matnlar (hero, muammo/yechim, pilot, FAQ, ariza formasi, ro‘yxatdan o‘tish, profil, diplom, jonli dars, qo‘llanma) neytral qilindi. Yosh guruhlari: 7–8, 9–10, 11, 12–17, 18+. Vaqt zonalari: Toshkent, London, CET, Moskva, Seul, AQShning 4 zonasi; jonli dars vaqti Toshkent/London/ET/CT/PT da ko‘rsatiladi. Yangi kurs **«Sayohatchilar uchun o‘zbek tili»** (6 dars: salom/rahmat, bozor, taksi, choyxona, mehmonxona/yordam/112, raqamlar-pul-vaqt), inglizcha izohlar bilan.

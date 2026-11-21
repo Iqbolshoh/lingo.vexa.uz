@@ -17,7 +17,7 @@
 
                 <div class="cert-header">
                     <div class="cert-institution">GULOMOV’S ACADEMY • LINGOUZ</div>
-                    <div class="cert-subtitle">AQSHDAGI O‘ZBEK TILI ONLAYN AKADEMIYASI</div>
+                    <div class="cert-subtitle">O‘ZBEK TILI ONLAYN AKADEMIYASI</div>
                 </div>
 
                 <div class="cert-title-wrap">
@@ -29,13 +29,13 @@
                     <p class="cert-presentation">Ushbu diplom faxr bilan topshiriladi:</p>
                     <div class="cert-student-name"><?= e($student['display_name']) ?></div>
                     <p class="cert-description">
-                        AQShda yashab, ona tili — o‘zbek tilini mehr bilan o‘rgangani, 5 ta asosiy mikro-darsni, interaktiv sinovlarni hamda 80% testlarini muvaffaqiyatli topshirib, <strong>A0–A1 Boshlang‘ich Darajasi</strong>ni a’lo baholar bilan tamomlagani uchun!
+                        O‘zbek tilini mehr bilan o‘rgangani, <strong>«<?= e($course['title']) ?>»</strong> kursining <?= (int) $state['total'] ?> ta darsini, interaktiv mashqlar va testlarni muvaffaqiyatli topshirib, o‘rtacha <strong><?= (int) $state['mastery'] ?>%</strong> natija bilan tamomlagani uchun!
                     </p>
                 </div>
 
                 <div class="cert-footer-row">
                     <div class="cert-col cert-date">
-                        <div class="cert-line"><?= date('d.m.Y') ?></div>
+                        <div class="cert-line"><?= e(date('d.m.Y', strtotime((string) $completedAt))) ?></div>
                         <span class="cert-label">Sana / Date</span>
                     </div>
 
@@ -53,7 +53,7 @@
                     </div>
                 </div>
 
-                <div class="cert-code">Sertifikat ID: LU-<?= date('Y') ?>-<?= str_pad((string)$student['id'], 4, '0', STR_PAD_LEFT) ?></div>
+                <div class="cert-code">Sertifikat ID: LU-<?= (int) $course['id'] ?>-<?= str_pad((string) $student['id'], 4, '0', STR_PAD_LEFT) ?></div>
             </div>
         </div>
     </div>

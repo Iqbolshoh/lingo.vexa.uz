@@ -225,7 +225,7 @@ function initMatchGame() {
     lockBoard = false;
     scoreCoins = 0;
 
-    const vocabSlice = window.LESSON_VOCAB.slice(0, 4);
+    const vocabSlice = [...window.LESSON_VOCAB].sort(() => Math.random() - 0.5).slice(0, 5);
     totalPairs = vocabSlice.length;
 
     const matchedEl = document.getElementById('matchedPairsCount');
@@ -301,6 +301,7 @@ function handleCardClick(card) {
                 SoundFX.match();
                 const winBanner = document.getElementById('gameWinBanner');
                 if (winBanner) winBanner.style.display = 'block';
+                document.dispatchEvent(new CustomEvent('lingo:game-won'));
             }, 300);
         }
     } else {
@@ -466,3 +467,9 @@ if (document.readyState === 'loading') {
 } else {
     initMobileDrawer();
 }
+
+// Any [data-speak] element reads its text aloud (the lesson page has its own richer handler).
+document.addEventListener('click', (e) => {
+    const el = e.target.closest('[data-speak]');
+    if (el) speakUzbek(el.dataset.speak);
+});
