@@ -1,96 +1,158 @@
-# 🇺🇿 LingoUz by Gulomov’s Academy — Mukammallashtirish va Rivojlantirish Rejasi (plan.md)
+# LingoUz by Gulomov’s Academy — plan.md
 
-Ushbu hujjat **LingoUz** platformasini AQShda yashovchi 7–11 yoshli o‘zbek bolalari uchun jahon darajasidagi, **Registon va qadimiy O‘zbekiston me’morchiligi ruhidagi nufuzli milliy dizayn** hamda to‘liq **haqiqiy backend (Laravel + SQLite)** asosida rivojlantirishning bosqichma-bosqich yo‘l xaritasidir.
-
----
-
-## 🏛️ 1. Dizayn Falsafasi: «Qadimiy Registon & Zamonamiy Ta’lim»
-
-1. **Registon va Samarqand Koshinlari (Majolica Azure & Gold):**
-   - Moviy gumbazlar va Registon maydonining lojuvard/feruza koshinlari (`#0284c7`, `#0c4a6e`, `#0ea5e9`).
-   - Tillakori madrasasining tillarang-oltin va Buxoro g‘ishtin qadimiy minoralari koloritlari (`#d97706`, `#b45309`, `#f59e0b`).
-   - Peshtaq va gumbazli arkali kartochkalar (`border-radius: 32px 32px 16px 16px` va moviy arkali hoshiyalar).
-2. **Professional Vektorli SVG Ikonkalar (No Emojis):**
-   - Barcha sahifalardagi nomutanosib emojilar butunlay chiqarib tashlandi.
-   - O‘rniga aniq, zamonaviy, professional SVG vektor ikonkalar tizimi (`src/icons.php` -> `icon(...)`) joriy qilindi.
-3. **Milliy Maskot — «Lingo»:**
-   - Chust do‘ppisini kiygan yoqimli do‘st SVG formatida platformaga integratsiya qilindi. Bolaga darslarda hamrohlik qiladi: *«Salom do‘stim! Men Lingoman. Birga o‘zbekcha o‘rganamiz!»*
+AQShda yashovchi 7–11 yoshli o‘zbek bolalari uchun onlayn o‘zbek tili maktabi (startap).
+URL: https://lingo.vexa.uz · Yo‘l: `/var/www/startups/lingo` · Oxirgi to‘liq tekshiruv: **2026-11-21**
 
 ---
 
-## ⚙️ 2. Haqiqiy Backend Arxitekturasi (No GET Hacks)
+## 0. Umumiy holat — qay darajada tayyor
 
-1. **To‘liq Xavfsiz Autentifikatsiya (POST-Only):**
-   - Tizimda soxta yoki g‘alati `GET` orqali login qilish (`?as=...`) butunlay olib tashlandi.
-   - Barcha harakatlar qat’iy `POST`, CSRF-token tekshiruvi, sessiya regeneratsiyasi va `password_hash` / `password_verify` orqali ishlaydi.
-   - `/login` sahifasida faqat test uchun qulay ma’lumot beruvchi chiroyli kartochka joylashtirilgan bo‘lib, u formadagi maydonlarni to‘ldirib, haqiqiy `POST` so‘rov yuboradi.
-2. **Foydalanuvchi Profili Boshqaruvi (`/profile`):**
-   - O‘quvchi va ota-onalar o‘z ismini, yoshini, darajasini, vaqt zonasini tahrirlashi hamda parolini xavfsiz yangilashi mumkin.
-3. **Administrator Boshqaruvi (`/admin`):**
-   - Ota-onalarning arizalarini to‘g‘ridan-to‘g‘ri boshqarish (Holat: *Kutilmoqda*, *Bog‘lanildi*, *Tasdiqlandi*, *Rad etildi* — `POST /admin/enrollments/status`).
-   - Manual Override: O‘quvchilarga istalgan darsni majburiy ochib berish (`POST /admin/unlock`).
-   - CSV Eksport: Arizalarni bir marta bosish bilan yuklab olish.
-4. **80% Content Locking Qoidasi:**
-   - Server darajasida qat’iy tekshiruv: o‘quvchi dars testidan kamida 80% to‘plamasa, keyingi dars URL orqali ham ochilmaydi.
+**Umumiy tayyorlik: ~65% (ishlaydigan MVP / pilot bosqichi).**
+Sayt to‘liq dinamik: barcha ma’lumot (foydalanuvchilar, darslar, lug‘at, testlar, natijalar, nishonlar, arizalar, jonli darslar) **SQLite** bazasida saqlanadi va har so‘rovda bazadan o‘qiladi. Hozircha SQLite yetarli (owner qarori 2026-11-21: MySQL/Laravel'ga ko‘chirish shart emas).
 
----
-
-## 🚀 Bosqichma-Bosqich Yo‘l Xaritasi
-
-### 1-BOSQICH: Registon & Milliy Me’morchilik Dizayni [BAJARILDI ✅]
-- [x] Registon va Samarqand moviy koshinlari, Buxoro oltin-zar naqshlari uslubidagi dizayn yaratildi.
-- [x] Peshtaq arkali kartochkalar, lojuvard foni va naqshlar tatbiq etildi.
-- [x] Barcha emojilar professional SVG vektor ikonkalariga (`src/icons.php`) almashtirildi.
-
-### 2-BOSQICH: Haqiqiy Backend & Autentifikatsiya [BAJARILDI ✅]
-- [x] Soxta GET so‘rovlar va pastdagi sinov paneli to‘liq o‘chirildi.
-- [x] Haqiqiy POST login, ro‘yxatdan o‘tish va sessiya xavfsizligi ta’minlandi.
-- [x] O‘quvchi profili sahifasi (`/profile`) va parolni yangilash funksiyasi qo‘shildi.
-- [x] Administrator uchun arizalar holatini boshqarish (`POST /admin/enrollments/status`) ulandi.
-
-### 3-BOSQICH: Interaktiv Dars Pleyeri va 3D Flip Lug‘at [BAJARILDI ✅]
-- [x] 3D ag‘dariluvchi (Flip) fleshkartalar: old tomoni o‘zbekcha va ovozli, orqa tomoni inglizcha ma’no va misollar.
-- [x] Web Audio API orqali zang, tanga va fanfara tovush effektlari.
-- [x] Web Speech API orqali so‘zlarni toza o‘zbekcha talaffuz qilish.
-
-### 4-BOSQICH: O‘yinlashtirish va Sertifikatlash [BAJARILDI ✅]
-- [x] So‘zlarni moslashtirish mini-o‘yini va tangalar hisobi.
-- [x] 80% test natijasi bo‘yicha konfetti va g‘alaba ekrani.
-- [x] Rasmiy «O‘zbek Tili Bilimdoni Diplomi» generatori (`/certificate`).
-
-### 5-BOSQICH: Ota-onalar Qo‘llanmasi va Xavfsizlik [BAJARILDI ✅]
-- [x] Diasporadagi ota-onalarga 5 ta oltin tavsiya (`/parent-tips`).
-- [x] COPPA standartlari bo‘yicha maxfiylik siyosati (`/privacy`).
-
-### 6-BOSQICH: Moslashuvchan Header & Mobil Drawer Menyusi [BAJARILDI ✅]
-- [x] Desktop va mobil qurilmalar uchun moslashuvchan (responsive) boshqaruv paneli yaratildi.
-- [x] Admin yoki o‘quvchi hisobiga kirganda (masalan, "Gulomov Admin") menyu elementlari sig‘may qolishi to‘liq bartaraf etildi.
-- [x] 1100px dan kichik ekranlar uchun qulay o‘ng tomondan ochiluvchi Off-canvas Drawer menyusi va fonni xiralashtiruvchi backdrop qo‘shildi.
-- [x] Esc tugmasi yoki fonni bosganda yopilish hamda foydalanuvchi ismining qisqarishi (ellipsis) kiritildi.
-
-### 7-BOSQICH: Ranglar Kontrasti, Ko‘rinuvchanlik & Kengaytirilgan Responsivlik [BAJARILDI ✅]
-- [x] Oq kartochkalardagi och kulrang `#e2e8f0` form labellaridan kelib chiqqan ko‘rinmas matn muammosi to‘liq tuzatildi (`#1e293b` ga almashtirildi).
-- [x] Dashboard moviy banneridagi ko‘rinmay qolgan ko‘k tugma (`.btn-primary`) o‘rniga kontrastli oq va oltin tugmalar joriy qilindi.
-- [x] Ta’lim video pleyeridagi va lug‘at flip kartochkalarining orqa tomonidagi barcha matn va tugmalar yuqori kontrastga (`#ffffff`, `#e0f2fe`, `#fde68a`) keltirildi.
-- [x] Yetishmayotgan `.btn-light` klassi to‘liq stilizatsiya qilindi.
-- [x] Diplom, Darslar xaritasi, 404 sahifasi va qo‘llanmadagi qolib ketgan emojilar rasmiy SVG vektor ikonkalariga almashtirildi.
-- [x] Kichik smartfonlar (320px - 520px) uchun darslar kartochkalari, o‘yin katakchalari, sertifikat va ro‘yxatdan o‘tish formalarining responsivligi mukammallashtirildi.
-
-### 8-BOSQICH: Login Sahifasini Tozalash & Demo/Admin Hisoblarini Standartlashtirish [BAJARILDI ✅]
-- [x] `/login` sahifasidagi ochiq "Sinov hisoblari ma’lumotlari" bloki butunlay olib tashlandi, forma toza va professional ko‘rinishga keltirildi.
-- [x] Akkauntlar standartlashtirildi: O‘quvchi demo hisobi `demo@lingo.uz` (login: `demo`), Administrator `admin@lingo.uz` (login: `admin`).
-- [x] Har ikkala hisob uchun login ham to‘liq email (`demo@lingo.uz`), ham qisqa nom (`demo`) orqali xavfsiz POST bilan kirishga moslashtirildi.
-
-### 9-BOSQICH: Chiqish (Logout) va Akkaunt O‘rtasida O‘tishni Mukammallashtirish [BAJARILDI ✅]
-- [x] `GET /logout` va `POST /logout` ikkalasi ham to‘liq qo‘llab-quvvatlandi (havolalar, brauzer satri yoki tugma orqali chiqish bir zumda ishlaydi).
-- [x] Mobil drawer menyusida va desktop headerda yaqqol ko‘rinadigan qizil "Chiqish" tugmasi joylashtirildi.
-- [x] Tizimga kirilgan holatda `/login` sahifasiga kirilganda bloklanib qolish o‘rniga, joriy hisob holati va bir zumda boshqa akkauntga o‘tish/chiqish imkoniyati berildi.
-- [x] Chiqishda sessiyaning xavfsiz regeneratsiyasi va xabar beruvchi flash xabarlar saqlanishi ta’minlandi.
+| # | Qism | Tayyorlik | Holat |
+|---|------|-----------|-------|
+| 1 | Landing (bosh sahifa) | 90% | Ishlaydi, darslar va lug‘at bazadan |
+| 2 | Pilotga ariza (enrollment) | 75% | Ishlaydi, validatsiya zaif |
+| 3 | Ro‘yxatdan o‘tish / kirish / chiqish / profil | 75% | Ishlaydi, brute-force himoyasi yo‘q |
+| 4 | O‘quvchi paneli (darslar xaritasi, progress) | 85% | Ishlaydi |
+| 5 | Dars pleyeri (sahna, flip-kartalar, o‘yin, ovoz) | 80% | Ishlaydi, haqiqiy video yo‘q |
+| 6 | Test va 80% qulf qoidasi | 60% | Sahifa qulfi bor, lekin POST orqali chetlab o‘tiladi |
+| 7 | Nishonlar (badges) va tangalar | 70% | Nishonlar bazada, tangalar faqat brauzerda |
+| 8 | Diplom (sertifikat) | 40% | Hamma uchun ochiq, darslarni tugatish tekshirilmaydi |
+| 9 | Jonli Zoom xonasi | 45% | Vaqtlar qo‘lda yozilgan, bazadagi sana ishlatilmaydi |
+| 10 | Admin panel | 50% | Faqat ko‘rish + ariza holati + qo‘lda dars ochish; kontentni tahrirlash yo‘q |
+| 11 | Ota-onalar qo‘llanmasi, Maxfiylik (COPPA) | 100% | Statik matn |
+| 12 | Xavfsizlik va infratuzilma | 60% | CSRF, xavfsiz sessiya bor; throttling, xato sahifasi, kesh muammolari bor |
+| 13 | To‘lov, email xabarnomalar, ota-ona kabineti | 0% | Hali boshlanmagan |
 
 ---
 
-## 📌 Server va Texnik Holat
-* **URL:** https://lingo.vexa.uz
-* **Loyiha yo‘li:** `/var/www/startups/lingo`
-* **Arxitektura:** Laravel + SQLite (izolyatsiyalangan PHP-FPM poolida 5ms tezlikda ishlaydi).
-* **Git:** Barcha o‘zgarishlar `main` branchida commit qilingan.
+## 1. Texnik arxitektura (haqiqiy holat)
+
+- **Stack:** oddiy PHP 8.5 (framework yo‘q) + SQLite (PDO, WAL rejimi). Nomi “Laravel” deb yozilgan, lekin **bu Laravel emas** — `artisan` ham o‘zimizning kichik CLI skripti.
+- **Server:** nginx → `php-fpm-students` (alohida pool, `students` foydalanuvchisi, open_basedir, 2 GB RAM / 1.5 CPU cgroup limiti). nginx konfig: `/etc/nginx/sites-available/student-lingo.conf`, root = `public/`.
+- **Front controller:** `public/index.php` — oddiy route jadvali (`'GET /path' => handler`), `/up` health-check (bazani tekshiradi).
+- **Fayllar:**
+  - `src/bootstrap.php` — DB ulanish, avto-migratsiya, sessiya, CSRF, flash, auth yordamchilari, `render()`.
+  - `src/schema.php` — barcha jadvallar (SCHEMA_VERSION = 1).
+  - `src/content.php` — boshlang‘ich kontent: 1 kurs, 5 dars, 37 so‘z, 25 savol, 5 nishon, 2 demo akkaunt, 1 jonli dars.
+  - `src/handlers.php` — barcha sahifa va amallar (≈745 qator).
+  - `src/icons.php` — SVG ikonkalar to‘plami (`icon('name')`), emoji o‘rniga.
+  - `src/views/*.php` — 14 ta shablon + `layout.php`.
+  - `public/assets/style.css` (≈1900 qator, Registon dizayni), `app.js` (ovoz, flip, o‘yin, konfetti, mobil menyu), maskot SVG'lar.
+- **CLI:** `php artisan migrate | db:seed | status`, `php bin/seed-demo.php`.
+- **Git:** lokal repo, `main` branch, remote yo‘q.
+
+## 2. Ma’lumotlar bazasi (SQLite, `database/database.sqlite`)
+
+| Jadval | Vazifasi |
+|--------|----------|
+| `users` | O‘quvchi va adminlar (role, ism, email, parol hash, yosh, daraja, vaqt zonasi) |
+| `enrollments` | Ota-onalar pilot arizalari + holat (pending / contacted / approved / rejected) |
+| `courses` | Kurs (hozir 1 ta: A0–A1, 7–11 yosh) |
+| `lessons` | Darslar (tartib, nom uz/en, maqsad, davomiylik, video, o‘tish bali) |
+| `vocabulary` | Har dars lug‘ati (so‘z, tarjima, talaffuz, misol) |
+| `quizzes`, `questions` | Dars testi va savollar (variantlar JSON, to‘g‘ri javob indeksi, izoh) |
+| `quiz_attempts` | Har bir test urinishi (ball, foiz, o‘tdi/o‘tmadi) |
+| `lesson_progress` | O‘quvchi × dars holati (locked / available / completed, eng yaxshi ball, admin override) |
+| `badges`, `user_badges` | Nishonlar va olingan nishonlar |
+| `live_sessions` | Zoom jonli mashg‘ulotlar |
+| `startup_meta` | Sxema versiyasi |
+
+Hozirgi jonli ma’lumot (2026-11-21): 3 foydalanuvchi, 1 ariza, 5 dars, 37 so‘z, 25 savol, 2 test urinishi.
+
+## 3. Sahifalar va funksiyalar (rol bo‘yicha)
+
+### 3.1 Mehmon (tizimga kirmagan)
+| Route | Funksiya |
+|-------|----------|
+| `GET /` | Landing: hero + maskot, muammo/yechim, 4 bosqichli metodika, darslar ro‘yxati (bazadan), talaffuz sinovi (1-dars lug‘ati, Web Speech API), FAQ, pilotga ariza formasi |
+| `POST /enroll` | Ariza saqlash; ixtiyoriy “akkaunt ham yaratish” — o‘quvchi yaratib, avtomatik kiritadi |
+| `GET/POST /register` | O‘quvchi ro‘yxati (ism, ota-ona emaili, parol, yosh, daraja, vaqt zonasi) → avto-login |
+| `GET/POST /login` | Email yoki qisqa login (`demo` → `demo@lingo.uz`), kirgan bo‘lsa — akkaunt almashtirish kartasi |
+| `GET/POST /logout` | Chiqish + sessiya regeneratsiyasi |
+| `GET /parent-tips` | Ota-onalarga 5 ta tavsiya |
+| `GET /privacy`, `/terms` | COPPA maxfiylik siyosati |
+| `GET /up` | Monitoring uchun health-check |
+
+### 3.2 O‘quvchi
+| Route | Funksiya |
+|-------|----------|
+| `GET /dashboard` | Salomlashish, progress foizi, darslar xaritasi (tugagan / ochiq / qulf), nishonlar, keyingi jonli dars, profil qisqacha |
+| `GET /lessons/{id}` | Dars: 1) sahna pleyeri (lug‘atdan iboralar, ovoz), 2) 3D flip lug‘at kartalari, 3) so‘z moslashtirish o‘yini + tangalar, 4) yakuniy test |
+| `POST /lessons/{id}/quiz` | Testni baholash, urinishni saqlash, ≥80% bo‘lsa keyingi darsni ochish va nishon berish |
+| `GET /lessons/{id}/result` | Natija: foiz, konfetti/ovoz, har savol bo‘yicha tahlil va izoh |
+| `GET /live` | Zoom jonli xona, xavfsizlik qoidalari, “Jonli Muloqotchi” nishoni |
+| `GET /certificate` | “O‘zbek Tili Bilimdoni” diplomi, chop etish / PDF |
+| `GET/POST /profile` | Ism, yosh, daraja, vaqt zonasi, parolni o‘zgartirish; test statistikasi |
+
+### 3.3 Administrator
+| Route | Funksiya |
+|-------|----------|
+| `GET /admin` | Ko‘rsatkichlar, o‘quvchilar ro‘yxati + tugatilgan darslar, arizalar, oxirgi 20 test urinishi |
+| `POST /admin/enrollments/status` | Ariza holatini o‘zgartirish |
+| `POST /admin/unlock` | O‘quvchiga darsni qo‘lda ochish (manual override) |
+| `GET /admin/export` | Arizalarni CSV (Excel uchun UTF-8 BOM) yuklab olish |
+
+### 3.4 Biznes qoidalari
+- **80% qoidasi:** keyingi dars faqat oldingi dars testidan ≥80% olinganda ochiladi; admin istalgan darsni ochib bera oladi; admin hamma darsni ko‘radi.
+- **Nishonlar:** `first_step` (1-dars), `smart_kid` (har qanday ≥80%), `halfway_hero` (3 dars), `lingo_master` (5 dars), `speaker` (/live sahifasiga kirish).
+- **Demo akkauntlar:** o‘quvchi `demo` / `demo123`, admin `admin` / `admin123`.
+
+## 4. 2026-11-21 tekshiruvi — topilgan muammolar
+
+Sinov jonli saytning nusxasida o‘tkazildi (jonli bazaga test yozuvi tushmadi). Barcha sahifalar 200/302 qaytaradi, PHP xatolari yo‘q.
+
+**Jiddiy (birinchi navbatda):**
+1. **80% qulfini chetlab o‘tish mumkin** — `POST /lessons/{id}/quiz` dars ochiqligini tekshirmaydi. Sinovda yangi o‘quvchi 1-darsni o‘tmasdan 2–5 darslarni “tugatdi”.
+2. **Diplom hammaga ochiq** — `/certificate` darslar tugaganini tekshirmaydi, ro‘yxatdan o‘tgan zahoti diplom chiqadi.
+3. **Login’da cheklov yo‘q** — 30 ta noto‘g‘ri parol ketma-ket qabul qilindi (brute-force himoyasi yo‘q).
+4. **Ariza orqali noto‘g‘ri akkaunt** — `notanemail` emaili va `1` paroli bilan akkaunt yaratildi; email/parol tekshirilmaydi.
+
+**O‘rtacha:**
+5. **Jonli dars vaqtlari qo‘lda yozilgan** (11:00 / 10:00 / 09:00 / 08:00) — bazadagi `starts_at` (hozir 22-Nov 03:04, seed xatosi) bilan mos emas; o‘tib ketgan sessiyalar ham “rejalashtirilgan” bo‘lib qoladi.
+6. **Profil validatsiyasi yo‘q** — yosh `999`, daraja `ZZZZ`, vaqt zonasi istalgan matn saqlanadi.
+7. **“5 ta dars” qattiq yozilgan** — keyingi darsni ochish (`<= 5`), admin jadvali (“/ 5”), qo‘lda ochish ro‘yxati (2–5), ro‘yxatdan o‘tishda progress yaratish. 6-dars qo‘shilsa ishlamaydi. Qulf ham `id - 1` ga va qat’iy 80 ga bog‘langan (`passing_score` ishlatilmaydi).
+8. **Sahna pleyeri maskotni emoji bilan almashtiradi** (`app.js` → `v.icon`), “emoji yo‘q” qoidasiga zid.
+9. **Xato sahifasi exception matnini foydalanuvchiga ko‘rsatadi** (`public/index.php`).
+10. **CSS/JS keshlanmaydi** — `?v=<?= time() ?>` har so‘rovda yangi, brauzer har safar qayta yuklaydi.
+
+**Kichik:**
+11. `GET /logout` — begona sahifa rasm orqali foydalanuvchini chiqarib yuborishi mumkin.
+12. Test natijasi tafsilotlari faqat sessiyada; qayta ochilganda savollar tahlili yo‘qoladi.
+13. Tangalar (o‘yin) bazaga saqlanmaydi.
+14. Dars videolari — vaqtinchalik YouTube havolasi; haqiqiy video yo‘q.
+15. Admin kontentni (dars, so‘z, savol, jonli dars) saytdan tahrirlay olmaydi — faqat kod/seed orqali.
+16. Footer “Laravel + SQLite” deydi — aslida oddiy PHP.
+
+## 5. Keyingi qadamlar (yo‘l xaritasi)
+
+### 10-BOSQICH: Dizaynni sayqallash [JARAYONDA]
+- [ ] Umumiy vizual sifatni oshirish (tipografiya, bo‘shliqlar, kartalar, tugmalar, mobil ko‘rinish).
+
+### 11-BOSQICH: Xavfsizlik va qoidalar
+- [ ] Quiz POST’da dars qulfini tekshirish (muammo 1).
+- [ ] Diplomni faqat barcha darslar tugaganda berish (muammo 2).
+- [ ] Login throttling (muammo 3), ariza/profil validatsiyasi (4, 6).
+- [ ] Xato sahifasida texnik matnni yashirish, faqat logga yozish (9).
+- [ ] Logout faqat POST (11).
+
+### 12-BOSQICH: To‘liq dinamik kontent
+- [ ] Dars soni va qulfni `sequence_number` + `passing_score` bo‘yicha hisoblash (7).
+- [ ] Jonli dars vaqtlarini `starts_at` dan 4 ta AQSh vaqt zonasiga hisoblash, o‘tganlarini yashirish (5).
+- [ ] Admin: darslar, lug‘at, savollar, jonli darslar uchun CRUD (15).
+- [ ] Test tafsilotlarini `quiz_attempts` ga saqlash (12), tangalarni bazaga yozish (13).
+
+### 13-BOSQICH: Startapni o‘stirish
+- [ ] Haqiqiy dars videolari (14).
+- [ ] Ota-ona kabineti (bir nechta bola, progress hisobotlari).
+- [ ] Email xabarnomalar (ariza qabul qilindi, haftalik hisobot).
+- [ ] To‘lov / obuna (pilotdan keyin).
+- [ ] Yangi darslar (6–20) va A1–A2 kurslari.
+
+---
+
+## 6. O‘zgarishlar tarixi
+- **2026-11-18:** MVP, Registon dizayni, SVG ikonkalar, flip-kartalar, diplom, admin, mobil drawer, login/logout tuzatishlari (1–9 bosqichlar).
+- **2026-11-21:** To‘liq tekshiruv o‘tkazildi, plan.md qayta yozildi (haqiqiy holat, tayyorlik foizlari, topilgan 16 muammo). MySQL/Laravel’ga ko‘chirish bekor qilindi — SQLite qoladi.
