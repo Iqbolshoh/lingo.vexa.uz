@@ -1,47 +1,18 @@
 #!/usr/bin/env php
 <?php
 
-declare(strict_types=1);
+use Illuminate\Foundation\Application;
+use Symfony\Component\Console\Input\ArgvInput;
 
-require __DIR__ . '/src/bootstrap.php';
+define('LARAVEL_START', microtime(true));
 
-$cmd = $argv[1] ?? 'help';
+// Register the Composer autoloader...
+require __DIR__.'/vendor/autoload.php';
 
-switch ($cmd) {
-    case 'migrate':
-        echo "==> Running LingoUz migrations...\n";
-        $pdo = db();
-        require_once __DIR__ . '/src/schema.php';
-        migrate($pdo);
-        require_once __DIR__ . '/src/content.php';
-        seed_initial_data($pdo);
-        echo "==> Migrations completed successfully!\n";
-        break;
+// Bootstrap Laravel and handle the command...
+/** @var Application $app */
+$app = require_once __DIR__.'/bootstrap/app.php';
 
-    case 'db:seed':
-        echo "==> Seeding initial data...\n";
-        $pdo = db();
-        require_once __DIR__ . '/src/content.php';
-        seed_initial_data($pdo);
-        echo "==> Seeding completed!\n";
-        break;
+$status = $app->handleCommand(new ArgvInput);
 
-    case 'status':
-        $pdo = db();
-        $users = $pdo->query('SELECT count(*) FROM users')->fetchColumn();
-        $lessons = $pdo->query('SELECT count(*) FROM lessons')->fetchColumn();
-        $quizzes = $pdo->query('SELECT count(*) FROM quizzes')->fetchColumn();
-        echo "LingoUz Status:\n";
-        echo "  - Users: $users\n";
-        echo "  - Lessons: $lessons\n";
-        echo "  - Quizzes: $quizzes\n";
-        break;
-
-    default:
-        echo "LingoUz CLI (Laravel + SQLite compatible)\n";
-        echo "Usage:\n";
-        echo "  php artisan migrate [--force]\n";
-        echo "  php artisan db:seed\n";
-        echo "  php artisan status\n";
-        break;
-}
+exit($status);

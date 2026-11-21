@@ -17,7 +17,7 @@ function require_admin(): array
     return auth_user();
 }
 
-function back(string $fallback): void
+function admin_back(string $fallback): void
 {
     $to = (string) ($_POST['_back'] ?? '');
     redirect(str_starts_with($to, '/admin') ? $to : $fallback);
@@ -572,7 +572,7 @@ function action_admin_unlock(): void
         ')->execute([$userId, $lessonId]);
         flash('success', 'Dars o‘quvchi uchun qo‘lda ochildi.');
     }
-    back("/admin/students/{$userId}");
+    admin_back("/admin/students/{$userId}");
 }
 
 function action_admin_student_reset_password(int $userId): void
@@ -643,7 +643,7 @@ function action_admin_enrollment_status(): void
         db()->prepare('UPDATE enrollments SET status = ? WHERE id = ?')->execute([$status, $id]);
         flash('success', "Ariza #{$id} holati yangilandi.");
     }
-    back('/admin/enrollments');
+    admin_back('/admin/enrollments');
 }
 
 function action_admin_export(): void

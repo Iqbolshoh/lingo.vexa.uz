@@ -21,29 +21,34 @@
 
 ## 🛠 Arxitektura va Texnologiyalar
 
-- **Backend:** Native Modern PHP 8.x (High-Performance MVC, Zero framework latency).
-- **Database:** SQLite 3 + WAL rejimi (Ultra yengil, tezkor va portativ).
-- **Frontend:** Modern CSS3 Variables, Glassmorphism, Vanilla ES6+ JavaScript, Web Speech API, Service Workers.
-- **CLI vositasi:** `artisan` buyruqlar satri interfeysi (`php artisan status`).
+- **Framework:** **Laravel 13 (v13.43.0)** — Eng so‘nggi, zamonaviy Laravel versiyasi.
+- **PHP:** PHP 8.5+ (Composer 2.9+).
+- **ORM & Database:** Eloquent ORM + SQLite 3 (WAL yuqori tezlikdagi tranzaksiyalar rejimi).
+- **Frontend:** Modern CSS3 Variables, Glassmorphism, Vanilla ES6+ JavaScript, Web Speech AI, PWA Service Workers.
+- **CLI vositasi:** Rasmiy Laravel `artisan` (`php artisan route:list`, `php artisan tinker`).
 
 ---
 
 ## 📂 Loyiha Strukturasi
 
 ```text
-├── bin/                 # CLI yordamchi skriptlar (seed-demo.php)
-├── database/            # SQLite ma'lumotlar bazasi va schema migratsiyalari
-├── public/              # Web server root (index.php, CSS, JS, SVG maskotlar, PWA manifest, sw.js)
-├── src/                 # Asosiy biznes mantiq:
+├── app/                 # Laravel 13 App (Http Controllers, Eloquent Models, Providers)
+├── bootstrap/           # Laravel 13 Bootstrap (app.php, providers.php)
+├── config/              # Laravel konfiguratsiyalari (app, auth, database, session, vb.)
+├── database/            # SQLite ma'lumotlar bazasi va migratsiyalar
+├── public/              # Web root (index.php, CSS, JS, SVG maskotlar, PWA manifest, sw.js)
+├── routes/              # Laravel yo‘nalishlari (web.php, console.php)
+├── src/                 # Ta’lim mantiqi, i18n, Yangi Lotin alifbosi va shablonlar:
 │   ├── handlers.php     # Controller / Web route handlers
-│   ├── bootstrap.php    # Ilova ishga tushishi, session, CSRF va router
-│   ├── i18n.php         # Ko'p tilli tizim va Yangi Lotin alifbosi konvertori
-│   ├── schema.php       # Baza sxemasi va migratsiyalar
+│   ├── bootstrap.php    # Ilova yordamchilari, CSRF va router
+│   ├── i18n.php         # Yangi Lotin alifbosi konvertori (Ö/ö, Ş/ş, Ç/ç, Ğ/ğ)
+│   ├── schema.php       # Baza sxemasi va ma'lumotlar
 │   ├── admin.php        # Administrator boshqaruv markazi
-│   └── views/           # PHP shablonlari (Dashboard, Flashcards, Leaderboard, Lessons, vb.)
+│   └── views/           # UI shablonlari (Dashboard, Flashcards, Leaderboard, vb.)
+├── storage/             # Kesh, sessiyalar va loglar
 ├── tools/               # i18n tarjima tekshiruv vositalari
-├── artisan              # CLI buyruqlar markazi
-└── plan.md              # Loyiha rivojlanish rejasi
+├── artisan              # Rasmiy Laravel 13 CLI
+└── composer.json        # Paketlar va bog'liqliklar
 ```
 
 ---
