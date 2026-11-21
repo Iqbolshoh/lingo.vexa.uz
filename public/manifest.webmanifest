@@ -1,0 +1,63 @@
+{
+  "name": "LingoUz — O‘zbek Tilini O‘rganish",
+  "short_name": "LingoUz",
+  "description": "O‘zbek tilini interaktiv, qiziqarli va professional tarzda o‘rganish platformasi.",
+  "start_url": "/dashboard",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#0c4a6e",
+  "theme_color": "#0284c7",
+  "orientation": "portrait-primary",
+  "lang": "uz",
+  "categories": ["education", "books"],
+  "icons": [
+    {
+      "src": "/assets/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/assets/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/assets/icon-maskable-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Mening sahifam",
+      "short_name": "Sahifam",
+      "description": "Darslarni davom ettirish va natijalar",
+      "url": "/dashboard",
+      "icons": [{ "src": "/assets/icon-192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "Aqlli Flashcards",
+      "short_name": "Flashcards",
+      "description": "So‘zlarni tezkor takrorlash trenajyori",
+      "url": "/flashcards",
+      "icons": [{ "src": "/assets/icon-192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "Reyting va Liga",
+      "short_name": "Reyting",
+      "description": "O‘quvchilar yetakchilik jadvali",
+      "url": "/leaderboard",
+      "icons": [{ "src": "/assets/icon-192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "Kurslar",
+      "short_name": "Kurslar",
+      "description": "Barcha o‘quv kurslari va darslar",
+      "url": "/courses",
+      "icons": [{ "src": "/assets/icon-192.png", "sizes": "192x192" }]
+    }
+  ]
+}

@@ -268,6 +268,29 @@ function page_dashboard(): void
 
     $liveSession = $pdo->query("SELECT * FROM live_sessions WHERE status = 'scheduled' AND starts_at >= datetime('now', '-1 hour') ORDER BY starts_at LIMIT 1")->fetch();
 
+    $leadersStmt = $pdo->query('
+        SELECT u.id, u.display_name, u.xp, u.streak_days, u.language_level,
+               (SELECT count(*) FROM lesson_progress lp WHERE lp.user_id = u.id AND lp.status = "completed") as completed_lessons
+        FROM users u
+        ORDER BY u.xp DESC, completed_lessons DESC, u.streak_days DESC, u.id ASC
+        LIMIT 5
+    ');
+    $topLeaders = $leadersStmt->fetchAll();
+    $myRank = 1;
+    $found = false;
+    foreach ($topLeaders as $idx => $l) {
+        if ((int) $l['id'] === (int) $user['id']) {
+            $myRank = $idx + 1;
+            $found = true;
+            break;
+        }
+    }
+    if (!$found) {
+        $rankStmt = $pdo->prepare('SELECT count(*) + 1 FROM users WHERE xp > ? OR (xp = ? AND id < ?)');
+        $rankStmt->execute([(int) $user['xp'], (int) $user['xp'], (int) $user['id']]);
+        $myRank = (int) $rankStmt->fetchColumn();
+    }
+
     render('dashboard', [
         'title' => t('O‘quvchi Paneli — ') . $user['display_name'],
         'user' => $user,
@@ -282,6 +305,8 @@ function page_dashboard(): void
         'todayXp' => today_xp((int) $user['id']),
         'recommended' => recommended_courses($user)[0] ?? null,
         'interests' => decode_list($user['interests_json'], ONB_INTERESTS),
+        'topLeaders' => $topLeaders,
+        'myRank' => $myRank,
     ]);
 }
 
@@ -552,4 +577,110 @@ function page_certificate(): void
 function page_parent_tips(): void
 {
     render('parent_tips', ['title' => t('Samarali o‘rganish qo‘llanmasi — LingoUz')]);
+}
+
+function page_leaderboard(): void
+{
+    $pdo = db();
+    $user = auth_user();
+
+    $stmt = $pdo->query('
+        SELECT 
+            u.id, 
+            u.display_name, 
+            u.xp, 
+            u.streak_days, 
+            u.language_level,
+            (SELECT count(*) FROM lesson_progress lp WHERE lp.user_id = u.id AND lp.status = "completed") as completed_lessons,
+            (SELECT count(*) FROM user_badges ub WHERE ub.user_id = u.id) as badge_count
+        FROM users u
+        ORDER BY u.xp DESC, completed_lessons DESC, u.streak_days DESC, u.id ASC
+        LIMIT 30
+    ');
+    $leaders = $stmt->fetchAll();
+
+    $myRank = null;
+    if ($user) {
+        foreach ($leaders as $idx => $l) {
+            if ((int) $l['id'] === (int) $user['id']) {
+                $myRank = $idx + 1;
+                break;
+            }
+        }
+        if ($myRank === null) {
+            $rankStmt = $pdo->prepare('SELECT count(*) + 1 FROM users WHERE xp > ? OR (xp = ? AND id < ?)');
+            $rankStmt->execute([(int) $user['xp'], (int) $user['xp'], (int) $user['id']]);
+            $myRank = (int) $rankStmt->fetchColumn();
+        }
+    }
+
+    render('leaderboard', [
+        'title' => t('O‘quvchilar Reytingi va Ligasi — LingoUz'),
+        'leaders' => $leaders,
+        'myRank' => $myRank,
+        'currentUser' => $user,
+    ]);
+}
+
+function page_flashcards(): void
+{
+    $pdo = db();
+    $user = auth_user();
+    $courseId = isset($_GET['course']) ? (int) $_GET['course'] : 0;
+    $courses = published_courses();
+
+    if ($courseId > 0) {
+        $stmt = $pdo->prepare('
+            SELECT v.id, v.lesson_id, v.word_uz, v.word_en, v.pronunciation, v.example,
+                   l.title as lesson_title, l.title_en as lesson_title_en,
+                   c.id as course_id, c.title as course_title, c.theme as course_theme
+            FROM vocabulary v
+            JOIN lessons l ON l.id = v.lesson_id
+            JOIN courses c ON c.id = l.course_id
+            WHERE c.id = ?
+            ORDER BY RANDOM()
+            LIMIT 40
+        ');
+        $stmt->execute([$courseId]);
+    } else {
+        $stmt = $pdo->query('
+            SELECT v.id, v.lesson_id, v.word_uz, v.word_en, v.pronunciation, v.example,
+                   l.title as lesson_title, l.title_en as lesson_title_en,
+                   c.id as course_id, c.title as course_title, c.theme as course_theme
+            FROM vocabulary v
+            JOIN lessons l ON l.id = v.lesson_id
+            JOIN courses c ON c.id = l.course_id
+            ORDER BY RANDOM()
+            LIMIT 40
+        ');
+    }
+    $words = $stmt->fetchAll();
+
+    render('flashcards', [
+        'title' => t('Aqlli Flashcards: So‘zlarni takrorlash — LingoUz'),
+        'words' => $words,
+        'courses' => $courses,
+        'selectedCourse' => $courseId,
+        'currentUser' => $user,
+    ]);
+}
+
+function action_flashcards_done(): void
+{
+    $user = require_login();
+    $data = json_decode(file_get_contents('php://input'), true) ?: $_POST;
+    $knownCount = max(0, min(100, (int) ($data['known_count'] ?? 0)));
+    $earnedXp = $knownCount * 2; // 2 XP per mastered word
+
+    $res = ['streak' => (int) $user['streak_days'], 'xp' => (int) $user['xp']];
+    if ($earnedXp > 0) {
+        $res = reward_user((int) $user['id'], $earnedXp, 2);
+    }
+
+    json_response([
+        'ok' => true,
+        'earned_xp' => $earnedXp,
+        'total_xp' => $res['xp'],
+        'streak' => $res['streak'],
+    ]);
 }

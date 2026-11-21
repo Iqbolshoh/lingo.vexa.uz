@@ -10,7 +10,12 @@ $user = auth_user();
     <meta name="description" content="<?= t('O‘zbek tilini o‘rganmoqchi bo‘lgan hamma uchun — bolalar, kattalar va sayyohlar. Ovozli lug‘at, mashqlar, madaniyat va jonli darslar. Learn Uzbek online.') ?>">
     <link rel="icon" type="image/svg+xml" href="/favicon.svg?v=1">
     <link rel="icon" type="image/x-icon" href="/favicon.ico?v=1">
-    <link rel="apple-touch-icon" href="/favicon.svg?v=1">
+    <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
+    <link rel="manifest" href="/manifest.webmanifest">
+    <meta name="theme-color" content="#0284c7">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="LingoUz">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -36,6 +41,8 @@ $user = auth_user();
                     <!-- Logged in (Student / Admin): Priority app navigation -->
                     <a href="/dashboard" class="nav-pill"><?= icon('layers', '', 16) ?> <?= t('Mening sahifam') ?></a>
                     <a href="/courses"><?= icon('book-open', '', 16) ?> <?= t('Kurslar') ?></a>
+                    <a href="/flashcards"><?= icon('layers', '', 16) ?> <?= t('Flashcards') ?></a>
+                    <a href="/leaderboard"><?= icon('trophy', '', 16) ?> <?= t('Reyting') ?></a>
                     <a href="/live"><?= icon('video', '', 16) ?> <?= t('Jonli Muloqot') ?></a>
                     <?php if (is_admin()): ?>
                         <a href="/admin" class="nav-admin"><?= icon('shield-check', '', 16) ?> Admin</a>
@@ -44,6 +51,8 @@ $user = auth_user();
                 <?php else: ?>
                     <!-- Guest Navigation -->
                     <a href="/"><?= icon('registon', '', 16) ?> <?= t('Bosh sahifa') ?></a>
+                    <a href="/leaderboard"><?= icon('trophy', '', 16) ?> <?= t('Reyting') ?></a>
+                    <a href="/flashcards"><?= icon('layers', '', 16) ?> <?= t('Flashcards') ?></a>
                     <a href="/#metodika"><?= icon('sparkles', '', 16) ?> <?= t('Metodika') ?></a>
                     <a href="/#darslar"><?= icon('book-open', '', 16) ?> <?= t('Darslar') ?></a>
                     <a href="/parent-tips"><?= icon('users', '', 16) ?> <?= t('Qo‘llanma') ?></a>
@@ -127,6 +136,14 @@ $user = auth_user();
                     <span class="drawer-icon"><?= icon('book-open', '', 18) ?></span>
                     <span><?= t('Kurslar va darslar') ?></span>
                 </a>
+                <a href="/flashcards" class="drawer-link">
+                    <span class="drawer-icon"><?= icon('layers', '', 18) ?></span>
+                    <span><?= t('Aqlli Flashcards') ?></span>
+                </a>
+                <a href="/leaderboard" class="drawer-link">
+                    <span class="drawer-icon"><?= icon('trophy', '', 18) ?></span>
+                    <span><?= t('Reyting va Liga') ?></span>
+                </a>
                 <a href="/live" class="drawer-link">
                     <span class="drawer-icon"><?= icon('video', '', 18) ?></span>
                     <span><?= t('Zoom Jonli Muloqot') ?></span>
@@ -157,6 +174,14 @@ $user = auth_user();
                     <span class="drawer-icon"><?= icon('registon', '', 18) ?></span>
                     <span><?= t('Bosh sahifa') ?></span>
                 </a>
+                <a href="/leaderboard" class="drawer-link">
+                    <span class="drawer-icon"><?= icon('trophy', '', 18) ?></span>
+                    <span><?= t('Reyting va Liga') ?></span>
+                </a>
+                <a href="/flashcards" class="drawer-link">
+                    <span class="drawer-icon"><?= icon('layers', '', 18) ?></span>
+                    <span><?= t('Aqlli Flashcards') ?></span>
+                </a>
                 <a href="/#metodika" class="drawer-link">
                     <span class="drawer-icon"><?= icon('sparkles', '', 18) ?></span>
                     <span><?= t('Ta’lim Metodikasi') ?></span>
@@ -174,6 +199,13 @@ $user = auth_user();
                     <span><?= t('Ro‘yxatdan o‘tish') ?></span>
                 </a>
             <?php endif; ?>
+
+            <!-- PWA Install Button inside Drawer -->
+            <div class="drawer-pwa-wrap" id="drawerPwaWrap" style="margin-top:18px;padding-top:14px;border-top:1px solid rgba(0,0,0,.08);display:none;">
+                <button type="button" class="btn btn-primary btn-block pwa-drawer-install-btn" id="pwaDrawerBtn">
+                    📱 <?= t('Ilovani o‘rnatish (PWA)') ?>
+                </button>
+            </div>
         </div>
 
         <div class="drawer-footer">
@@ -262,5 +294,37 @@ $user = auth_user();
 
     <?php if (is_en()): ?><script>window.I18N = <?= json_encode(js_translations(), JSON_UNESCAPED_UNICODE | JSON_HEX_TAG | JSON_HEX_AMP) ?>;</script><?php endif; ?>
     <script src="/assets/app.js?v=<?= filemtime(__DIR__ . '/../../public/assets/app.js') ?>"></script>
+    <script>
+    // PWA Service Worker & Install Prompt Registration
+    if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+            navigator.serviceWorker.register('/sw.js').catch(err => {
+                console.warn('[LingoUz PWA] SW registration failed:', err);
+            });
+        });
+    }
+
+    let deferredPrompt = null;
+    window.addEventListener('beforeinstallprompt', (e) => {
+        e.preventDefault();
+        deferredPrompt = e;
+        const pwaWrap = document.getElementById('drawerPwaWrap');
+        if (pwaWrap) pwaWrap.style.display = 'block';
+    });
+
+    const pwaBtn = document.getElementById('pwaDrawerBtn');
+    if (pwaBtn) {
+        pwaBtn.addEventListener('click', async () => {
+            if (!deferredPrompt) return;
+            deferredPrompt.prompt();
+            const { outcome } = await deferredPrompt.userChoice;
+            if (outcome === 'accepted') {
+                const pwaWrap = document.getElementById('drawerPwaWrap');
+                if (pwaWrap) pwaWrap.style.display = 'none';
+            }
+            deferredPrompt = null;
+        });
+    }
+    </script>
 </body>
 </html>

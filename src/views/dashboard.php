@@ -25,11 +25,13 @@ $goalPct = min(100, (int) round($todayXp / $goalXp * 100));
                         <span class="xp-chip"><span class="ico-star"><?= icon('star', '', 18) ?></span> <?= (int) $user['xp'] ?> XP <small><?= t(':n-daraja', ['n' => $level['level']]) ?></small></span>
                         <span class="xp-chip"><span class="ico-coins"><?= icon('coins', '', 18) ?></span> <?= (int) $user['coins'] ?> <small><?= t('tanga') ?></small></span>
                     </div>
-                    <div class="dashboard-cta-row" style="margin-top:20px">
+                    <div class="dashboard-cta-row" style="margin-top:20px;display:flex;gap:10px;flex-wrap:wrap">
                         <?php if ($continue): ?>
                             <a href="/lessons/<?= (int) $continue['id'] ?>" class="btn btn-gold btn-lg"><?= icon('play', '', 18) ?> <?= t('Darsni davom ettirish') ?></a>
                         <?php endif; ?>
-                        <a href="/courses" class="btn btn-glass btn-lg"><?= icon('book-open', '', 18) ?> <?= t('Barcha kurslar') ?></a>
+                        <a href="/flashcards" class="btn btn-primary btn-lg"><?= icon('layers', '', 18) ?> <?= t('Aqlli Flashcards') ?></a>
+                        <a href="/leaderboard" class="btn btn-glass btn-lg"><?= icon('trophy', '', 18) ?> <?= t('Reyting va Liga') ?></a>
+                        <a href="/courses" class="btn btn-ghost btn-lg" style="color:#fff;border-color:rgba(255,255,255,.2)"><?= icon('book-open', '', 18) ?> <?= t('Barcha kurslar') ?></a>
                     </div>
                 </div>
                 <div class="hero-owl-ring">
@@ -118,6 +120,51 @@ $goalPct = min(100, (int) round($todayXp / $goalXp * 100));
             </div>
 
             <aside class="stack-sm">
+                <!-- Top 5 Leaderboard Widget -->
+                <div class="card tone-gold leaderboard-widget">
+                    <div class="row-between" style="align-items:center;margin-bottom:12px">
+                        <h3 class="card-title" style="margin:0"><span class="icon-wrap"><?= icon('trophy', '', 20) ?></span> <?= t('Haftalik Liga (Top 5)') ?></h3>
+                        <a href="/leaderboard" class="small" style="font-weight:700;color:var(--gold-dark);"><?= t('Barchasi →') ?></a>
+                    </div>
+                    <?php if (!empty($topLeaders)): ?>
+                        <div class="mini-leader-list">
+                            <?php foreach ($topLeaders as $i => $lead): 
+                                $isMe = (int)$lead['id'] === (int)$user['id'];
+                                $rankIco = match($i) {
+                                    0 => '🥇',
+                                    1 => '🥈',
+                                    2 => '🥉',
+                                    default => '#' . ($i + 1)
+                                };
+                            ?>
+                                <div class="mini-leader-row <?= $isMe ? 'is-me' : '' ?>">
+                                    <span class="mini-rank"><?= $rankIco ?></span>
+                                    <span class="mini-name"><?= e($lead['display_name']) ?> <?= $isMe ? '<small class="you-pill">' . t('Siz') . '</small>' : '' ?></span>
+                                    <span class="mini-xp"><?= (int)$lead['xp'] ?> XP</span>
+                                </div>
+                            <?php endforeach; ?>
+                        </div>
+                    <?php endif; ?>
+                    <div class="widget-user-rank" style="margin-top:12px;padding-top:10px;border-top:1px dashed rgba(0,0,0,.1);display:flex;justify-content:space-between;align-items:center;">
+                        <span class="small muted"><?= t('Sizning o‘rningiz:') ?> <strong>#<?= $myRank ?></strong></span>
+                        <a href="/leaderboard" class="btn btn-primary btn-xs"><?= t('Reyting jadvali') ?></a>
+                    </div>
+                </div>
+
+                <!-- Smart Flashcards Widget -->
+                <div class="card tone-teal" style="background:linear-gradient(135deg, #f0fdfa, #ccfbf1);border-color:#5eead4;">
+                    <div style="display:flex;gap:12px;align-items:center">
+                        <?= mascot('smart', 54, 'owl--mini') ?>
+                        <div>
+                            <strong style="display:block;color:#0f766e;font-size:16px"><?= t('Aqlli Flashcards') ?></strong>
+                            <p class="small" style="color:#115e59;margin:2px 0 0"><?= t('So‘zlarni 3D kartochkalarda tezkor takrorlang va +2 XP to‘plang!') ?></p>
+                        </div>
+                    </div>
+                    <a href="/flashcards" class="btn btn-emerald btn-sm btn-block" style="margin-top:12px;background:#0d9488;border-color:#0f766e">
+                        <?= icon('layers', '', 16) ?> <?= t('Mashqni boshlash') ?>
+                    </a>
+                </div>
+
                 <div class="card tone-gold">
                     <h3 class="card-title"><span class="icon-wrap"><?= icon('trophy', '', 20) ?></span> <?= t('Nishonlar') ?></h3>
                     <div class="bdg-grid">

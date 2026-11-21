@@ -83,7 +83,25 @@ MVP ni mukammal startap holatiga yetkazish uchun quyidagi qadamlar rejalashtiril
 - [x] Har bir dars ostiga ikki tilli interaktiv subtitrlar tizimi (`video_subtitles`) qo‘shildi: vaqt ko‘rsatkichi (`0:05`), yangi lotin alifbosidagi o‘zbekcha matn, inglizcha tarjima, har bir qatorda alohida ovoz eshitish va o‘z talaffuzini mikrofonda tekshirish tugmalari.
 - [x] Subtitrlarni filtrlash rejimi ulandi: `[Ikkala til]`, `[O‘zbekcha]`, `[English]`.
 
-### 2.3. Telegram Bot bilan integratsiya (Retenshn va Eslatmalar)
+### 2.3. O‘quvchilar Reytingi va Ligasini (Leaderboard) joriy etish [BAJARILDI ✅ 2026-11-21]
+- [x] Maxsus `/leaderboard` sahifasi yaratildi: Top-3 Shohsupa (🥇 1st Oltin, 🥈 2nd Kumush, 🥉 3rd Bronza) va to‘liq o‘quvchilar reyting jadvali.
+- [x] O‘quvchi boshqaruv panelida (`/dashboard`) Top-5 haftalik liga vidjeti va foydalanuvchining o‘z o‘rni aks ettirildi.
+- [x] Reyting darslar, to‘plangan XP, ketma-ketlik (streak) va test natijalariga asoslangan holda avtomatik hisoblanadi.
+
+### 2.4. Progressive Web App (PWA) — Mobil Ilovaga aylantirish [BAJARILDI ✅ 2026-11-21]
+- [x] `manifest.webmanifest` to‘liq standart bo‘yicha sozlandi (nomi, do‘ppi va registon siluetli logotipi, ranglar gammasi `#0284c7`, tezkor havolalar).
+- [x] 192x192, 512x512, apple-touch-icon va maskable formatdagi ilova belgilari yaratildi.
+- [x] `sw.js` (Service Worker) ulanib, asosiy statik fayllar keshlandi va oflayn rejim qo‘llab-quvvatlandi.
+- [x] Brauzer panellarisiz mustaqil mobil ilova sifatida (Add to Home Screen) bir tugma bilan o‘rnatish imkoniyati qo‘shildi.
+
+### 2.5. Aqlli Flashcards (So‘zlarni tezkor takrorlash trenajyori) [BAJARILDI ✅ 2026-11-21]
+- [x] Yangi `/flashcards` sahifasi va navbarda tezkor havolalar yaratildi.
+- [x] 3D kartochkani aylantirish (Space yoki bosish), o‘zbekcha so‘z, talaffuz transkripsiyasi, inglizcha tarjimasi va namunaviy gap.
+- [x] Web Speech API orqali so‘z talaffuzini ovozli tinglash hamda mikrofondan o‘quvchining talaffuzini sun’iy intellekt orqali tekshirish.
+- [x] «Yana takrorlash» (Left arrow `←`) va «Bilib oldim! (+2 XP)» (Right arrow `→`) trenajyor mexanikasi.
+- [x] Bosqich yakunlanganda konfetti, bayramona tabrik va API orqali o‘quvchi balansiga real XP qo‘shilishi.
+
+### 2.6. Telegram Bot bilan integratsiya (Retenshn va Eslatmalar)
 - [ ] O‘quvchi har kuni o‘rganishni to‘xtatib qo‘ymasligi uchun (Streak saqlash) Telegram bot orqali kunlik eslatmalar.
 - [ ] Kuniga 1 ta yangi so‘z kartochkasi va mini-viktorina.
 - [ ] Bot orqali bitta tugma bilan tizimga kirish (Telegram Login Widget).
