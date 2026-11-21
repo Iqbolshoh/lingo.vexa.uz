@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-const SCHEMA_VERSION = 4;
+const SCHEMA_VERSION = 5;
 
 function migrate(PDO $pdo): void
 {
@@ -18,7 +18,10 @@ function migrate(PDO $pdo): void
         if ($version < 3) {
             migrate_v3($pdo);
         }
-        migrate_v4($pdo);
+        if ($version < 4) {
+            migrate_v4($pdo);
+        }
+        migrate_v5($pdo);
         return;
     }
 
@@ -160,6 +163,7 @@ function migrate(PDO $pdo): void
     migrate_v2($pdo);
     migrate_v3($pdo);
     migrate_v4($pdo);
+    migrate_v5($pdo);
 }
 
 /**
@@ -274,6 +278,24 @@ function migrate_v4(PDO $pdo): void
     $pdo->exec("UPDATE enrollments SET timezone = substr(timezone, 1, instr(timezone, ' ') - 1) WHERE instr(timezone, ' ') > 0");
     // Accounts that existed before onboarding are not forced through it as admins.
     $pdo->exec("UPDATE users SET onboarded_at = datetime('now') WHERE role = 'admin' AND onboarded_at IS NULL");
+    $pdo->prepare("INSERT OR REPLACE INTO startup_meta (key, value) VALUES ('schema_version', '4')")->execute();
+    $pdo->commit();
+}
+
+/** Version 5: English versions of course and lesson texts for the English interface. */
+function migrate_v5(PDO $pdo): void
+{
+    $pdo->beginTransaction();
+    foreach (['courses' => ['title_en', 'subtitle_en', 'description_en'], 'lessons' => ['objective_en', 'summary_en', 'culture_title_en', 'culture_note_en']] as $table => $cols) {
+        $existing = array_column($pdo->query("PRAGMA table_info({$table})")->fetchAll(PDO::FETCH_ASSOC), 'name');
+        foreach ($cols as $col) {
+            if (!in_array($col, $existing, true)) {
+                $pdo->exec("ALTER TABLE {$table} ADD COLUMN {$col} TEXT");
+            }
+        }
+    }
+    require_once __DIR__ . '/content_v5.php';
+    seed_v5_content($pdo);
     $pdo->prepare("INSERT OR REPLACE INTO startup_meta (key, value) VALUES ('schema_version', ?)")
         ->execute([(string) SCHEMA_VERSION]);
     $pdo->commit();

@@ -6,6 +6,8 @@
 (function () {
     'use strict';
 
+    // UI strings: Uzbek source text, English from window.I18N (set by the layout).
+    const L = (s) => (window.I18N && window.I18N[s]) || s;
     const csrf = document.querySelector('meta[name="csrf-token"]')?.content || '';
     // SoundFX is a top-level const in app.js, so it is not a window property.
     const fx = (typeof SoundFX !== 'undefined') ? SoundFX : { click() {}, coin() {}, match() {}, encourage() {}, fanfare() {} };
@@ -37,7 +39,7 @@
     const reading = document.getElementById('readingText');
     document.getElementById('toggleEn')?.addEventListener('click', (e) => {
         reading.classList.toggle('show-en');
-        e.currentTarget.lastChild.textContent = reading.classList.contains('show-en') ? ' Tarjimani yashirish' : ' Tarjimani ko‘rsatish';
+        e.currentTarget.lastChild.textContent = ' ' + (reading.classList.contains('show-en') ? L('Tarjimani yashirish') : L('Tarjimani ko‘rsatish'));
     });
     document.getElementById('readAll')?.addEventListener('click', () => {
         const lines = [...reading.querySelectorAll('.read-line')];
@@ -72,8 +74,8 @@
             const res = await fetch(`/lessons/${window.LESSON_ID}/game`, { method: 'POST', headers: { 'X-CSRF-Token': csrf } });
             const data = await res.json();
             if (out) out.textContent = data.coins_awarded > 0
-                ? `+${data.coins_awarded} tanga hisobingizga qo‘shildi! Jami: ${data.coins}.`
-                : 'Zo‘r takrorlash! Tangalar bu dars uchun avval berilgan.';
+                ? L('+:n tanga hisobingizga qo‘shildi! Jami: :total.').replace(':n', data.coins_awarded).replace(':total', data.coins)
+                : L('Zo‘r takrorlash! Tangalar bu dars uchun avval berilgan.');
         } catch (_) { /* offline: the banner still shows */ }
     });
 
@@ -169,7 +171,7 @@
             }
         });
         quiz.addEventListener('submit', (e) => {
-            if (steps.some(s => !answered(s)) && !confirm('Ba’zi savollarga javob berilmagan. Baribir yakunlaysizmi?')) e.preventDefault();
+            if (steps.some(s => !answered(s)) && !confirm(L('Ba’zi savollarga javob berilmagan. Baribir yakunlaysizmi?'))) e.preventDefault();
         });
         show();
     }
@@ -208,22 +210,22 @@
             current = null;
             foot.classList.remove('is-right', 'is-wrong');
             feedback.innerHTML = '';
-            btn.textContent = 'Tekshirish';
+            btn.textContent = L('Tekshirish');
             btn.disabled = true;
             fill.style.width = Math.round(at / tasks.length * 100) + '%';
             count.textContent = `${at + 1} / ${tasks.length}`;
 
             let html = '';
             if (t.kind === 'listen') {
-                html = `<span class="ex-kind">Tinglang</span><h3 class="ex-prompt">Nima deyildi?</h3>
-                    <button type="button" class="listen-big" data-speak="${esc(t.item.word_uz)}" aria-label="Tinglash">${ICON_SPEAKER}</button>`;
+                html = `<span class="ex-kind">${L('Tinglang')}</span><h3 class="ex-prompt">${L('Nima deyildi?')}</h3>
+                    <button type="button" class="listen-big" data-speak="${esc(t.item.word_uz)}" aria-label="${L('Tinglash')}">${ICON_SPEAKER}</button>`;
             } else if (t.kind === 'uz2en') {
-                html = `<span class="ex-kind">Tarjima qiling</span><h3 class="ex-prompt">«${esc(t.item.word_uz)}» — bu nima?</h3><p class="ex-sub">Choose the English meaning</p>`;
+                html = `<span class="ex-kind">${L('Tarjima qiling')}</span><h3 class="ex-prompt">${L('«:word» — bu nima?').replace(':word', esc(t.item.word_uz))}</h3><p class="ex-sub">${L('Inglizcha ma’nosini tanlang')}</p>`;
             } else if (t.kind === 'en2uz') {
-                html = `<span class="ex-kind">O‘zbekcha toping</span><h3 class="ex-prompt">${esc(t.item.word_en)}</h3><p class="ex-sub">O‘zbekcha qanday bo‘ladi?</p>`;
+                html = `<span class="ex-kind">${L('O‘zbekcha toping')}</span><h3 class="ex-prompt">${esc(t.item.word_en)}</h3><p class="ex-sub">${L('O‘zbekcha qanday bo‘ladi?')}</p>`;
             } else {
-                html = `<span class="ex-kind">Yozing</span><h3 class="ex-prompt">${esc(t.item.word_en)}</h3><p class="ex-sub">O‘zbekcha yozing</p>
-                    <input class="fill-input" type="text" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="Javob…">
+                html = `<span class="ex-kind">${L('Yozing')}</span><h3 class="ex-prompt">${esc(t.item.word_en)}</h3><p class="ex-sub">${L('O‘zbekcha yozing')}</p>
+                    <input class="fill-input" type="text" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="${L('Javob…')}">
                     <div class="char-keys"><button type="button" data-char="o‘">o‘</button><button type="button" data-char="g‘">g‘</button></div>`;
             }
             if (t.options) {
@@ -254,8 +256,8 @@
             const pct = Math.round(right / tasks.length * 100);
             body.innerHTML = `<div class="ex-done">
                 <div class="ex-done-owl"></div>
-                <div class="big">${pct >= 80 ? 'Barakalla!' : 'Yaxshi harakat!'}</div>
-                <p class="muted">${right} / ${tasks.length} to‘g‘ri. ${pct >= 80 ? 'Endi yakuniy testga tayyorsiz!' : 'Lug‘atni yana bir ko‘rib, qayta urinib ko‘ring.'}</p>
+                <div class="big">${pct >= 80 ? L('Barakalla!') : L('Yaxshi harakat!')}</div>
+                <p class="muted">${L(':score / :total to‘g‘ri').replace(':score', right).replace(':total', tasks.length)}. ${pct >= 80 ? L('Endi yakuniy testga tayyorsiz!') : L('Lug‘atni yana bir ko‘rib, qayta urinib ko‘ring.')}</p>
             </div>`;
             const big = practiceOwl ? practiceOwl.cloneNode(true) : null;
             if (big) {
@@ -268,7 +270,7 @@
             if (pct >= 80) fx.fanfare(); else fx.encourage();
             foot.classList.remove('is-right', 'is-wrong');
             feedback.innerHTML = '';
-            btn.textContent = 'Yana mashq qilish';
+            btn.textContent = L('Yana mashq qilish');
             btn.disabled = false;
             mode = 'restart';
         };
@@ -285,17 +287,17 @@
             });
             foot.classList.add(ok ? 'is-right' : 'is-wrong');
             feedback.innerHTML = ok
-                ? `<span>Barakalla! To‘g‘ri.</span>`
-                : `<span>To‘g‘ri javob: ${esc(t.answer)}<small>${esc(t.item.word_uz)} — ${esc(t.item.word_en)}</small></span>`;
+                ? `<span>${L('Barakalla! To‘g‘ri.')}</span>`
+                : `<span>${L('To‘g‘ri javob:')} ${esc(t.answer)}<small>${esc(t.item.word_uz)} — ${esc(t.item.word_en)}</small></span>`;
             ok ? fx.coin() : fx.encourage();
             window.Owl && Owl.play(practiceOwl, ok ? 'success' : 'mistake', 1800);
             speak(t.item.word_uz);
-            btn.textContent = 'Davom etish';
+            btn.textContent = L('Davom etish');
             mode = 'next';
         });
 
         render();
     } else if (practice) {
-        practice.querySelector('.ex-body').innerHTML = '<div class="empty">Mashq uchun kamida 2 ta so‘z kerak.</div>';
+        practice.querySelector('.ex-body').innerHTML = '<div class="empty">' + L('Mashq uchun kamida 2 ta so‘z kerak.') + '</div>';
     }
 })();

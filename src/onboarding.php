@@ -131,7 +131,7 @@ function page_onboarding(): void
 {
     $user = require_student_login();
     render('onboarding', [
-        'title' => 'Keling, tanishaylik — LingoUz',
+        'title' => t('Keling, tanishaylik — LingoUz'),
         'user' => $user,
         'motives' => decode_list($user['motives_json'], ONB_MOTIVES),
         'places' => decode_list($user['places_json'], ONB_PLACES),
@@ -178,7 +178,7 @@ function page_placement(): void
         redirect('/onboarding/done');
     }
     $_SESSION['placement'] = $questions;
-    render('placement', ['title' => 'Daraja testi — LingoUz', 'questions' => $questions]);
+    render('placement', ['title' => t('Daraja testi — LingoUz'), 'questions' => $questions]);
 }
 
 function action_placement(): void
@@ -232,7 +232,7 @@ function page_onboarding_done(): void
     $result = $_SESSION['placement_result'] ?? null;
     unset($_SESSION['placement_result']);
     render('onboarding_done', [
-        'title' => 'Tayyor! — LingoUz',
+        'title' => t('Tayyor! — LingoUz'),
         'user' => $user,
         'result' => $result,
         'recommended' => array_slice(recommended_courses($user), 0, 3),

@@ -141,6 +141,9 @@ function course_form_data(): array
         'title' => input_str('title', 120),
         'subtitle' => input_str('subtitle', 160),
         'description' => input_str('description', 2000),
+        'title_en' => input_str('title_en', 120),
+        'subtitle_en' => input_str('subtitle_en', 160),
+        'description_en' => input_str('description_en', 2000),
         'level' => input_str('level', 20) ?: 'A0–A1',
         'age_range' => input_str('age_range', 40) ?: '7–11 yosh',
         'category' => ($_POST['category'] ?? '') === 'culture' ? 'culture' : 'language',
@@ -161,7 +164,7 @@ function page_admin_course_form(?int $courseId = null): void
     }
     render_admin('course_form', 'courses', [
         'title' => $course ? 'Kursni tahrirlash' : 'Yangi kurs',
-        'course' => $course ?? ['title' => '', 'subtitle' => '', 'description' => '', 'level' => 'A0–A1', 'age_range' => '7–11 yosh', 'category' => 'language', 'icon' => 'book-open', 'theme' => 'lapis', 'status' => 'draft', 'sort_order' => (int) db()->query('SELECT COALESCE(MAX(sort_order),0)+1 FROM courses')->fetchColumn()],
+        'course' => $course ?? ['title' => '', 'subtitle' => '', 'description' => '', 'title_en' => '', 'subtitle_en' => '', 'description_en' => '', 'level' => 'A0–A1', 'age_range' => '7–11 yosh', 'category' => 'language', 'icon' => 'book-open', 'theme' => 'lapis', 'status' => 'draft', 'sort_order' => (int) db()->query('SELECT COALESCE(MAX(sort_order),0)+1 FROM courses')->fetchColumn()],
     ]);
 }
 
@@ -175,11 +178,11 @@ function action_admin_course_save(?int $courseId = null): void
     }
     $pdo = db();
     if ($courseId) {
-        $pdo->prepare('UPDATE courses SET title=?, subtitle=?, description=?, level=?, age_range=?, category=?, icon=?, theme=?, status=?, sort_order=? WHERE id=?')
+        $pdo->prepare('UPDATE courses SET title=?, subtitle=?, description=?, title_en=?, subtitle_en=?, description_en=?, level=?, age_range=?, category=?, icon=?, theme=?, status=?, sort_order=? WHERE id=?')
             ->execute([...array_values($d), $courseId]);
         flash('success', 'Kurs saqlandi.');
     } else {
-        $pdo->prepare("INSERT INTO courses (title, subtitle, description, level, age_range, category, icon, theme, status, sort_order, created_at) VALUES (?,?,?,?,?,?,?,?,?,?, datetime('now'))")
+        $pdo->prepare("INSERT INTO courses (title, subtitle, description, title_en, subtitle_en, description_en, level, age_range, category, icon, theme, status, sort_order, created_at) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?, datetime('now'))")
             ->execute(array_values($d));
         $courseId = (int) $pdo->lastInsertId();
         flash('success', 'Kurs yaratildi. Endi unga dars qo‘shing.');
@@ -259,6 +262,7 @@ function lesson_form_data(): array
         'title' => input_str('title', 160),
         'title_en' => input_str('title_en', 160),
         'objective' => input_str('objective', 600),
+        'objective_en' => input_str('objective_en', 600),
         'summary' => input_str('summary', 1200),
         'duration_min' => input_int('duration_min', 1, 120, 5),
         'video_url' => input_str('video_url', 500),
@@ -266,6 +270,8 @@ function lesson_form_data(): array
         'reading_en' => input_str('reading_en', 4000),
         'culture_title' => input_str('culture_title', 160),
         'culture_note' => input_str('culture_note', 2000),
+        'culture_title_en' => input_str('culture_title_en', 160),
+        'culture_note_en' => input_str('culture_note_en', 2000),
         'icon' => in_array($_POST['icon'] ?? '', LESSON_ICONS, true) ? $_POST['icon'] : 'book-open',
         'passing_score' => input_int('passing_score', 50, 100, 80),
         'status' => ($_POST['status'] ?? '') === 'draft' ? 'draft' : 'published',
@@ -315,9 +321,9 @@ function action_admin_lesson_store(int $courseId): void
     $seq = (int) $pdo->query('SELECT COALESCE(MAX(sequence_number), 0) + 1 FROM lessons')->fetchColumn();
     $pos = (int) $pdo->query("SELECT COALESCE(MAX(position), 0) + 1 FROM lessons WHERE course_id = {$courseId}")->fetchColumn();
     $pdo->prepare('
-        INSERT INTO lessons (sequence_number, course_id, position, title, title_en, objective, summary, duration_min, video_url,
-                             reading_uz, reading_en, culture_title, culture_note, icon, passing_score, status)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        INSERT INTO lessons (sequence_number, course_id, position, title, title_en, objective, objective_en, summary, duration_min, video_url,
+                             reading_uz, reading_en, culture_title, culture_note, culture_title_en, culture_note_en, icon, passing_score, status)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     ')->execute([$seq, $courseId, $pos, ...array_values($d)]);
     $lessonId = (int) $pdo->lastInsertId();
     lesson_quiz($lessonId);
@@ -374,8 +380,8 @@ function action_admin_lesson_update(int $lessonId): void
     $raw = $d['video_url'];
     $d['video_url'] = clean_video_url($raw);
     db()->prepare('
-        UPDATE lessons SET title=?, title_en=?, objective=?, summary=?, duration_min=?, video_url=?, reading_uz=?, reading_en=?,
-                           culture_title=?, culture_note=?, icon=?, passing_score=?, status=?
+        UPDATE lessons SET title=?, title_en=?, objective=?, objective_en=?, summary=?, duration_min=?, video_url=?, reading_uz=?, reading_en=?,
+                           culture_title=?, culture_note=?, culture_title_en=?, culture_note_en=?, icon=?, passing_score=?, status=?
         WHERE id = ?
     ')->execute([...array_values($d), $lessonId]);
     db()->prepare('UPDATE quizzes SET pass_score = ? WHERE lesson_id = ?')->execute([$d['passing_score'], $lessonId]);

@@ -1,8 +1,8 @@
 <div class="certificate-page">
     <div class="container text-center print-hide" style="margin-bottom: 24px;">
-        <a href="/dashboard" class="btn btn-outline btn-sm">← O‘quvchi paneliga qaytish</a>
+        <a href="/dashboard" class="btn btn-outline btn-sm"><?= t('← O‘quvchi paneliga qaytish') ?></a>
         <button onclick="window.print()" class="btn btn-primary btn-sm" style="margin-left: 10px;">
-            <?= icon('download', '', 16) ?> Sertifikatni Chop Etish / PDF Saqlash
+            <?= icon('download', '', 16) ?> <?= t('Sertifikatni Chop Etish / PDF Saqlash') ?>
         </button>
     </div>
 
@@ -17,43 +17,43 @@
 
                 <div class="cert-header">
                     <div class="cert-institution">GULOMOV’S ACADEMY • LINGOUZ</div>
-                    <div class="cert-subtitle">O‘ZBEK TILI ONLAYN AKADEMIYASI</div>
+                    <div class="cert-subtitle"><?= t('O‘ZBEK TILI ONLAYN AKADEMIYASI') ?></div>
                 </div>
 
                 <div class="cert-title-wrap">
-                    <h1 class="cert-main-title">DIPLOM</h1>
-                    <div class="cert-award-tag"><?= icon('award', '', 16) ?> O‘ZBEK TILI BILIMDONI</div>
+                    <h1 class="cert-main-title"><?= t('DIPLOM') ?></h1>
+                    <div class="cert-award-tag"><?= icon('award', '', 16) ?> <?= t('O‘ZBEK TILI BILIMDONI') ?></div>
                 </div>
 
                 <div class="cert-body">
-                    <p class="cert-presentation">Ushbu diplom faxr bilan topshiriladi:</p>
+                    <p class="cert-presentation"><?= t('Ushbu diplom faxr bilan topshiriladi:') ?></p>
                     <div class="cert-student-name"><?= e($student['display_name']) ?></div>
                     <p class="cert-description">
-                        O‘zbek tilini mehr bilan o‘rgangani, <strong>«<?= e($course['title']) ?>»</strong> kursining <?= (int) $state['total'] ?> ta darsini, interaktiv mashqlar va testlarni muvaffaqiyatli topshirib, o‘rtacha <strong><?= (int) $state['mastery'] ?>%</strong> natija bilan tamomlagani uchun!
+                        <?= t('O‘zbek tilini mehr bilan o‘rgangani, <strong>«:course»</strong> kursining :n ta darsini, interaktiv mashqlar va testlarni muvaffaqiyatli topshirib, o‘rtacha <strong>:mastery%</strong> natija bilan tamomlagani uchun!', ['course' => loc($course, 'title'), 'n' => (int) $state['total'], 'mastery' => (int) $state['mastery']]) ?>
                     </p>
                 </div>
 
                 <div class="cert-footer-row">
                     <div class="cert-col cert-date">
                         <div class="cert-line"><?= e(date('d.m.Y', strtotime((string) $completedAt))) ?></div>
-                        <span class="cert-label">Sana / Date</span>
+                        <span class="cert-label"><?= t('Sana / Date') ?></span>
                     </div>
 
                     <div class="cert-col cert-seal-col">
                         <div class="cert-gold-seal">
                             <span class="seal-icon"><?= icon('registon', '', 24) ?></span>
-                            <span class="seal-text">LINGOUZ<br>RASMIY MUHR</span>
+                            <span class="seal-text">LINGOUZ<br><?= t('RASMIY MUHR') ?></span>
                         </div>
                     </div>
 
                     <div class="cert-col cert-sign">
                         <div class="cert-signature-img">Gulomov</div>
-                        <div class="cert-line">Gulomov Ustoz</div>
-                        <span class="cert-label">Akademiya Rahbari</span>
+                        <div class="cert-line"><?= t('Gulomov Ustoz') ?></div>
+                        <span class="cert-label"><?= t('Akademiya Rahbari') ?></span>
                     </div>
                 </div>
 
-                <div class="cert-code">Sertifikat ID: LU-<?= (int) $course['id'] ?>-<?= str_pad((string) $student['id'], 4, '0', STR_PAD_LEFT) ?></div>
+                <div class="cert-code"><?= t('Sertifikat ID: LU-') ?><?= (int) $course['id'] ?>-<?= str_pad((string) $student['id'], 4, '0', STR_PAD_LEFT) ?></div>
             </div>
         </div>
     </div>

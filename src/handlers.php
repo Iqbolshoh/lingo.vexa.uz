@@ -7,7 +7,7 @@ declare(strict_types=1);
 function require_login(string $message = 'Iltimos, avval tizimga kiring.'): array
 {
     if (!auth_check()) {
-        flash('info', $message);
+        flash('info', t($message));
         redirect('/login');
     }
     return auth_user();
@@ -16,7 +16,7 @@ function require_login(string $message = 'Iltimos, avval tizimga kiring.'): arra
 function not_found(string $title = 'Sahifa topilmadi'): void
 {
     http_response_code(404);
-    render('not_found', ['title' => $title]);
+    render('not_found', ['title' => t($title)]);
 }
 
 function client_ip(): string
@@ -45,7 +45,7 @@ function page_home(): void
     ];
 
     render('home', [
-        'title' => 'LingoUz — O‘zbek tilini hamma uchun onlayn o‘rganish | Learn Uzbek online',
+        'title' => t('LingoUz — O‘zbek tilini hamma uchun onlayn o‘rganish | Learn Uzbek online'),
         'courses' => $courses,
         'sampleVocab' => $sampleVocab,
         'culture' => $culture,
@@ -67,11 +67,11 @@ function action_enroll(): void
     $password = (string) ($_POST['password'] ?? '');
 
     if ($parentName === '' || $childName === '' || !filter_var($parentEmail, FILTER_VALIDATE_EMAIL)) {
-        flash('error', 'Iltimos, ota-ona ismi, to‘g‘ri email va bola ismini kiriting.');
+        flash('error', t('Iltimos, ota-ona ismi, to‘g‘ri email va bola ismini kiriting.'));
         redirect('/#ariza');
     }
     if ($createAccount && mb_strlen($password) < 6) {
-        flash('error', 'Akkaunt uchun parol kamida 6 ta belgidan iborat bo‘lishi kerak.');
+        flash('error', t('Akkaunt uchun parol kamida 6 ta belgidan iborat bo‘lishi kerak.'));
         redirect('/#ariza');
     }
 
@@ -90,20 +90,20 @@ function action_enroll(): void
                 VALUES (\'student\', ?, ?, ?, ?, ?, ?)
             ')->execute([mb_substr($childName, 0, 80), $parentEmail, password_hash($password, PASSWORD_DEFAULT), $childAge, $languageLevel, $timezone]);
             login_user(['id' => (int) $pdo->lastInsertId()]);
-            flash('success', 'Arizangiz qabul qilindi va o‘quvchi profili yaratildi! Keling, tanishaylik.');
+            flash('success', t('Arizangiz qabul qilindi va o‘quvchi profili yaratildi! Keling, tanishaylik.'));
             redirect('/onboarding');
         }
-        flash('info', 'Ariza qabul qilindi. Bu email bilan akkaunt allaqachon bor — tizimga kiring.');
+        flash('info', t('Ariza qabul qilindi. Bu email bilan akkaunt allaqachon bor — tizimga kiring.'));
         redirect('/login');
     }
 
-    flash('success', 'Rahmat! Arizangiz qabul qilindi. Tez orada mentorlarimiz siz bilan bog‘lanishadi.');
+    flash('success', t('Rahmat! Arizangiz qabul qilindi. Tez orada mentorlarimiz siz bilan bog‘lanishadi.'));
     redirect('/#ariza');
 }
 
 function page_login(): void
 {
-    render('login', ['title' => 'Tizimga kirish — LingoUz', 'currentUser' => auth_user()]);
+    render('login', ['title' => t('Tizimga kirish — LingoUz'), 'currentUser' => auth_user()]);
 }
 
 function action_login(): void
@@ -113,11 +113,11 @@ function action_login(): void
     $ip = client_ip();
 
     if (login_throttled($ip)) {
-        flash('error', 'Juda ko‘p noto‘g‘ri urinish. 15 daqiqadan so‘ng qayta urinib ko‘ring.');
+        flash('error', t('Juda ko‘p noto‘g‘ri urinish. 15 daqiqadan so‘ng qayta urinib ko‘ring.'));
         redirect('/login');
     }
     if ($identifier === '' || $password === '') {
-        flash('error', 'Email yoki login va parolni kiriting.');
+        flash('error', t('Email yoki login va parolni kiriting.'));
         redirect('/login');
     }
 
@@ -128,20 +128,20 @@ function action_login(): void
 
     if (!$user || !password_verify($password, $user['password_hash'])) {
         record_login_failure($ip, $identifier);
-        flash('error', 'Login yoki parol noto‘g‘ri kiritildi.');
+        flash('error', t('Login yoki parol noto‘g‘ri kiritildi.'));
         redirect('/login');
     }
 
     clear_login_failures($ip);
     login_user($user);
-    flash('success', 'Xush kelibsiz, ' . $user['display_name'] . '!');
+    flash('success', t('Xush kelibsiz, :name!', ['name' => $user['display_name']], false));
     redirect($user['role'] === 'admin' ? '/admin' : '/dashboard');
 }
 
 function action_logout(): void
 {
     logout_user();
-    flash('info', 'Tizimdan muvaffaqiyatli chiqdingiz.');
+    flash('info', t('Tizimdan muvaffaqiyatli chiqdingiz.'));
     redirect('/login');
 }
 
@@ -150,7 +150,7 @@ function page_register(): void
     if (auth_check()) {
         redirect('/dashboard');
     }
-    render('register', ['title' => 'O‘quvchini ro‘yxatdan o‘tkazish — LingoUz']);
+    render('register', ['title' => t('O‘quvchini ro‘yxatdan o‘tkazish — LingoUz')]);
 }
 
 function action_register(): void
@@ -163,7 +163,7 @@ function action_register(): void
     $timezone = normalize_timezone($_POST['timezone'] ?? '');
 
     if ($displayName === '' || !filter_var($email, FILTER_VALIDATE_EMAIL) || mb_strlen($password) < 6) {
-        flash('error', 'Ism, to‘g‘ri email va kamida 6 belgili parol kiriting.');
+        flash('error', t('Ism, to‘g‘ri email va kamida 6 belgili parol kiriting.'));
         redirect('/register');
     }
 
@@ -171,7 +171,7 @@ function action_register(): void
     $check = $pdo->prepare('SELECT id FROM users WHERE email = ?');
     $check->execute([$email]);
     if ($check->fetch()) {
-        flash('error', 'Bu email orqali allaqachon ro‘yxatdan o‘tilgan. Tizimga kiring.');
+        flash('error', t('Bu email orqali allaqachon ro‘yxatdan o‘tilgan. Tizimga kiring.'));
         redirect('/login');
     }
 
@@ -181,7 +181,7 @@ function action_register(): void
     ')->execute([mb_substr($displayName, 0, 80), $email, password_hash($password, PASSWORD_DEFAULT), $ageBand, $languageLevel, $timezone]);
     login_user(['id' => (int) $pdo->lastInsertId()]);
 
-    flash('success', 'Xush kelibsiz! Keling, avval bir-birimizni yaxshiroq tanib olaylik.');
+    flash('success', t('Xush kelibsiz! Keling, avval bir-birimizni yaxshiroq tanib olaylik.'));
     redirect('/onboarding');
 }
 
@@ -195,7 +195,7 @@ function page_profile(): void
     $stats->execute([$user['id']]);
 
     render('profile', [
-        'title' => 'Mening Profilim — ' . $user['display_name'],
+        'title' => t('Mening Profilim — ') . $user['display_name'],
         'user' => $user,
         'stats' => $stats->fetch(),
     ]);
@@ -211,11 +211,11 @@ function action_update_profile(): void
     $newPassword = (string) ($_POST['new_password'] ?? '');
 
     if ($displayName === '' || mb_strlen($displayName) > 80) {
-        flash('error', 'Ism 1–80 belgidan iborat bo‘lishi kerak.');
+        flash('error', t('Ism 1–80 belgidan iborat bo‘lishi kerak.'));
         redirect('/profile');
     }
     if ($newPassword !== '' && mb_strlen($newPassword) < 6) {
-        flash('error', 'Yangi parol kamida 6 ta belgidan iborat bo‘lishi kerak.');
+        flash('error', t('Yangi parol kamida 6 ta belgidan iborat bo‘lishi kerak.'));
         redirect('/profile');
     }
 
@@ -226,13 +226,13 @@ function action_update_profile(): void
         $pdo->prepare('UPDATE users SET password_hash = ? WHERE id = ?')->execute([password_hash($newPassword, PASSWORD_DEFAULT), $user['id']]);
     }
 
-    flash('success', 'Profilingiz yangilandi!');
+    flash('success', t('Profilingiz yangilandi!'));
     redirect('/profile');
 }
 
 function page_dashboard(): void
 {
-    $user = require_login('Iltimos, avval tizimga kiring yoki demo akkaunt orqali sinab ko‘ring.');
+    $user = require_login(t('Iltimos, avval tizimga kiring yoki demo akkaunt orqali sinab ko‘ring.'));
     if ($user['role'] === 'student' && empty($user['onboarded_at'])) {
         redirect('/onboarding');
     }
@@ -255,7 +255,7 @@ function page_dashboard(): void
     $badges->execute([$user['id']]);
 
     $recent = $pdo->prepare('
-        SELECT qa.*, l.title AS lesson_title FROM quiz_attempts qa JOIN lessons l ON l.id = qa.lesson_id
+        SELECT qa.*, l.title AS lesson_title, l.title_en AS lesson_title_en FROM quiz_attempts qa JOIN lessons l ON l.id = qa.lesson_id
         WHERE qa.user_id = ? ORDER BY qa.id DESC LIMIT 5
     ');
     $recent->execute([$user['id']]);
@@ -269,7 +269,7 @@ function page_dashboard(): void
     $liveSession = $pdo->query("SELECT * FROM live_sessions WHERE status = 'scheduled' AND starts_at >= datetime('now', '-1 hour') ORDER BY starts_at LIMIT 1")->fetch();
 
     render('dashboard', [
-        'title' => 'O‘quvchi Paneli — ' . $user['display_name'],
+        'title' => t('O‘quvchi Paneli — ') . $user['display_name'],
         'user' => $user,
         'courseStates' => $courseStates,
         'continue' => $continue,
@@ -289,7 +289,7 @@ function page_courses(): void
 {
     $user = require_login();
     render('courses', [
-        'title' => 'Kurslar — LingoUz',
+        'title' => t('Kurslar — LingoUz'),
         'courseStates' => array_map(fn ($c) => course_state($c, (int) $user['id'], is_admin()), published_courses()),
     ]);
 }
@@ -299,11 +299,11 @@ function page_course(int $courseId): void
     $user = require_login();
     $course = find_course($courseId);
     if (!$course || ($course['status'] !== 'published' && !is_admin())) {
-        not_found('Kurs topilmadi');
+        not_found(t('Kurs topilmadi'));
         return;
     }
     render('course', [
-        'title' => $course['title'] . ' — LingoUz',
+        'title' => loc($course, 'title') . ' — LingoUz',
         'state' => course_state($course, (int) $user['id'], is_admin()),
     ]);
 }
@@ -313,13 +313,13 @@ function accessible_lesson(int $lessonId, array $user): ?array
 {
     $lesson = find_lesson($lessonId);
     if (!$lesson || ($lesson['status'] !== 'published' && !is_admin())) {
-        not_found('Dars topilmadi');
+        not_found(t('Dars topilmadi'));
         return null;
     }
     $state = lesson_state_for_user($lesson, (int) $user['id'], is_admin());
     if ($state['user_status'] === 'locked') {
         $prev = $state['prev_lesson'];
-        flash('error', 'Bu dars hali qulflangan. Avval «' . ($prev['title'] ?? 'oldingi dars') . '» testidan kamida ' . ($prev['passing_score'] ?? 80) . '% to‘plang.');
+        flash('error', t('Bu dars hali qulflangan. Avval «:title» testidan kamida :score% to‘plang.', ['title' => $prev ? loc($prev, 'title') : t('oldingi dars'), 'score' => $prev['passing_score'] ?? 80], false));
         redirect('/courses/' . $lesson['course_id']);
     }
     return $state;
@@ -327,7 +327,7 @@ function accessible_lesson(int $lessonId, array $user): ?array
 
 function page_lesson(int $lessonId): void
 {
-    $user = require_login('Darsni ko‘rish uchun avval tizimga kiring.');
+    $user = require_login(t('Darsni ko‘rish uchun avval tizimga kiring.'));
     $lesson = accessible_lesson($lessonId, $user);
     if (!$lesson) {
         return;
@@ -339,7 +339,7 @@ function page_lesson(int $lessonId): void
     $course = find_course((int) $lesson['course_id']);
 
     render('lesson', [
-        'title' => $lesson['title'] . ' — LingoUz',
+        'title' => loc($lesson, 'title') . ' — LingoUz',
         'lesson' => $lesson,
         'course' => $course,
         'lessonCount' => count(course_lessons((int) $lesson['course_id'])),
@@ -362,7 +362,7 @@ function action_submit_quiz(int $lessonId): void
     $quiz = lesson_quiz($lessonId);
     $questions = lesson_questions($lessonId);
     if (!$questions) {
-        flash('error', 'Bu darsda hali test savollari yo‘q.');
+        flash('error', t('Bu darsda hali test savollari yo‘q.'));
         redirect('/lessons/' . $lessonId);
     }
 
@@ -466,7 +466,7 @@ function page_quiz_result(int $lessonId): void
     $user = require_login();
     $lesson = find_lesson($lessonId);
     if (!$lesson) {
-        not_found('Dars topilmadi');
+        not_found(t('Dars topilmadi'));
         return;
     }
     $attemptId = (int) ($_GET['attempt'] ?? 0);
@@ -481,7 +481,7 @@ function page_quiz_result(int $lessonId): void
     }
 
     render('quiz_result', [
-        'title' => 'Test Natijasi — LingoUz',
+        'title' => t('Test Natijasi — LingoUz'),
         'lesson' => $lesson,
         'course' => find_course((int) $lesson['course_id']),
         'result' => [
@@ -498,7 +498,7 @@ function page_quiz_result(int $lessonId): void
 
 function page_live(): void
 {
-    $user = require_login('Jonli muloqot xonasiga kirish uchun avval tizimga kiring.');
+    $user = require_login(t('Jonli muloqot xonasiga kirish uchun avval tizimga kiring.'));
     $sessions = db()->query("
         SELECT * FROM live_sessions WHERE status = 'scheduled' AND starts_at >= datetime('now', '-1 hour')
         ORDER BY starts_at LIMIT 8
@@ -506,7 +506,7 @@ function page_live(): void
     award_badge((int) $user['id'], 'speaker');
 
     render('live', [
-        'title' => 'Jonli Muloqot Xonasi (Zoom) — LingoUz',
+        'title' => t('Jonli Muloqot Xonasi (Zoom) — LingoUz'),
         'sessions' => $sessions,
         'user' => $user,
     ]);
@@ -514,22 +514,22 @@ function page_live(): void
 
 function page_privacy(): void
 {
-    render('privacy', ['title' => 'Bolalar Maxfiyligi va Xavfsizlik Siyosati (COPPA) — LingoUz']);
+    render('privacy', ['title' => t('Bolalar Maxfiyligi va Xavfsizlik Siyosati (COPPA) — LingoUz')]);
 }
 
 function page_certificate(): void
 {
-    $user = require_login('Diplomni ko‘rish uchun avval tizimga kiring.');
+    $user = require_login(t('Diplomni ko‘rish uchun avval tizimga kiring.'));
     $courseId = (int) ($_GET['course'] ?? 1);
     $course = find_course($courseId);
     if (!$course) {
-        not_found('Kurs topilmadi');
+        not_found(t('Kurs topilmadi'));
         return;
     }
     $state = course_state($course, (int) $user['id']);
     if (($state['total'] === 0 || $state['completed'] < $state['total']) && !is_admin()) {
         render('certificate_locked', [
-            'title' => 'Diplom hali yopiq — LingoUz',
+            'title' => t('Diplom hali yopiq — LingoUz'),
             'state' => $state,
         ]);
         return;
@@ -541,7 +541,7 @@ function page_certificate(): void
     $completedAt->execute([$user['id'], $courseId]);
 
     render('certificate', [
-        'title' => 'Diplom — ' . $user['display_name'],
+        'title' => t('Diplom — ') . $user['display_name'],
         'student' => $user,
         'course' => $course,
         'state' => $state,
@@ -551,5 +551,5 @@ function page_certificate(): void
 
 function page_parent_tips(): void
 {
-    render('parent_tips', ['title' => 'Samarali o‘rganish qo‘llanmasi — LingoUz']);
+    render('parent_tips', ['title' => t('Samarali o‘rganish qo‘llanmasi — LingoUz')]);
 }

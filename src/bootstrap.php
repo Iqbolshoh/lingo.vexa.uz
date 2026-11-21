@@ -5,6 +5,7 @@ declare(strict_types=1);
 // LingoUz by Gulomov's Academy - Application Bootstrap
 require_once __DIR__ . '/icons.php';
 require_once __DIR__ . '/mascot.php';
+require_once __DIR__ . '/i18n.php';
 
 function db(): PDO
 {

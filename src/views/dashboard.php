@@ -11,31 +11,31 @@ $goalPct = min(100, (int) round($todayXp / $goalXp * 100));
         <section class="pg-hero">
             <div class="hero-split">
                 <div>
-                    <span class="hero-chip"><?= icon('registon', '', 14) ?> O‘quvchi fazosi</span>
-                    <h1>Assalomu alaykum, <span style="color:#fde68a"><?= e($user['display_name']) ?></span>!</h1>
+                    <span class="hero-chip"><?= icon('registon', '', 14) ?> <?= t('O‘quvchi fazosi') ?></span>
+                    <h1><?= t('Assalomu alaykum') ?>, <span style="color:#fde68a"><?= e($user['display_name']) ?></span>!</h1>
                     <p>
                         <?php if ($continue): ?>
-                            Bugun «<?= e($continue['title']) ?>» darsini davom ettiramiz. Har kuni 5 daqiqa — va o‘zbek tili sizniki!
+                            <?= t('Bugun «:title» darsini davom ettiramiz. Har kuni 5 daqiqa — va o‘zbek tili sizniki!', ['title' => loc($continue, 'title')]) ?>
                         <?php else: ?>
-                            Barcha ochiq darslarni tugatdingiz. Ajoyib! Diplomingizni yuklab oling yoki darslarni takrorlang.
+                            <?= t('Barcha ochiq darslarni tugatdingiz. Ajoyib! Diplomingizni yuklab oling yoki darslarni takrorlang.') ?>
                         <?php endif; ?>
                     </p>
                     <div class="xp-strip">
-                        <span class="xp-chip"><span class="ico-flame"><?= icon('flame', '', 18) ?></span> <?= $streak ?> kun <small>ketma-ket</small></span>
-                        <span class="xp-chip"><span class="ico-star"><?= icon('star', '', 18) ?></span> <?= (int) $user['xp'] ?> XP <small><?= $level['level'] ?>-daraja</small></span>
-                        <span class="xp-chip"><span class="ico-coins"><?= icon('coins', '', 18) ?></span> <?= (int) $user['coins'] ?> <small>tanga</small></span>
+                        <span class="xp-chip"><span class="ico-flame"><?= icon('flame', '', 18) ?></span> <?= t(':n kun', ['n' => $streak]) ?> <small><?= t('ketma-ket') ?></small></span>
+                        <span class="xp-chip"><span class="ico-star"><?= icon('star', '', 18) ?></span> <?= (int) $user['xp'] ?> XP <small><?= t(':n-daraja', ['n' => $level['level']]) ?></small></span>
+                        <span class="xp-chip"><span class="ico-coins"><?= icon('coins', '', 18) ?></span> <?= (int) $user['coins'] ?> <small><?= t('tanga') ?></small></span>
                     </div>
                     <div class="dashboard-cta-row" style="margin-top:20px">
                         <?php if ($continue): ?>
-                            <a href="/lessons/<?= (int) $continue['id'] ?>" class="btn btn-gold btn-lg"><?= icon('play', '', 18) ?> Darsni davom ettirish</a>
+                            <a href="/lessons/<?= (int) $continue['id'] ?>" class="btn btn-gold btn-lg"><?= icon('play', '', 18) ?> <?= t('Darsni davom ettirish') ?></a>
                         <?php endif; ?>
-                        <a href="/courses" class="btn btn-glass btn-lg"><?= icon('book-open', '', 18) ?> Barcha kurslar</a>
+                        <a href="/courses" class="btn btn-glass btn-lg"><?= icon('book-open', '', 18) ?> <?= t('Barcha kurslar') ?></a>
                     </div>
                 </div>
                 <div class="hero-owl-ring">
                     <?= mascot($continue ? 'welcome' : 'celebrate', 110) ?>
                     <div class="ring" style="--p: <?= $overall ?>">
-                        <div><strong><?= $overall ?>%</strong><span>umumiy yo‘l</span></div>
+                        <div><strong><?= $overall ?>%</strong><span><?= t('umumiy yo‘l') ?></span></div>
                     </div>
                 </div>
             </div>
@@ -44,23 +44,23 @@ $goalPct = min(100, (int) round($todayXp / $goalXp * 100));
         <div class="stat-grid">
             <div class="stat-tile tone-lapis">
                 <span class="stat-ico"><?= icon('check-circle', '', 22) ?></span>
-                <div><strong><?= $totalDone ?> / <?= $totalLessons ?></strong><span>o‘zlashtirilgan darslar</span></div>
+                <div><strong><?= $totalDone ?> / <?= $totalLessons ?></strong><span><?= t('o‘zlashtirilgan darslar') ?></span></div>
             </div>
             <div class="stat-tile tone-emerald">
                 <span class="stat-ico"><?= icon('book-open', '', 22) ?></span>
-                <div><strong><?= $wordsLearned ?></strong><span>o‘rganilgan so‘zlar</span></div>
+                <div><strong><?= $wordsLearned ?></strong><span><?= t('o‘rganilgan so‘zlar') ?></span></div>
             </div>
             <div class="stat-tile tone-gold">
                 <span class="stat-ico"><?= icon('star', '', 22) ?></span>
                 <div style="flex:1">
-                    <strong><?= $level['level'] ?>-daraja</strong><span><?= $level['into'] ?> / <?= $level['need'] ?> XP</span>
+                    <strong><?= t(':n-daraja', ['n' => $level['level']]) ?></strong><span><?= $level['into'] ?> / <?= $level['need'] ?> XP</span>
                     <div class="bar bar-gold"><i style="width: <?= $level['percent'] ?>%"></i></div>
                 </div>
             </div>
             <div class="stat-tile tone-ruby">
                 <span class="stat-ico"><?= icon('flame', '', 22) ?></span>
                 <div style="flex:1">
-                    <strong><?= $todayXp ?> / <?= $goalXp ?> XP</strong><span><?= $goalPct >= 100 ? 'Bugungi maqsad bajarildi!' : 'bugungi maqsad' ?></span>
+                    <strong><?= $todayXp ?> / <?= $goalXp ?> XP</strong><span><?= $goalPct >= 100 ? t('Bugungi maqsad bajarildi!') : t('bugungi maqsad') ?></span>
                     <div class="bar bar-emerald"><i style="width: <?= $goalPct ?>%"></i></div>
                 </div>
             </div>
@@ -72,31 +72,31 @@ $goalPct = min(100, (int) round($todayXp / $goalXp * 100));
                     <div class="card for-you tone-gold">
                         <?= mascot('learning', 72, 'owl--mini') ?>
                         <div style="flex:1;min-width:200px">
-                            <div class="small" style="font-weight:800;letter-spacing:.6px;color:#b45309;text-transform:uppercase">Siz uchun tavsiya</div>
-                            <strong style="font-family:var(--font-heading);font-size:20px;color:var(--ink)"><?= e($recommended['title']) ?></strong>
+                            <div class="small" style="font-weight:800;letter-spacing:.6px;color:#b45309;text-transform:uppercase"><?= t('Siz uchun tavsiya') ?></div>
+                            <strong style="font-family:var(--font-heading);font-size:20px;color:var(--ink)"><?= e(loc($recommended, 'title')) ?></strong>
                             <?php if ($interests): ?>
-                                <div class="chip-cloud" style="margin-top:6px"><?php foreach (array_slice($interests, 0, 4) as $k): ?><span class="tag tag-gold"><?= ONB_INTERESTS[$k][0] ?></span><?php endforeach; ?></div>
+                                <div class="chip-cloud" style="margin-top:6px"><?php foreach (array_slice($interests, 0, 4) as $k): ?><span class="tag tag-gold"><?= t(ONB_INTERESTS[$k][0]) ?></span><?php endforeach; ?></div>
                             <?php endif; ?>
                         </div>
                         <div class="adm-actions">
-                            <a href="/courses/<?= (int) $recommended['id'] ?>" class="btn btn-primary btn-sm"><?= icon('play', '', 14) ?> Ochish</a>
-                            <a href="/onboarding" class="btn btn-ghost btn-sm">Qiziqishlarim</a>
+                            <a href="/courses/<?= (int) $recommended['id'] ?>" class="btn btn-primary btn-sm"><?= icon('play', '', 14) ?> <?= t('Ochish') ?></a>
+                            <a href="/onboarding" class="btn btn-ghost btn-sm"><?= t('Qiziqishlarim') ?></a>
                         </div>
                     </div>
                 <?php endif; ?>
-                <h2 class="section-h"><?= icon('layers', '', 24) ?> Mening kurslarim <small>Keyingi dars uchun testdan 80%+ kerak</small></h2>
+                <h2 class="section-h"><?= icon('layers', '', 24) ?> <?= t('Mening kurslarim') ?> <small><?= t('Keyingi dars uchun testdan 80%+ kerak') ?></small></h2>
                 <div class="course-grid">
                     <?php foreach ($courseStates as $cs): $c = $cs['course']; ?>
                         <?php require __DIR__ . '/partials/course_card.php'; ?>
                     <?php endforeach; ?>
                 </div>
 
-                <h2 class="section-h"><?= icon('target', '', 24) ?> So‘nggi natijalar</h2>
+                <h2 class="section-h"><?= icon('target', '', 24) ?> <?= t('So‘nggi natijalar') ?></h2>
                 <div class="card">
                     <?php if (!$recent): ?>
                         <div class="empty">
                             <?= mascot('sleeping', 90) ?>
-                            Hali test topshirilmagan. Birinchi darsni boshlang — natijalar shu yerda ko‘rinadi!
+                            <?= t('Hali test topshirilmagan. Birinchi darsni boshlang — natijalar shu yerda ko‘rinadi!') ?>
                         </div>
                     <?php else: ?>
                         <div class="review-list">
@@ -105,7 +105,7 @@ $goalPct = min(100, (int) round($todayXp / $goalXp * 100));
                                     <span class="mark"><?= $r['passed'] ? icon('check-circle', '', 18) : icon('rotate-cw', '', 16) ?></span>
                                     <div class="row-between">
                                         <div>
-                                            <h4><?= e($r['lesson_title']) ?></h4>
+                                            <h4><?= e(loc($r, 'lesson_title')) ?></h4>
                                             <div class="small muted"><?= e(substr((string) $r['created_at'], 0, 16)) ?> · +<?= (int) $r['xp_earned'] ?> XP</div>
                                         </div>
                                         <span class="heat heat-<?= mastery_label((int) $r['percent'])[1] ?>"><?= (int) $r['percent'] ?>%</span>
@@ -119,19 +119,19 @@ $goalPct = min(100, (int) round($todayXp / $goalXp * 100));
 
             <aside class="stack-sm">
                 <div class="card tone-gold">
-                    <h3 class="card-title"><span class="icon-wrap"><?= icon('trophy', '', 20) ?></span> Nishonlar</h3>
+                    <h3 class="card-title"><span class="icon-wrap"><?= icon('trophy', '', 20) ?></span> <?= t('Nishonlar') ?></h3>
                     <div class="bdg-grid">
                         <?php foreach ($badges as $b): ?>
-                            <div class="bdg-item <?= $b['earned_at'] ? '' : 'is-off' ?>" title="<?= e($b['description']) ?>">
+                            <div class="bdg-item <?= $b['earned_at'] ? '' : 'is-off' ?>" title="<?= e(t($b['description'])) ?>">
                                 <div class="b-ico"><?= icon($b['icon'], '', 20) ?></div>
-                                <strong><?= e($b['title']) ?></strong>
+                                <strong><?= e(t($b['title'])) ?></strong>
                             </div>
                         <?php endforeach; ?>
                     </div>
                 </div>
 
                 <div class="card tone-lapis">
-                    <h3 class="card-title"><span class="icon-wrap"><?= icon('video', '', 20) ?></span> Jonli muloqot</h3>
+                    <h3 class="card-title"><span class="icon-wrap"><?= icon('video', '', 20) ?></span> <?= t('Jonli muloqot') ?></h3>
                     <?php if ($liveSession): ?>
                         <strong style="display:block;color:var(--ink)"><?= e($liveSession['title']) ?></strong>
                         <p class="small muted" style="margin:4px 0 10px"><?= e(uz_date($liveSession['starts_at'], normalize_timezone($user['timezone']))) ?></p>
@@ -140,16 +140,16 @@ $goalPct = min(100, (int) round($todayXp / $goalXp * 100));
                                 <span class="tag tag-lapis"><?= e($time) ?> <?= e($zone) ?></span>
                             <?php endforeach; ?>
                         </div>
-                        <a href="/live" class="btn btn-primary btn-sm btn-block"><?= icon('video', '', 16) ?> Xonaga o‘tish</a>
+                        <a href="/live" class="btn btn-primary btn-sm btn-block"><?= icon('video', '', 16) ?> <?= t('Xonaga o‘tish') ?></a>
                     <?php else: ?>
-                        <p class="small muted">Yaqin kunlarda jonli dars rejalashtirilmagan. Ustoz yangi vaqt e’lon qilganda shu yerda ko‘rinadi.</p>
+                        <p class="small muted"><?= t('Yaqin kunlarda jonli dars rejalashtirilmagan. Ustoz yangi vaqt e’lon qilganda shu yerda ko‘rinadi.') ?></p>
                     <?php endif; ?>
                 </div>
 
                 <div class="card tone-emerald">
-                    <h3 class="card-title"><span class="icon-wrap"><?= icon('heart', '', 20) ?></span> Kunlik maslahat</h3>
-                    <p class="small muted">Har kuni 5 daqiqa yetarli: o‘qish bo‘limidagi gaplarni baland ovozda takrorlang. Farzandingiz bilan o‘qisangiz — navbatma-navbat ayting.</p>
-                    <a href="/parent-tips" class="btn btn-ghost btn-sm btn-block" style="margin-top:10px">Samarali o‘rganish qo‘llanmasi</a>
+                    <h3 class="card-title"><span class="icon-wrap"><?= icon('heart', '', 20) ?></span> <?= t('Kunlik maslahat') ?></h3>
+                    <p class="small muted"><?= t('Har kuni 5 daqiqa yetarli: o‘qish bo‘limidagi gaplarni baland ovozda takrorlang. Farzandingiz bilan o‘qisangiz — navbatma-navbat ayting.') ?></p>
+                    <a href="/parent-tips" class="btn btn-ghost btn-sm btn-block" style="margin-top:10px"><?= t('Samarali o‘rganish qo‘llanmasi') ?></a>
                 </div>
             </aside>
         </div>

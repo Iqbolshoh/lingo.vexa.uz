@@ -76,7 +76,7 @@ function annotate_course_lessons(array $lessons, array $progress, bool $isAdmin 
         $override = $p && (int) $p['manual_override'] === 1;
 
         $lesson['best_score'] = $best;
-        $lesson['prev_lesson'] = $prev ? ['id' => $prev['id'], 'title' => $prev['title'], 'position' => $prev['position'], 'passing_score' => $prev['passing_score']] : null;
+        $lesson['prev_lesson'] = $prev ? ['id' => $prev['id'], 'title' => $prev['title'], 'title_en' => $prev['title_en'] ?? '', 'position' => $prev['position'], 'passing_score' => $prev['passing_score']] : null;
         if ($completed) {
             $lesson['user_status'] = 'completed';
         } elseif ($prevPassed || $override || $isAdmin) {
@@ -248,13 +248,14 @@ function award_badge(int $userId, string $code): void
 
 function mastery_label(int $percent): array
 {
-    return match (true) {
+    [$label, $tone] = match (true) {
         $percent >= 90 => ['A’lo', 'excellent'],
         $percent >= 80 => ['O‘zlashtirildi', 'good'],
         $percent >= 50 => ['Rivojlanmoqda', 'mid'],
         $percent > 0 => ['Qayta ishlash kerak', 'low'],
         default => ['Boshlanmagan', 'none'],
     };
+    return [t($label), $tone];
 }
 
 /** Zones every live session is shown in: Uzbekistan, Europe and the US. */
@@ -286,6 +287,9 @@ function uz_date(string $utc, string $zone = 'America/New_York'): string
         $d = (new DateTimeImmutable($utc, new DateTimeZone('UTC')))->setTimezone(new DateTimeZone($zone));
     } catch (Throwable) {
         return $utc;
+    }
+    if (is_en()) {
+        return $d->format('l, F j');
     }
     return $days[(int) $d->format('N')] . ', ' . (int) $d->format('j') . '-' . $months[(int) $d->format('n')];
 }

@@ -4,26 +4,26 @@
         <section class="pg-hero theme-<?= e($c['theme']) ?>">
             <div class="hero-split">
                 <div>
-                    <div class="crumbs"><a href="/courses">Kurslar</a> <span>/</span> <span><?= e($c['title']) ?></span></div>
-                    <h1><?= e($c['title']) ?></h1>
-                    <p><?= e($c['description']) ?></p>
+                    <div class="crumbs"><a href="/courses"><?= t('Kurslar') ?></a> <span>/</span> <span><?= e(loc($c, 'title')) ?></span></div>
+                    <h1><?= e(loc($c, 'title')) ?></h1>
+                    <p><?= e(loc($c, 'description')) ?></p>
                     <div class="xp-strip">
-                        <span class="xp-chip"><?= icon('book-open', '', 16) ?> <?= $state['total'] ?> dars</span>
-                        <span class="xp-chip"><?= icon('users', '', 16) ?> <?= e($c['age_range']) ?></span>
-                        <span class="xp-chip"><?= icon('target', '', 16) ?> Daraja: <?= e($c['level']) ?></span>
+                        <span class="xp-chip"><?= icon('book-open', '', 16) ?> <?= t(':n ta dars', ['n' => $state['total']]) ?></span>
+                        <span class="xp-chip"><?= icon('users', '', 16) ?> <?= e(t($c['age_range'])) ?></span>
+                        <span class="xp-chip"><?= icon('target', '', 16) ?> <?= t('Daraja: :level', ['level' => $c['level']]) ?></span>
                     </div>
                 </div>
                 <div class="ring" style="--p: <?= $state['percent'] ?>">
-                    <div><strong><?= $state['completed'] ?>/<?= $state['total'] ?></strong><span>tugatildi</span></div>
+                    <div><strong><?= $state['completed'] ?>/<?= $state['total'] ?></strong><span><?= t('tugatildi') ?></span></div>
                 </div>
             </div>
         </section>
 
         <div class="layout-main-side" style="margin-top:28px">
             <div>
-                <h2 class="section-h mt-0"><?= icon('map-pin', '', 24) ?> Darslar yo‘li</h2>
+                <h2 class="section-h mt-0"><?= icon('map-pin', '', 24) ?> <?= t('Darslar yo‘li') ?></h2>
                 <?php if (!$state['lessons']): ?>
-                    <div class="card empty"><?= mascot('sleeping', 90) ?><p>Bu kursga darslar tez orada qo‘shiladi.</p></div>
+                    <div class="card empty"><?= mascot('sleeping', 90) ?><p><?= t('Bu kursga darslar tez orada qo‘shiladi.') ?></p></div>
                 <?php endif; ?>
                 <div class="path">
                     <?php $currentShown = false; foreach ($state['lessons'] as $l):
@@ -33,29 +33,29 @@
                         [$mLabel, $mTone] = mastery_label((int) $l['best_score']);
                     ?>
                         <div class="path-node is-<?= $st ?> <?= $isCurrent ? 'is-current' : '' ?>">
-                            <?php if ($isCurrent): ?><span class="path-start-tip">Boshlash</span><?php endif; ?>
+                            <?php if ($isCurrent): ?><span class="path-start-tip"><?= t('Boshlash') ?></span><?php endif; ?>
                             <?php if ($st === 'locked'): ?>
-                                <span class="path-dot" aria-label="Qulflangan"><?= icon('lock', '', 26) ?></span>
+                                <span class="path-dot" aria-label="<?= t('Qulflangan') ?>"><?= icon('lock', '', 26) ?></span>
                             <?php else: ?>
-                                <a class="path-dot" href="/lessons/<?= (int) $l['id'] ?>" aria-label="<?= e($l['title']) ?>">
+                                <a class="path-dot" href="/lessons/<?= (int) $l['id'] ?>" aria-label="<?= e(loc($l, 'title')) ?>">
                                     <?= $st === 'completed' ? icon('check-circle', '', 30) : icon($l['icon'], '', 28) ?>
                                 </a>
                             <?php endif; ?>
                             <div class="path-card">
-                                <div class="small muted" style="font-weight:800;letter-spacing:.4px"><?= (int) $l['position'] ?>-DARS</div>
-                                <h3><?= e($l['title']) ?></h3>
-                                <div class="en"><?= e($l['title_en']) ?></div>
+                                <div class="small muted" style="font-weight:800;letter-spacing:.4px"><?= t(':n-DARS', ['n' => (int) $l['position']]) ?></div>
+                                <h3><?= e(is_en() ? $l['title_en'] : $l['title']) ?></h3>
+                                <div class="en"><?= e(is_en() ? $l['title'] : $l['title_en']) ?></div>
                                 <div class="row">
                                     <div class="meta">
-                                        <span><?= icon('clock', '', 13) ?> <?= (int) $l['duration_min'] ?> daq</span>
+                                        <span><?= icon('clock', '', 13) ?> <?= (int) $l['duration_min'] ?> <?= t('daq') ?></span>
                                         <?php if ($st !== 'locked' && $l['best_score'] > 0): ?><span class="heat heat-<?= $mTone ?>"><?= (int) $l['best_score'] ?>%</span><?php endif; ?>
                                     </div>
                                     <?php if ($st === 'completed'): ?>
-                                        <a href="/lessons/<?= (int) $l['id'] ?>" class="btn btn-ghost btn-xs"><?= icon('rotate-cw', '', 13) ?> Takrorlash</a>
+                                        <a href="/lessons/<?= (int) $l['id'] ?>" class="btn btn-ghost btn-xs"><?= icon('rotate-cw', '', 13) ?> <?= t('Takrorlash') ?></a>
                                     <?php elseif ($st === 'available'): ?>
-                                        <a href="/lessons/<?= (int) $l['id'] ?>" class="btn btn-primary btn-xs"><?= icon('play', '', 12) ?> Boshlash</a>
+                                        <a href="/lessons/<?= (int) $l['id'] ?>" class="btn btn-primary btn-xs"><?= icon('play', '', 12) ?> <?= t('Boshlash') ?></a>
                                     <?php else: ?>
-                                        <span class="small muted"><?= icon('lock', '', 12) ?> Oldingi darsdan <?= (int) ($l['prev_lesson']['passing_score'] ?? 80) ?>%+</span>
+                                        <span class="small muted"><?= icon('lock', '', 12) ?> <?= t('Oldingi darsdan :n%+', ['n' => (int) ($l['prev_lesson']['passing_score'] ?? 80)]) ?></span>
                                     <?php endif; ?>
                                 </div>
                             </div>
@@ -66,11 +66,11 @@
                     <div class="path-finish">
                         <?= mascot($done ? 'celebrate' : 'encourage', 64, 'owl--mini') ?>
                         <div style="flex:1">
-                            <strong style="font-family:var(--font-heading);font-size:19px">Marra — kurs diplomi!</strong>
-                            <div class="small">Barcha darslarni 80%+ bilan tugating va diplomni chop eting.</div>
+                            <strong style="font-family:var(--font-heading);font-size:19px"><?= t('Marra — kurs diplomi!') ?></strong>
+                            <div class="small"><?= t('Barcha darslarni 80%+ bilan tugating va diplomni chop eting.') ?></div>
                         </div>
                         <?php if ($done): ?>
-                            <a class="btn btn-accent btn-sm" href="/certificate?course=<?= (int) $c['id'] ?>">Diplomni ochish</a>
+                            <a class="btn btn-accent btn-sm" href="/certificate?course=<?= (int) $c['id'] ?>"><?= t('Diplomni ochish') ?></a>
                         <?php endif; ?>
                     </div>
                 <?php endif; ?>
@@ -78,22 +78,22 @@
 
             <aside class="stack-sm">
                 <div class="card tone-lapis">
-                    <h3 class="card-title"><span class="icon-wrap"><?= icon('target', '', 20) ?></span> O‘zlashtirish</h3>
+                    <h3 class="card-title"><span class="icon-wrap"><?= icon('target', '', 20) ?></span> <?= t('O‘zlashtirish') ?></h3>
                     <div class="row-between" style="align-items:center">
                         <div class="ring ring-light" style="--p: <?= $state['mastery'] ?>; --size:110px">
-                            <div><strong><?= $state['mastery'] ?>%</strong><span>o‘rtacha ball</span></div>
+                            <div><strong><?= $state['mastery'] ?>%</strong><span><?= t('o‘rtacha ball') ?></span></div>
                         </div>
-                        <div class="small muted" style="flex:1;min-width:140px">Har bir darsning eng yaxshi test natijasi asosida hisoblanadi. 80% va undan yuqori — dars o‘zlashtirilgan.</div>
+                        <div class="small muted" style="flex:1;min-width:140px"><?= t('Har bir darsning eng yaxshi test natijasi asosida hisoblanadi. 80% va undan yuqori — dars o‘zlashtirilgan.') ?></div>
                     </div>
                 </div>
                 <div class="card tone-gold">
-                    <h3 class="card-title"><span class="icon-wrap"><?= icon('sparkles', '', 20) ?></span> Har bir dars ichida</h3>
+                    <h3 class="card-title"><span class="icon-wrap"><?= icon('sparkles', '', 20) ?></span> <?= t('Har bir dars ichida') ?></h3>
                     <ul class="lock-list">
-                        <li><?= icon('video', '', 16) ?> Mikro-sahna va video</li>
-                        <li><?= icon('book-open', '', 16) ?> Ovozli lug‘at kartalari</li>
-                        <li><?= icon('message-square', '', 16) ?> O‘qish matni + «Bilasizmi?»</li>
-                        <li><?= icon('coins', '', 16) ?> Juftlik o‘yini va mashqlar</li>
-                        <li><?= icon('check-circle', '', 16) ?> Yakuniy test (80%)</li>
+                        <li><?= icon('video', '', 16) ?> <?= t('Mikro-sahna va video') ?></li>
+                        <li><?= icon('book-open', '', 16) ?> <?= t('Ovozli lug‘at kartalari') ?></li>
+                        <li><?= icon('message-square', '', 16) ?> <?= t('O‘qish matni + «Bilasizmi?»') ?></li>
+                        <li><?= icon('coins', '', 16) ?> <?= t('Juftlik o‘yini va mashqlar') ?></li>
+                        <li><?= icon('check-circle', '', 16) ?> <?= t('Yakuniy test (80%)') ?></li>
                     </ul>
                 </div>
             </aside>

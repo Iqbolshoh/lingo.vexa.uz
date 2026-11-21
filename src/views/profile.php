@@ -1,9 +1,9 @@
 <div class="dashboard-page">
     <div class="container" style="max-width: 800px;">
         <div class="section-header" style="margin-bottom: 24px;">
-            <a href="/dashboard" class="btn btn-outline btn-sm" style="margin-bottom: 12px;">← O‘quvchi paneliga qaytish</a>
-            <h1 class="section-title">Profil Sozlamalari</h1>
-            <p class="section-desc">O‘quvchi ma’lumotlarini tahrirlash va hisobni boshqarish</p>
+            <a href="/dashboard" class="btn btn-outline btn-sm" style="margin-bottom: 12px;"><?= t('← O‘quvchi paneliga qaytish') ?></a>
+            <h1 class="section-title"><?= t('Profil Sozlamalari') ?></h1>
+            <p class="section-desc"><?= t('O‘quvchi ma’lumotlarini tahrirlash va hisobni boshqarish') ?></p>
         </div>
 
         <div class="admin-card">
@@ -22,52 +22,52 @@
 
                 <div class="form-row">
                     <div class="form-group">
-                        <label for="display_name">O‘quvchining ismi yoki taxallusi (Nickname) *</label>
+                        <label for="display_name"><?= t('O‘quvchining ismi yoki taxallusi (Nickname) *') ?></label>
                         <input type="text" id="display_name" name="display_name" value="<?= e($user['display_name']) ?>" required>
                     </div>
 
                     <div class="form-group">
-                        <label for="email">Email (o‘zgartirib bo‘lmaydi)</label>
+                        <label for="email"><?= t('Email (o‘zgartirib bo‘lmaydi)') ?></label>
                         <input type="email" id="email" value="<?= e($user['email']) ?>" disabled style="background:#f1f5f9; cursor:not-allowed;">
                     </div>
                 </div>
 
                 <div class="form-row three-cols">
                     <div class="form-group">
-                        <label for="age_band">Yoshi</label>
+                        <label for="age_band"><?= t('Yoshi') ?></label>
                         <select id="age_band" name="age_band">
-                            <?php foreach (AGE_LABELS as $ageKey => $ageLabel): ?><option value="<?= $ageKey ?>" <?= $user['age_band'] === $ageKey ? 'selected' : '' ?>><?= $ageLabel ?></option><?php endforeach; ?>
+                            <?php foreach (AGE_LABELS as $ageKey => $ageLabel): ?><option value="<?= $ageKey ?>" <?= $user['age_band'] === $ageKey ? 'selected' : '' ?>><?= t($ageLabel) ?></option><?php endforeach; ?>
                         </select>
                     </div>
 
                     <div class="form-group">
-                        <label for="language_level">Til Darajasi</label>
+                        <label for="language_level"><?= t('Til Darajasi') ?></label>
                         <select id="language_level" name="language_level">
-                            <option value="A0" <?= $user['language_level'] === 'A0' ? 'selected' : '' ?>>A0 — Boshlang‘ich</option>
-                            <option value="A1" <?= $user['language_level'] === 'A1' ? 'selected' : '' ?>>A1 — Tushunadi</option>
-                            <option value="A2" <?= $user['language_level'] === 'A2' ? 'selected' : '' ?>>A2 — Savodxonlik</option>
+                            <option value="A0" <?= $user['language_level'] === 'A0' ? 'selected' : '' ?>><?= t('A0 — Boshlang‘ich') ?></option>
+                            <option value="A1" <?= $user['language_level'] === 'A1' ? 'selected' : '' ?>><?= t('A1 — Tushunadi') ?></option>
+                            <option value="A2" <?= $user['language_level'] === 'A2' ? 'selected' : '' ?>><?= t('A2 — Savodxonlik') ?></option>
                         </select>
                     </div>
 
                     <div class="form-group">
-                        <label for="timezone">Vaqt Zonasi</label>
+                        <label for="timezone"><?= t('Vaqt Zonasi') ?></label>
                         <select id="timezone" name="timezone">
-                            <?php foreach (TIMEZONES as $tzKey => $tzLabel): ?><option value="<?= $tzKey ?>" <?= normalize_timezone($user['timezone']) === $tzKey ? 'selected' : '' ?>><?= $tzLabel ?></option><?php endforeach; ?>
+                            <?php foreach (TIMEZONES as $tzKey => $tzLabel): ?><option value="<?= $tzKey ?>" <?= normalize_timezone($user['timezone']) === $tzKey ? 'selected' : '' ?>><?= t($tzLabel) ?></option><?php endforeach; ?>
                         </select>
                     </div>
                 </div>
 
                 <div class="form-group" style="padding-top:14px; border-top:1px solid var(--border);">
-                    <label for="new_password">Yangi parol (faqat parolni o‘zgartirmoqchi bo‘lsangiz to‘ldiring):</label>
-                    <input type="password" id="new_password" name="new_password" placeholder="Yangi parol (ixtiyoriy)">
+                    <label for="new_password"><?= t('Yangi parol (faqat parolni o‘zgartirmoqchi bo‘lsangiz to‘ldiring):') ?></label>
+                    <input type="password" id="new_password" name="new_password" placeholder="<?= t('Yangi parol (ixtiyoriy)') ?>">
                 </div>
 
                 <div style="display:flex; justify-content:flex-end; gap:12px; margin-top:20px; flex-wrap:wrap;">
                     <?php if ($user['role'] === 'student'): ?>
-                        <a href="/onboarding" class="btn btn-ghost btn-lg" style="margin-right:auto"><?= icon('heart', '', 16) ?> Qiziqishlar va kunlik maqsad</a>
+                        <a href="/onboarding" class="btn btn-ghost btn-lg" style="margin-right:auto"><?= icon('heart', '', 16) ?> <?= t('Qiziqishlar va kunlik maqsad') ?></a>
                     <?php endif; ?>
                     <button type="submit" class="btn btn-primary btn-lg">
-                        Saqlash
+                        <?= t('Saqlash') ?>
                     </button>
                 </div>
             </form>

@@ -2,11 +2,11 @@
 $selfLevel = $user['self_level'] ?: 'none';
 $goal = (int) ($user['daily_goal_xp'] ?: 50);
 $steps = [
-    ['Nima uchun o‘zbek tilini o‘rganmoqchisiz?', 'Bir nechtasini tanlashingiz mumkin. Shunga qarab darslarni moslayman!', 'welcome'],
-    ['Qayerlarga borishni orzu qilasiz?', 'O‘zbekistonda har bir shahar — alohida ertak.', 'thinking'],
-    ['Nimalarga qiziqasiz?', 'Qiziqishlaringizga mos so‘z va hikoyalar tanlayman.', 'learning'],
-    ['O‘zbek tilini qay darajada bilasiz?', 'Rostini ayting — kerak bo‘lsa, qisqa test bilan tekshiramiz.', 'thinking'],
-    ['Kuniga qancha vaqt ajratasiz?', 'Har kuni oz-ozdan — eng to‘g‘ri yo‘l. Keyin o‘zgartirsa bo‘ladi.', 'encourage'],
+    [t('Nima uchun o‘zbek tilini o‘rganmoqchisiz?'), t('Bir nechtasini tanlashingiz mumkin. Shunga qarab darslarni moslayman!'), 'welcome'],
+    [t('Qayerlarga borishni orzu qilasiz?'), t('O‘zbekistonda har bir shahar — alohida ertak.'), 'thinking'],
+    [t('Nimalarga qiziqasiz?'), t('Qiziqishlaringizga mos so‘z va hikoyalar tanlayman.'), 'learning'],
+    [t('O‘zbek tilini qay darajada bilasiz?'), t('Rostini ayting — kerak bo‘lsa, qisqa test bilan tekshiramiz.'), 'thinking'],
+    [t('Kuniga qancha vaqt ajratasiz?'), t('Har kuni oz-ozdan — eng to‘g‘ri yo‘l. Keyin o‘zgartirsa bo‘ladi.'), 'encourage'],
 ];
 ?>
 <div class="pg onb">
@@ -29,21 +29,21 @@ $steps = [
                         <div class="pick-grid">
                             <?php foreach (ONB_MOTIVES as $k => [$label, $desc, $ico]): ?>
                                 <label class="pick"><input type="checkbox" name="motives[]" value="<?= $k ?>" <?= in_array($k, $motives, true) ? 'checked' : '' ?>>
-                                    <span class="pick-ico"><?= icon($ico, '', 22) ?></span><span><strong><?= $label ?></strong><small><?= $desc ?></small></span></label>
+                                    <span class="pick-ico"><?= icon($ico, '', 22) ?></span><span><strong><?= t($label) ?></strong><small><?= t($desc) ?></small></span></label>
                             <?php endforeach; ?>
                         </div>
                     <?php elseif ($i === 1): ?>
                         <div class="pick-grid">
                             <?php foreach (ONB_PLACES as $k => [$label, $desc]): ?>
                                 <label class="pick"><input type="checkbox" name="places[]" value="<?= $k ?>" <?= in_array($k, $places, true) ? 'checked' : '' ?>>
-                                    <span class="pick-ico"><?= icon($k === 'notsure' ? 'sparkles' : 'map-pin', '', 22) ?></span><span><strong><?= $label ?></strong><small><?= $desc ?></small></span></label>
+                                    <span class="pick-ico"><?= icon($k === 'notsure' ? 'sparkles' : 'map-pin', '', 22) ?></span><span><strong><?= t($label) ?></strong><small><?= t($desc) ?></small></span></label>
                             <?php endforeach; ?>
                         </div>
                     <?php elseif ($i === 2): ?>
                         <div class="pick-grid">
                             <?php foreach (ONB_INTERESTS as $k => [$label, $desc, $ico]): ?>
                                 <label class="pick"><input type="checkbox" name="interests[]" value="<?= $k ?>" <?= in_array($k, $interests, true) ? 'checked' : '' ?>>
-                                    <span class="pick-ico"><?= icon($ico, '', 22) ?></span><span><strong><?= $label ?></strong><small><?= $desc ?></small></span></label>
+                                    <span class="pick-ico"><?= icon($ico, '', 22) ?></span><span><strong><?= t($label) ?></strong><small><?= t($desc) ?></small></span></label>
                             <?php endforeach; ?>
                         </div>
                     <?php elseif ($i === 3): ?>
@@ -51,7 +51,7 @@ $steps = [
                             <?php $bars = ['none' => 1, 'words' => 2, 'basic' => 3, 'good' => 4]; foreach (ONB_LEVELS as $k => [$label, $desc, $cefr]): ?>
                                 <label class="pick pick-row"><input type="radio" name="self_level" value="<?= $k ?>" <?= $selfLevel === $k ? 'checked' : '' ?>>
                                     <span class="lvl-bars"><?php for ($b = 1; $b <= 4; $b++): ?><i class="<?= $b <= $bars[$k] ? 'on' : '' ?>"></i><?php endfor; ?></span>
-                                    <span><strong><?= $label ?></strong><small><?= $desc ?></small></span><span class="tag tag-lapis" style="margin-left:auto"><?= $cefr ?></span></label>
+                                    <span><strong><?= t($label) ?></strong><small><?= t($desc) ?></small></span><span class="tag tag-lapis" style="margin-left:auto"><?= $cefr ?></span></label>
                             <?php endforeach; ?>
                         </div>
                     <?php else: ?>
@@ -59,7 +59,7 @@ $steps = [
                             <?php foreach (ONB_GOALS as $xp => [$time, $label, $xpLabel]): ?>
                                 <label class="pick pick-row"><input type="radio" name="daily_goal" value="<?= $xp ?>" <?= $goal === $xp ? 'checked' : '' ?>>
                                     <span class="pick-ico"><?= icon('flame', '', 22) ?></span>
-                                    <span><strong><?= $time ?> kuniga</strong><small><?= $label ?></small></span><span class="tag tag-gold" style="margin-left:auto"><?= $xpLabel ?></span></label>
+                                    <span><strong><?= t(':time kuniga', ['time' => t($time)]) ?></strong><small><?= t($label) ?></small></span><span class="tag tag-gold" style="margin-left:auto"><?= $xpLabel ?></span></label>
                             <?php endforeach; ?>
                         </div>
                     <?php endif; ?>
@@ -67,10 +67,10 @@ $steps = [
             <?php endforeach; ?>
 
             <div class="ex-foot">
-                <button type="button" class="btn btn-ghost" data-act="prev"><?= icon('arrow-left', '', 16) ?> Orqaga</button>
-                <button type="submit" form="skipForm" class="btn-link-muted">Keyinroq</button>
-                <button type="button" class="btn btn-check" data-act="next">Davom etish <?= icon('arrow-right', '', 16) ?></button>
-                <button type="submit" class="btn btn-check" data-act="submit" hidden><?= icon('check-circle', '', 18) ?> Tayyor!</button>
+                <button type="button" class="btn btn-ghost" data-act="prev"><?= icon('arrow-left', '', 16) ?> <?= t('Orqaga') ?></button>
+                <button type="submit" form="skipForm" class="btn-link-muted"><?= t('Keyinroq') ?></button>
+                <button type="button" class="btn btn-check" data-act="next"><?= t('Davom etish') ?> <?= icon('arrow-right', '', 16) ?></button>
+                <button type="submit" class="btn btn-check" data-act="submit" hidden><?= icon('check-circle', '', 18) ?> <?= t('Tayyor!') ?></button>
             </div>
         </form>
         <form method="POST" action="/onboarding/skip" id="skipForm" hidden><?= csrf_field() ?></form>
