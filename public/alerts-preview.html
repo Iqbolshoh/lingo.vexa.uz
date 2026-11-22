@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+<meta charset="UTF-8">
+<title>Real-time Alerts Preview</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+  body { background: #0e1621; display: flex; justify-content: center; align-items: center; min-height: 100vh; padding: 20px; }
+  .card { width: 100%; max-width: 820px; background: #17212b; border-radius: 16px; border: 1px solid #242f3d; padding: 26px; box-shadow: 0 15px 40px rgba(0,0,0,0.5); }
+  .badge { display: inline-flex; align-items: center; gap: 8px; background: rgba(59, 130, 246, 0.15); color: #60a5fa; border: 1px solid rgba(59, 130, 246, 0.3); padding: 6px 14px; border-radius: 20px; font-size: 13px; font-weight: 600; margin-bottom: 16px; }
+  h2 { color: #ffffff; font-size: 20px; margin-bottom: 8px; }
+  p { color: #94a3b8; font-size: 14px; line-height: 1.5; margin-bottom: 22px; }
+  
+  .alerts-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+  .alert-card { background: #1e293b; border-radius: 12px; padding: 16px; border: 1px solid #334155; display: flex; flex-direction: column; gap: 8px; }
+  .alert-card.user { border-left: 4px solid #10b981; }
+  .alert-card.lead { border-left: 4px solid #38bdf8; }
+  .alert-card.milestone { border-left: 4px solid #f59e0b; }
+  .alert-card.streak { border-left: 4px solid #ef4444; }
+  
+  .alert-header { display: flex; align-items: center; justify-content: space-between; font-size: 13px; font-weight: 700; }
+  .user .alert-header { color: #34d399; }
+  .lead .alert-header { color: #38bdf8; }
+  .milestone .alert-header { color: #fbbf24; }
+  .streak .alert-header { color: #f87171; }
+  
+  .alert-body { color: #e2e8f0; font-size: 13px; line-height: 1.5; }
+  .alert-meta { color: #64748b; font-size: 11px; margin-top: 4px; font-family: monospace; }
+</style>
+</head>
+<body>
+
+<div class="card">
+  <div class="badge">🔔 26-Bosqich: Avtomatlashtirilgan Hodisalar Monitoringi</div>
+  <h2>Platformadagi Muhim Hodisalar Dasturchilar Guruhiga Ulandi</h2>
+  <p>Har bir talaba harakati, ro‘yxatdan o‘tish va yutuqlar real-time rejimda guruhga avtomatik bildirishnoma bo‘lib keladi:</p>
+
+  <div class="alerts-grid">
+    <div class="alert-card user">
+      <div class="alert-header">
+        <span>👤 YANGI O‘QUVCHI RO‘YXATDAN O‘TDI</span>
+        <span>👥 Students</span>
+      </div>
+      <div class="alert-body">
+        <strong>Ism:</strong> Jasur Aliyev (@jasur_a)<br>
+        <strong>Email:</strong> jasur@example.com<br>
+        <strong>Maqsad:</strong> Bolalar uchun o‘zbek tili
+      </div>
+      <div class="alert-meta">action_register() • auto-alert</div>
+    </div>
+
+    <div class="alert-card lead">
+      <div class="alert-header">
+        <span>📝 YANGI KURS ARIZASI (LEAD)</span>
+        <span>📝 Leads</span>
+      </div>
+      <div class="alert-body">
+        <strong>Ota-ona:</strong> Nigora Karimova<br>
+        <strong>Telefon:</strong> +998 90 123 45 67<br>
+        <strong>Farzand yoshi:</strong> 8 yosh • Kurs: A1
+      </div>
+      <div class="alert-meta">action_enroll() • auto-alert</div>
+    </div>
+
+    <div class="alert-card milestone">
+      <div class="alert-header">
+        <span>🏆 100% TEST NATIJASI</span>
+        <span>🏆 Milestones</span>
+      </div>
+      <div class="alert-body">
+        <strong>O‘quvchi:</strong> Malika Sobirova<br>
+        <strong>Dars:</strong> 3-Dars: Sehrli Raqamlar<br>
+        <strong>Natija:</strong> 10/10 (100%) • +50 XP
+      </div>
+      <div class="alert-meta">action_submit_quiz() • auto-alert</div>
+    </div>
+
+    <div class="alert-card streak">
+      <div class="alert-header">
+        <span>🔥 7 KUNLIK STREAK REKORDI</span>
+        <span>🏆 Milestones</span>
+      </div>
+      <div class="alert-body">
+        <strong>O‘quvchi:</strong> Azizbek Toshmatov<br>
+        <strong>Ketma-ketlik:</strong> 7 kun uzluksiz o‘qish!<br>
+        <strong>Mukofot:</strong> Olovli nishon & bonus tangalar
+      </div>
+      <div class="alert-meta">streak_milestone() • auto-alert</div>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>
