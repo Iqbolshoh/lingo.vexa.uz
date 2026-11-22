@@ -410,8 +410,22 @@ function handle_telegram_webhook(array $update): void
         return;
     }
 
-    $chatId = $message['chat']['id'] ?? null;
     $from = $message['from'] ?? [];
+    // Ignore messages from bots to prevent feedback loops
+    if (!empty($from['is_bot'])) {
+        return;
+    }
+
+    $chat = $message['chat'] ?? [];
+    $chatType = (string) ($chat['type'] ?? 'private');
+
+    // In groups, supergroups, and channels: NEVER send private greetings, reply keyboards, or fallback menus!
+    // The developer group is strictly reserved for automated system notifications & reports.
+    if ($chatType !== 'private') {
+        return;
+    }
+
+    $chatId = $chat['id'] ?? null;
     $text = trim((string) ($message['text'] ?? ''));
 
     if (!$chatId) {
