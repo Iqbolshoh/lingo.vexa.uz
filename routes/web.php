@@ -10,6 +10,7 @@ require_once base_path('src/admin.php');
 require_once base_path('src/onboarding.php');
 require_once base_path('src/stats.php');
 require_once base_path('src/telegram.php');
+require_once base_path('src/og.php');
 
 // Helper wrapper for request handling
 function run_action(callable $fn, ...$args) {
@@ -61,6 +62,11 @@ Route::post('/api/telegram/webhook', function () { run_action('action_telegram_w
 Route::get('/api/telegram/status', function () { run_action('action_telegram_status'); });
 Route::post('/api/telegram/unlink', function () { run_action('action_telegram_unlink'); });
 Route::get('/telegram/connect', function () { run_action('page_telegram_connect'); });
+
+// Dynamic Open Graph (OG) Share Cards
+Route::get('/og/profile/{id}.png', function ($id) { action_og_profile((int) $id); });
+Route::get('/og/word/{id}.png', function ($id) { action_og_word((int) $id); });
+Route::get('/og/default.png', function () { action_og_default(); });
 
 // Static Pages
 Route::get('/privacy', function () { run_action('page_privacy'); });

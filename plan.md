@@ -102,12 +102,15 @@ MVP ni mukammal startap holatiga yetkazish uchun quyidagi qadamlar rejalashtiril
 - [x] Bosqich yakunlanganda konfetti, bayramona tabrik va API orqali o‘quvchi balansiga real XP qo‘shilishi.
 
 ### 2.6. Telegram Bot bilan integratsiya (Retenshn va Eslatmalar) [BAJARILDI ✅ 2026-11-22]
+- [x] **Rasmiy bot manzili:** `t.me/vexa_lingo_bot` (Token va Webhook to‘liq sozlandi va faol).
+- [x] **2 ta tilda to‘liq ishlash (O‘zbekcha va Inglizcha):** Bot foydalanuvchi tilini avtomatik aniqlaydi (`telegram_lang`), inline til almashtirgich (`/lang`) orqali xohlagan paytda almashtirish mumkin.
 - [x] **Algor.uz uslubidagi 1-bosishda ulanish:** O‘quvchi dashboardidagi yorqin bannerdagi «Botni ulash ↗» tugmasini bosishi bilan bot ochiladi (`/start link_<token>`).
 - [x] **Real-time status tekshirish:** Dashboard brauzer oynasida polling orqali foydalanuvchi botni ulanishi bilan sahifani yangilamasdan avtomatik muvaffaqiyat kartasiga aylanadi va +20 XP hamda 5 ta tanga taqdim etiladi.
-- [x] **Kunlik o‘quv kartochkasi (`/word`):** Har kuni yangi o‘zbekcha so‘z, talaffuz transkripsiyasi, inglizcha ma’nosi, namunaviy gap va Flashcards trenajyoriga havola.
-- [x] **Interaktiv mini-testlar (`/quiz`):** Telegramning rasmiy `sendPoll` (Quiz rejimi) orqali to‘g‘ri javob va tushuntirish bilan mini-viktorina.
+- [x] **Professional Dynamic OG Share Cards:** Har bir o‘quvchi profili (`/og/profile/{id}.png`), kunlik so‘z (`/og/word/{id}.png`) va platforma (`/og/default.png`) uchun avtomatik 1200x630 formatdagi yuqori sifatli brendli karta generatsiyasi.
+- [x] **Kunlik o‘quv kartochkasi (`/word`):** Har kuni yangi o‘zbekcha so‘z, talaffuz transkripsiyasi, inglizcha ma’nosi, namunaviy gap, rasmli OG karta va Flashcards trenajyoriga havola.
+- [x] **Interaktiv mini-testlar (`/quiz`):** Telegramning rasmiy `sendPoll` (Quiz rejimi) orqali to‘g‘ri javob va tushuntirish bilan ikki tilli mini-viktorina.
 - [x] **Streak xavfsizligi va eslatmalar:** Kun davomida dars qilmagan o‘quvchilarga streakni saqlab qolish va darsni davom ettirish bo‘yicha eslatmalar.
-- [x] **Admin panel boshqaruvi:** `/admin/settings` bo‘limida Bot Token, Bot Username, Webhook sozlash (Set Webhook) va sinov xabari yuborish (Broadcast) funksiyalari.
+- [x] **Bot tavsifi va qisqa ma’lumoti:** `setMyDescription`, `setMyShortDescription` va `setMyCommands` orqali Telegramda bot profili va buyruqlar menyusi ikki tilda to‘liq kiritildi.
 - [x] **Cron avtomatizatsiyasi:** `php artisan lingo:telegram-daily` konsol buyrug‘i.
 - [x] **Yangi o‘zbek lotin alifbosi:** Bot yuboradigan barcha xabarlar va savollarda qat’iy yangi alifbo (`Ö/ö`, `Ş/ş`, `Ç/ç`, `Ğ/ğ`).
 

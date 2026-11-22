@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 require_once __DIR__ . '/bootstrap.php';
 require_once __DIR__ . '/i18n.php';
+require_once __DIR__ . '/og.php';
 
 /**
  * Returns the Telegram bot token from environment or database.
@@ -23,7 +24,7 @@ function telegram_bot_token(): string
 }
 
 /**
- * Returns the Telegram bot username (e.g. 'LingoUzBot' without '@').
+ * Returns the Telegram bot username (e.g. 'vexa_lingo_bot' without '@').
  */
 function telegram_bot_username(): string
 {
@@ -38,7 +39,7 @@ function telegram_bot_username(): string
         }
     } catch (\Throwable $e) {
     }
-    return 'LingoUzBot';
+    return 'vexa_lingo_bot';
 }
 
 /**
@@ -53,7 +54,7 @@ function telegram_webhook_secret(): string
 /**
  * Executes a call to the Telegram Bot API.
  */
-function telegram_api(string $method, array $params = []): ?array
+function telegram_api(string $method, array $params = [], bool $isMultipart = false): ?array
 {
     $token = telegram_bot_token();
     if ($token === '') {
@@ -62,14 +63,25 @@ function telegram_api(string $method, array $params = []): ?array
 
     $url = "https://api.telegram.org/bot{$token}/{$method}";
     $ch = curl_init($url);
-    curl_setopt_array($ch, [
-        CURLOPT_POST => true,
-        CURLOPT_POSTFIELDS => json_encode($params, JSON_UNESCAPED_UNICODE),
-        CURLOPT_HTTPHEADER => ['Content-Type: application/json'],
-        CURLOPT_RETURNTRANSFER => true,
-        CURLOPT_TIMEOUT => 12,
-        CURLOPT_SSL_VERIFYPEER => true,
-    ]);
+
+    if ($isMultipart) {
+        curl_setopt_array($ch, [
+            CURLOPT_POST => true,
+            CURLOPT_POSTFIELDS => $params,
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_TIMEOUT => 20,
+            CURLOPT_SSL_VERIFYPEER => true,
+        ]);
+    } else {
+        curl_setopt_array($ch, [
+            CURLOPT_POST => true,
+            CURLOPT_POSTFIELDS => json_encode($params, JSON_UNESCAPED_UNICODE),
+            CURLOPT_HTTPHEADER => ['Content-Type: application/json'],
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_TIMEOUT => 15,
+            CURLOPT_SSL_VERIFYPEER => true,
+        ]);
+    }
 
     $response = curl_exec($ch);
     $err = curl_error($ch);
@@ -88,11 +100,24 @@ function telegram_api(string $method, array $params = []): ?array
 }
 
 /**
- * Sends a message to a Telegram chat with automatic New Latin alphabet conversion.
+ * Answers a callback query (for inline button clicks).
  */
-function telegram_send_message(string|int $chatId, string $text, ?array $replyMarkup = null, string $parseMode = 'HTML'): ?array
+function telegram_answer_callback(string $callbackQueryId, string $text = '', bool $showAlert = false): ?array
 {
-    $formattedText = to_new_latin($text);
+    $params = [
+        'callback_query_id' => $callbackQueryId,
+        'text' => to_new_latin($text),
+        'show_alert' => $showAlert,
+    ];
+    return telegram_api('answerCallbackQuery', $params);
+}
+
+/**
+ * Sends a text message with automatic formatting and New Latin conversion for Uzbek.
+ */
+function telegram_send_message(string|int $chatId, string $text, ?array $replyMarkup = null, string $parseMode = 'HTML', string $lang = 'uz'): ?array
+{
+    $formattedText = $lang === 'uz' ? to_new_latin($text) : $text;
     $params = [
         'chat_id' => $chatId,
         'text' => $formattedText,
@@ -106,12 +131,37 @@ function telegram_send_message(string|int $chatId, string $text, ?array $replyMa
 }
 
 /**
+ * Sends a photo message (e.g. dynamic OG share card) with caption and buttons.
+ */
+function telegram_send_photo(string|int $chatId, string $photoPathOrUrl, string $caption = '', ?array $replyMarkup = null, string $parseMode = 'HTML', string $lang = 'uz'): ?array
+{
+    $formattedCaption = $lang === 'uz' ? to_new_latin($caption) : $caption;
+    $params = [
+        'chat_id' => $chatId,
+        'caption' => $formattedCaption,
+        'parse_mode' => $parseMode,
+    ];
+    if ($replyMarkup !== null) {
+        $params['reply_markup'] = is_string($replyMarkup) ? $replyMarkup : json_encode($replyMarkup, JSON_UNESCAPED_UNICODE);
+    }
+
+    if (file_exists($photoPathOrUrl)) {
+        $params['photo'] = new CURLFile($photoPathOrUrl);
+        return telegram_api('sendPhoto', $params, true);
+    } else {
+        $params['photo'] = $photoPathOrUrl;
+        return telegram_api('sendPhoto', $params, false);
+    }
+}
+
+/**
  * Sends a native quiz poll to Telegram.
  */
-function telegram_send_poll(string|int $chatId, string $question, array $options, int $correctOptionId, string $explanation = ''): ?array
+function telegram_send_poll(string|int $chatId, string $question, array $options, int $correctOptionId, string $explanation = '', string $lang = 'uz'): ?array
 {
-    $formattedQuestion = to_new_latin($question);
-    $formattedOptions = array_map(fn ($opt) => to_new_latin((string) $opt), array_values($options));
+    $formattedQuestion = $lang === 'uz' ? to_new_latin($question) : $question;
+    $formattedOptions = array_map(fn ($opt) => $lang === 'uz' ? to_new_latin((string) $opt) : (string) $opt, array_values($options));
+
     $params = [
         'chat_id' => $chatId,
         'question' => mb_substr($formattedQuestion, 0, 300),
@@ -121,10 +171,54 @@ function telegram_send_poll(string|int $chatId, string $question, array $options
         'is_anonymous' => false,
     ];
     if ($explanation !== '') {
-        $params['explanation'] = mb_substr(to_new_latin($explanation), 0, 200);
+        $formattedExplanation = $lang === 'uz' ? to_new_latin($explanation) : $explanation;
+        $params['explanation'] = mb_substr($formattedExplanation, 0, 200);
         $params['explanation_parse_mode'] = 'HTML';
     }
     return telegram_api('sendPoll', $params);
+}
+
+/**
+ * Detects user preferred language ('uz' or 'en').
+ */
+function telegram_user_lang(?array $user, array $from = []): string
+{
+    if ($user && !empty($user['telegram_lang'])) {
+        return $user['telegram_lang'] === 'en' ? 'en' : 'uz';
+    }
+    $langCode = strtolower((string) ($from['language_code'] ?? ''));
+    if (str_starts_with($langCode, 'en')) {
+        return 'en';
+    }
+    return 'uz';
+}
+
+/**
+ * Returns main persistent reply keyboard in user's language.
+ */
+function telegram_main_keyboard(string $lang = 'uz'): array
+{
+    if ($lang === 'en') {
+        return [
+            'keyboard' => [
+                [['text' => '📖 Word of the day'], ['text' => '🎯 Mini-quiz']],
+                [['text' => '🔥 Streak status'], ['text' => '📊 My profile']],
+                [['text' => '🌐 Change language (UZ/EN)'], ['text' => '🚀 Open LingoUz']]
+            ],
+            'resize_keyboard' => true,
+            'one_time_keyboard' => false,
+        ];
+    }
+
+    return [
+        'keyboard' => [
+            [['text' => '📖 Bugungi söz'], ['text' => '🎯 Mini-test']],
+            [['text' => '🔥 Streak holati'], ['text' => '📊 Mening hisobim']],
+            [['text' => '🌐 Tilni almaştiriş (UZ/EN)'], ['text' => '🚀 LingoUz Sayti']]
+        ],
+        'resize_keyboard' => true,
+        'one_time_keyboard' => false,
+    ];
 }
 
 /**
@@ -148,29 +242,13 @@ function get_or_create_telegram_link_token(int $userId): string
 }
 
 /**
- * Generates the 1-click Telegram deep link (algor.uz style).
+ * Generates the 1-click Telegram deep link.
  */
 function get_telegram_link_url(array $user): string
 {
     $token = get_or_create_telegram_link_token((int) $user['id']);
     $bot = telegram_bot_username();
     return "https://t.me/{$bot}?start=link_{$token}";
-}
-
-/**
- * Returns main persistent reply keyboard for the bot.
- */
-function telegram_main_keyboard(): array
-{
-    return [
-        'keyboard' => [
-            [['text' => '📖 Bugungi söz'], ['text' => '🎯 Mini-test']],
-            [['text' => '🔥 Streak holati'], ['text' => '📊 Mening hisobim']],
-            [['text' => '🌐 LingoUz Saytiga kiriş']]
-        ],
-        'resize_keyboard' => true,
-        'one_time_keyboard' => false,
-    ];
 }
 
 /**
@@ -210,10 +288,42 @@ function telegram_random_quiz(): ?array
 }
 
 /**
- * Handles incoming webhook update from Telegram.
+ * Main Webhook Handler for Telegram updates.
  */
 function handle_telegram_webhook(array $update): void
 {
+    $pdo = db();
+
+    // 1. Handle Inline Button Callback Queries (e.g. Language Switcher)
+    if (!empty($update['callback_query'])) {
+        $cb = $update['callback_query'];
+        $cbId = (string) $cb['id'];
+        $cbData = (string) ($cb['data'] ?? '');
+        $chatId = $cb['message']['chat']['id'] ?? ($cb['from']['id'] ?? null);
+
+        if (str_starts_with($cbData, 'set_lang:')) {
+            $newLang = $cbData === 'set_lang:en' ? 'en' : 'uz';
+            if ($chatId) {
+                $pdo->prepare('UPDATE users SET telegram_lang = ? WHERE telegram_chat_id = ?')
+                    ->execute([$newLang, (string) $chatId]);
+            }
+
+            if ($newLang === 'en') {
+                telegram_answer_callback($cbId, "Language set to English! 🇬🇧");
+                $msg = "✅ <b>Language successfully updated to English!</b>\n\nNow all daily words, quizzes, and streak reminders will be sent with English guides.";
+                telegram_send_message($chatId, $msg, telegram_main_keyboard('en'), 'HTML', 'en');
+            } else {
+                telegram_answer_callback($cbId, "Til o‘zbekchaga o‘rnatildi! 🇺🇿");
+                $msg = "✅ <b>Til muvaffaqiyatli O‘zbekchaga (Yangi lotin) o‘rnatildi!</b>\n\nEndi barcha xabarlar, kunlik so‘zlar va viktorinalar yangi alifboda keladi.";
+                telegram_send_message($chatId, $msg, telegram_main_keyboard('uz'), 'HTML', 'uz');
+            }
+            return;
+        }
+
+        telegram_answer_callback($cbId);
+        return;
+    }
+
     $message = $update['message'] ?? $update['edited_message'] ?? null;
     if (!$message) {
         return;
@@ -228,20 +338,27 @@ function handle_telegram_webhook(array $update): void
     }
 
     $tgUsername = $from['username'] ?? '';
-    $tgFirstName = $from['first_name'] ?? ($from['username'] ?? 'Döst');
-    $pdo = db();
+    $tgFirstName = $from['first_name'] ?? ($from['username'] ?? 'Learner');
 
-    // 1. Deep linking: /start link_<token>
+    // Find linked user if exists
+    $uStmt = $pdo->prepare('SELECT * FROM users WHERE telegram_chat_id = ? LIMIT 1');
+    $uStmt->execute([(string) $chatId]);
+    $user = $uStmt->fetch() ?: null;
+
+    $lang = telegram_user_lang($user, $from);
+
+    // 2. Deep linking: /start link_<token>
     if (preg_match('/^\/start\s+link_([a-f0-9]{24,64})/i', $text, $matches)) {
         $token = $matches[1];
         $stmt = $pdo->prepare('SELECT * FROM users WHERE telegram_link_token = ? LIMIT 1');
         $stmt->execute([$token]);
-        $user = $stmt->fetch();
+        $targetUser = $stmt->fetch();
 
-        if ($user) {
-            $isFirstLink = empty($user['telegram_chat_id']);
+        if ($targetUser) {
+            $isFirstLink = empty($targetUser['telegram_chat_id']);
             $rewardXp = $isFirstLink ? 20 : 0;
             $rewardCoins = $isFirstLink ? 5 : 0;
+            $userLang = telegram_user_lang($targetUser, $from);
 
             $up = $pdo->prepare('
                 UPDATE users 
@@ -250,6 +367,7 @@ function handle_telegram_webhook(array $update): void
                     telegram_first_name = ?, 
                     telegram_linked_at = NOW(),
                     telegram_notifications = 1,
+                    telegram_lang = ?,
                     xp = xp + ?, 
                     coins = coins + ? 
                 WHERE id = ?
@@ -258,176 +376,307 @@ function handle_telegram_webhook(array $update): void
                 (string) $chatId,
                 $tgUsername ?: null,
                 $tgFirstName ?: null,
+                $userLang,
                 $rewardXp,
                 $rewardCoins,
-                $user['id']
+                $targetUser['id']
             ]);
 
-            $welcomeMsg = "Assalomu alaykum, <b>" . e($user['display_name']) . "</b>! 🎉\n\n" .
-                "Tabriklaymiz, sizning LingoUz hisobingiz Telegram botimizga muvaffaqiyatli ulandi!\n\n";
+            // Refresh user row
+            $targetUser['xp'] += $rewardXp;
+            $targetUser['coins'] += $rewardCoins;
 
-            if ($isFirstLink) {
-                $welcomeMsg .= "🎁 <b>Sovğa:</b> Hisobingizga <b>+20 XP</b> va <b>5 ta tanga</b> taqdim etildi!\n\n";
+            // Generate Professional OG Profile Card
+            $ogCardPath = generate_og_profile_image((int) $targetUser['id']);
+
+            if ($userLang === 'en') {
+                $caption = "Welcome, <b>" . e($targetUser['display_name']) . "</b>! 🎉\n\n" .
+                    "Congratulations, your LingoUz learning account has been linked!\n\n";
+                if ($isFirstLink) {
+                    $caption .= "🎁 <b>Welcome Gift:</b> <b>+20 XP</b> and <b>5 coins</b> have been added to your profile!\n\n";
+                }
+                $caption .= "Every day you will receive:\n" .
+                    "• 1 Word of the Day card with audio & translation\n" .
+                    "• Interactive mini-quizzes\n" .
+                    "• Streak protection alerts so you never lose your streak!\n\n" .
+                    "Choose an option below to start exploring:";
+
+                $keyboard = telegram_main_keyboard('en');
+            } else {
+                $caption = "Assalomu alaykum, <b>" . e($targetUser['display_name']) . "</b>! 🎉\n\n" .
+                    "Tabriklaymiz, sizning LingoUz hisobingiz botga muvaffaqiyatli ulandi!\n\n";
+                if ($isFirstLink) {
+                    $caption .= "🎁 <b>Sovg‘a:</b> Hisobingizga <b>+20 XP</b> va <b>5 ta tanga</b> taqdim etildi!\n\n";
+                }
+                $caption .= "Endi siz:\n" .
+                    "• Har kuni 1 ta yangi o‘zbekcha so‘z kartochkasi\n" .
+                    "• Qiziqarli mini-viktorinalar\n" .
+                    "• Streakingiz (ketma-ketlik) uzilib qolmasligi uchun eslatmalarni olasiz.\n\n" .
+                    "Bilim olishni davom ettirish uchun pastdagi menyudan foydalaning! 👇";
+
+                $keyboard = telegram_main_keyboard('uz');
             }
 
-            $welcomeMsg .= "Endi siz:\n" .
-                "• Har kuni 1 ta yangi o‘zbekcha so‘z kartochkasi\n" .
-                "• Qiziqarli mini-viktorina va savollar\n" .
-                "• Streakingiz (ketma-ketlik) uzilib qolmasligi uchun eslatmalarni qabul qilasiz.\n\n" .
-                "Bilim olishni davom ettirish uchun pastdagi menyudan foydalaning! 👇";
-
-            telegram_send_message($chatId, $welcomeMsg, telegram_main_keyboard());
+            telegram_send_photo($chatId, $ogCardPath, $caption, $keyboard, 'HTML', $userLang);
             return;
         } else {
-            $failMsg = "Kechirasiz, havola yaroqsiz yoki muddati o‘tgan. Iltimos, <a href=\"https://lingo.vexa.uz/dashboard\">LingoUz Boshqaruv paneliga</a> kirib, yangi havola orqali urinib ko‘ring.";
-            telegram_send_message($chatId, $failMsg);
+            $failMsg = $lang === 'en'
+                ? "Sorry, this invitation link is invalid or expired. Please visit your <a href=\"https://lingo.vexa.uz/dashboard\">LingoUz Dashboard</a> to get a new link."
+                : "Kechirasiz, havola yaroqsiz yoki muddati o‘tgan. Iltimos, <a href=\"https://lingo.vexa.uz/dashboard\">LingoUz Boshqaruv paneliga</a> kirib, yangi havola orqali urinib ko‘ring.";
+            telegram_send_message($chatId, $failMsg, null, 'HTML', $lang);
             return;
         }
     }
 
-    // Find linked user for this chat
-    $uStmt = $pdo->prepare('SELECT * FROM users WHERE telegram_chat_id = ? LIMIT 1');
-    $uStmt->execute([(string) $chatId]);
-    $user = $uStmt->fetch();
-
-    // 2. Command: /start (without token)
+    // 3. Command: /start (without token)
     if ($text === '/start') {
         if ($user) {
-            $msg = "Qaytganingiz bilan, <b>" . e($user['display_name']) . "</b>! 👋\n\n" .
-                "🔥 <b>Streakingiz:</b> " . (int) $user['streak_days'] . " kun\n" .
-                "⭐ <b>XP:</b> " . (int) $user['xp'] . " | 🪙 <b>Tangalar:</b> " . (int) $user['coins'] . "\n\n" .
-                "Bugun nima o‘rganamiz? Quyidagi tugmalardan birini tanlang:";
-            telegram_send_message($chatId, $msg, telegram_main_keyboard());
+            $ogPath = generate_og_profile_image((int) $user['id']);
+            if ($lang === 'en') {
+                $caption = "Welcome back, <b>" . e($user['display_name']) . "</b>! 👋\n\n" .
+                    "🔥 <b>Current Streak:</b> " . (int) $user['streak_days'] . " days\n" .
+                    "⭐ <b>Total XP:</b> " . (int) $user['xp'] . " | 🪙 <b>Coins:</b> " . (int) $user['coins'] . "\n\n" .
+                    "Ready for today's 5-minute Uzbek lesson?";
+            } else {
+                $caption = "Qaytganingiz bilan, <b>" . e($user['display_name']) . "</b>! 👋\n\n" .
+                    "🔥 <b>Ketma-ketlik (Streak):</b> " . (int) $user['streak_days'] . " kun\n" .
+                    "⭐ <b>Jami XP:</b> " . (int) $user['xp'] . " | 🪙 <b>Tangalar:</b> " . (int) $user['coins'] . "\n\n" .
+                    "Bugun nima o‘rganamiz? Quyidagi menyudan tanlang:";
+            }
+            telegram_send_photo($chatId, $ogPath, $caption, telegram_main_keyboard($lang), 'HTML', $lang);
         } else {
-            $msg = "Assalomu alaykum! 👋 Men LingoUz platformasining rasmiy yordamchisiman.\n\n" .
-                "Hisobingizni ulash va har kuni dars eslatmalari hamda yangi so‘zlarni qabul qilish uchun saytimizdagi shaxsiy kabinetingizga kiring va <b>«Telegram botni ulash»</b> tugmasini bosing:\n\n" .
-                "👉 https://lingo.vexa.uz/dashboard\n\n" .
-                "Hisobingizni ulagan zahotingiz sizga <b>+20 XP</b> va <b>5 ta tanga</b> sovg‘a qilinadi! 🎁";
+            if ($lang === 'en') {
+                $msg = "Hello! 👋 I am the official AI assistant of the <b>LingoUz</b> platform.\n\n" .
+                    "To link your account, receive daily words, interactive quizzes, and streak alerts, log in to your dashboard and click <b>«Connect Telegram Bot»</b>:\n\n" .
+                    "👉 https://lingo.vexa.uz/dashboard\n\n" .
+                    "You will receive <b>+20 XP</b> and <b>5 coins</b> bonus upon linking! 🎁";
+                $btnText = "🌐 Open Website & Link Account";
+            } else {
+                $msg = "Assalomu alaykum! 👋 Men LingoUz platformasining rasmiy botiman.\n\n" .
+                    "Hisobingizni ulash, kunlik so‘zlar va streak eslatmalarini qabul qilish uchun saytimizdagi Boshqaruv paneliga kiring va <b>«Telegram botni ulash»</b> tugmasini bosing:\n\n" .
+                    "👉 https://lingo.vexa.uz/dashboard\n\n" .
+                    "Hisobingizni ulagan zahotingiz sizga <b>+20 XP</b> va <b>5 ta tanga</b> sovg‘a qilinadi! 🎁";
+                $btnText = "🌐 Saytga o‘tish va hisobni ulash";
+            }
+
             telegram_send_message($chatId, $msg, [
                 'inline_keyboard' => [
-                    [['text' => '🌐 Saytga o‘tish va hisobni ulash', 'url' => 'https://lingo.vexa.uz/dashboard']]
+                    [['text' => $btnText, 'url' => 'https://lingo.vexa.uz/dashboard']]
                 ]
-            ]);
+            ], 'HTML', $lang);
         }
         return;
     }
 
-    // 3. Command: Bugungi so'z / /word
-    if ($text === '📖 Bugungi söz' || $text === '📖 Bugungi so‘z' || $text === '/word') {
+    // 4. Command: Word of the Day / Bugungi so'z
+    if (in_array($text, ['📖 Bugungi söz', '📖 Bugungi so‘z', '📖 Word of the day', '/word'], true)) {
         $word = telegram_today_word();
         if ($word) {
-            $msg = "📖 <b>Bugungi yangi so‘z:</b>\n\n" .
-                "🇺🇿 <b>" . e($word['word_uz']) . "</b>" . ($word['pronunciation'] ? " [<i>" . e($word['pronunciation']) . "</i>]" : "") . "\n" .
-                "🇬🇧 Tarjimasi: <b>" . e($word['word_en']) . "</b>\n\n";
-            if (!empty($word['example'])) {
-                $msg .= "💡 <b>Misol:</b>\n<i>«" . e($word['example']) . "»</i>\n\n";
+            $ogPath = generate_og_word_image((int) $word['id']);
+            if ($lang === 'en') {
+                $caption = "📖 <b>Word of the Day:</b>\n\n" .
+                    "🇺🇿 <b>" . e($word['word_uz']) . "</b>" . ($word['pronunciation'] ? " [<i>" . e($word['pronunciation']) . "</i>]" : "") . "\n" .
+                    "🇬🇧 Meaning: <b>" . e($word['word_en']) . "</b>\n\n";
+                if (!empty($word['example'])) {
+                    $caption .= "💡 <b>Example:</b>\n<i>«" . e($word['example']) . "»</i>\n\n";
+                }
+                $caption .= "🎧 Listen to audio pronunciation and practice cards on LingoUz:";
+                $btnTrain = "🎴 Smart Flashcards Trainer";
+                $btnCourses = "📚 All Uzbek Courses";
+            } else {
+                $caption = "📖 <b>Bugungi yangi so‘z:</b>\n\n" .
+                    "🇺🇿 <b>" . e($word['word_uz']) . "</b>" . ($word['pronunciation'] ? " [<i>" . e($word['pronunciation']) . "</i>]" : "") . "\n" .
+                    "🇬🇧 Tarjimasi: <b>" . e($word['word_en']) . "</b>\n\n";
+                if (!empty($word['example'])) {
+                    $caption .= "💡 <b>Misol:</b>\n<i>«" . e($word['example']) . "»</i>\n\n";
+                }
+                $caption .= "🎧 Ovozli talaffuz va barcha so‘zlarni ko‘rish uchun Flashcards trenajyoriga o‘ting:";
+                $btnTrain = "🎴 Aqlli Flashcards trenajyori";
+                $btnCourses = "📚 Barcha darslar";
             }
-            $msg .= "🎧 Ovozli talaffuz va barcha so‘zlarni ko‘rish uchun Flashcards trenajyoriga o‘ting:";
 
             $keyboard = [
                 'inline_keyboard' => [
-                    [['text' => '🎴 Aqlli Flashcards trenajyori', 'url' => 'https://lingo.vexa.uz/flashcards']],
-                    [['text' => '📚 Barcha darslar', 'url' => 'https://lingo.vexa.uz/courses']]
+                    [['text' => $btnTrain, 'url' => 'https://lingo.vexa.uz/flashcards']],
+                    [['text' => $btnCourses, 'url' => 'https://lingo.vexa.uz/courses']],
+                    [['text' => '📤 Share / Ulashish', 'url' => 'https://t.me/share/url?url=https://lingo.vexa.uz/flashcards&text=' . urlencode("Bugungi o‘zbekcha so‘z: " . $word['word_uz'] . " (" . $word['word_en'] . ")! LingoUz orqali o‘rganing!")]]
                 ]
             ];
-            telegram_send_message($chatId, $msg, $keyboard);
+            telegram_send_photo($chatId, $ogPath, $caption, $keyboard, 'HTML', $lang);
         } else {
-            telegram_send_message($chatId, "Hozircha yangi so‘zlar bazasi tayyorlanmoqda.");
+            telegram_send_message($chatId, $lang === 'en' ? "Vocabulary database is loading..." : "Lug‘at bazasi yangilanmoqda.", null, 'HTML', $lang);
         }
         return;
     }
 
-    // 4. Command: Mini-test / /quiz
-    if ($text === '🎯 Mini-test' || $text === '/quiz') {
+    // 5. Command: Mini-quiz / Mini-test
+    if (in_array($text, ['🎯 Mini-test', '🎯 Mini-quiz', '/quiz'], true)) {
         $quiz = telegram_random_quiz();
         if ($quiz) {
+            $prompt = $quiz['prompt'];
+            if ($lang === 'en' && !empty($quiz['prompt_en'])) {
+                $prompt = $quiz['prompt_en'];
+            }
             telegram_send_poll(
                 $chatId,
-                $quiz['prompt'],
+                $prompt,
                 $quiz['parsed_options'],
                 (int) $quiz['correct_index'],
-                (string) ($quiz['explanation'] ?? 'To‘g‘ri javob!')
+                (string) ($quiz['explanation'] ?? ($lang === 'en' ? 'Great job!' : 'To‘g‘ri javob!')),
+                $lang
             );
         } else {
-            telegram_send_message($chatId, "Savollar bazasi yangilanmoqda.");
+            telegram_send_message($chatId, $lang === 'en' ? "Quiz questions are being updated." : "Savollar bazasi yangilanmoqda.", null, 'HTML', $lang);
         }
         return;
     }
 
-    // 5. Command: Streak holati / /streak
-    if ($text === '🔥 Streak holati' || $text === '/streak') {
+    // 6. Command: Streak status / Streak holati
+    if (in_array($text, ['🔥 Streak holati', '🔥 Streak status', '/streak'], true)) {
         if ($user) {
             $streak = (int) $user['streak_days'];
-            $flames = str_repeat('🔥', max(1, min(5, $streak)));
-            $msg = "{$flames} <b>Sizning ketma-ketligingiz: " . $streak . " kun!</b>\n\n" .
-                ($streak > 0 
-                    ? "Ajoyib natija! Har kuni 5 daqiqa dars qilish orqali o‘zbek tilini mukammal o‘rgana olasiz. Ketma-ketlikni to‘xtatib qo‘ymang!" 
-                    : "Siz hali streakni boshlamadingiz. Bugunoq bitta darsni yakunlab, 1 kunlik olovli yutuqqa ega bo‘ling!") . "\n\n" .
-                "👉 <a href=\"https://lingo.vexa.uz/dashboard\">Darsga o‘tish va streakni oshirish</a>";
+            $flames = str_repeat('🔥', max(1, min(7, $streak)));
+            if ($lang === 'en') {
+                $msg = "{$flames} <b>Your Current Streak: " . $streak . " days!</b>\n\n" .
+                    ($streak > 0 
+                        ? "Great dedication! Just 5 minutes of Uzbek practice each day builds real fluency. Keep your streak alive today!" 
+                        : "You haven't started your streak yet. Complete one quick lesson today to ignite your 1-day flame badge!") . "\n\n" .
+                    "👉 <a href=\"https://lingo.vexa.uz/dashboard\">Continue your lesson on LingoUz</a>";
+                $btnText = "🚀 Practice & Boost Streak";
+            } else {
+                $msg = "{$flames} <b>Sizning ketma-ketligingiz: " . $streak . " kun!</b>\n\n" .
+                    ($streak > 0 
+                        ? "Ajoyib natija! Har kuni 5 daqiqa dars qilish orqali o‘zbek tilini mukammal o‘rgana olasiz. Ketma-ketlikni to‘xtatib qo‘ymang!" 
+                        : "Siz hali streakni boshlamadingiz. Bugunoq bitta darsni yakunlab, 1 kunlik olovli yutuqqa ega bo‘ling!") . "\n\n" .
+                    "👉 <a href=\"https://lingo.vexa.uz/dashboard\">Darsga o‘tish va streakni oshirish</a>";
+                $btnText = "🚀 Darsni boshlash";
+            }
+
             telegram_send_message($chatId, $msg, [
                 'inline_keyboard' => [
-                    [['text' => '🚀 Darsni boshlash', 'url' => 'https://lingo.vexa.uz/dashboard']]
+                    [['text' => $btnText, 'url' => 'https://lingo.vexa.uz/dashboard']],
+                    [['text' => '🏆 Leaderboard / Reyting', 'url' => 'https://lingo.vexa.uz/leaderboard']]
                 ]
-            ]);
+            ], 'HTML', $lang);
         } else {
-            telegram_send_message($chatId, "Hisobingiz ulanmagan. Saytdagi profilingizdan botni ulang: https://lingo.vexa.uz/dashboard");
+            telegram_send_message($chatId, $lang === 'en' ? "Account not linked. Please connect via: https://lingo.vexa.uz/dashboard" : "Hisobingiz ulanmagan: https://lingo.vexa.uz/dashboard", null, 'HTML', $lang);
         }
         return;
     }
 
-    // 6. Command: Mening hisobim / /stats / /profile
-    if ($text === '📊 Mening hisobim' || $text === '/stats' || $text === '/profile') {
+    // 7. Command: Profile / Mening hisobim
+    if (in_array($text, ['📊 Mening hisobim', '📊 My profile', '/profile', '/stats'], true)) {
         if ($user) {
-            $msg = "👤 <b>O‘quvchi profili:</b>\n\n" .
-                "Ism: <b>" . e($user['display_name']) . "</b>\n" .
-                "⭐ To‘plangan XP: <b>" . (int) $user['xp'] . "</b>\n" .
-                "🪙 Tangalar: <b>" . (int) $user['coins'] . "</b>\n" .
-                "🔥 Streak: <b>" . (int) $user['streak_days'] . " kun</b>\n" .
-                "🎯 Daraja: <b>" . e($user['language_level'] ?: 'A0') . "</b>\n\n" .
-                "Batafsil natijalar va yangi yutuqlar uchun shaxsiy kabinetingizga kiring:";
-            telegram_send_message($chatId, $msg, [
+            $ogPath = generate_og_profile_image((int) $user['id']);
+            if ($lang === 'en') {
+                $caption = "👤 <b>Learner Profile Card:</b>\n\n" .
+                    "Name: <b>" . e($user['display_name']) . "</b>\n" .
+                    "⭐ Total XP: <b>" . (int) $user['xp'] . "</b>\n" .
+                    "🪙 Coins: <b>" . (int) $user['coins'] . "</b>\n" .
+                    "🔥 Streak: <b>" . (int) $user['streak_days'] . " days</b>\n" .
+                    "🎯 Level: <b>" . e($user['language_level'] ?: 'A0 Beginner') . "</b>\n\n" .
+                    "View your detailed gradebook, certificates, and badges on LingoUz:";
+                $btnDash = "🌐 Open My Dashboard";
+                $btnLeader = "🏆 Global Leaderboard";
+                $shareText = "Men LingoUz platformasida " . (int)$user['xp'] . " XP va " . (int)$user['streak_days'] . " kunlik streak to‘pladim! Siz ham o‘zbek tilini o‘rganing:";
+            } else {
+                $caption = "👤 <b>O‘quvchi profili:</b>\n\n" .
+                    "Ism: <b>" . e($user['display_name']) . "</b>\n" .
+                    "⭐ To‘plangan XP: <b>" . (int) $user['xp'] . "</b>\n" .
+                    "🪙 Tangalar: <b>" . (int) $user['coins'] . "</b>\n" .
+                    "🔥 Ketma-ketlik: <b>" . (int) $user['streak_days'] . " kun</b>\n" .
+                    "🎯 Daraja: <b>" . e($user['language_level'] ?: 'A0 Boshlang‘ich') . "</b>\n\n" .
+                    "Batafsil natijalar va yangi yutuqlar uchun shaxsiy kabinetingizga kiring:";
+                $btnDash = "🌐 Shaxsiy kabinetga kirish";
+                $btnLeader = "🏆 Reyting va Liga";
+                $shareText = "Men LingoUz platformasida " . (int)$user['xp'] . " XP to‘pladim! Siz ham o‘zbek tilini o‘rganing:";
+            }
+
+            $keyboard = [
                 'inline_keyboard' => [
-                    [['text' => '🌐 Shaxsiy kabinetga kirish', 'url' => 'https://lingo.vexa.uz/dashboard']],
-                    [['text' => '🏆 Reyting va Liga', 'url' => 'https://lingo.vexa.uz/leaderboard']]
+                    [['text' => $btnDash, 'url' => 'https://lingo.vexa.uz/dashboard']],
+                    [['text' => $btnLeader, 'url' => 'https://lingo.vexa.uz/leaderboard']],
+                    [['text' => '📤 Natijani ulashish (Share)', 'url' => 'https://t.me/share/url?url=https://lingo.vexa.uz/profile&text=' . urlencode($shareText)]]
                 ]
-            ]);
+            ];
+            telegram_send_photo($chatId, $ogPath, $caption, $keyboard, 'HTML', $lang);
         } else {
-            telegram_send_message($chatId, "Hisobingiz ulanmagan. Iltimos, <a href=\"https://lingo.vexa.uz/dashboard\">saytga</a> kirib hisobingizni ulang.");
+            telegram_send_message($chatId, $lang === 'en' ? "Please link your account at https://lingo.vexa.uz/dashboard" : "Iltimos, hisobingizni ulang: https://lingo.vexa.uz/dashboard", null, 'HTML', $lang);
         }
         return;
     }
 
-    // 7. Command: LingoUz sayti
-    if ($text === '🌐 LingoUz Saytiga kiriş' || $text === '🌐 LingoUz Sayti' || $text === '/site') {
-        telegram_send_message($chatId, "Platformaga tezkor o‘tish uchun havolani bosing:\n\n👉 https://lingo.vexa.uz/dashboard", [
+    // 8. Command: Language Switcher / Tilni almashtirish
+    if (in_array($text, ['🌐 Tilni almaştiriş (UZ/EN)', '🌐 Change language (UZ/EN)', '/lang', '/language'], true)) {
+        $msg = "🌐 <b>Tilni tanlang / Choose your language:</b>\n\n" .
+            "Quyidagi tugmalardan birini bosing / Select an option below:";
+        $keyboard = [
             'inline_keyboard' => [
-                [['text' => '🚀 LingoUz Platformasini Ochish', 'url' => 'https://lingo.vexa.uz/dashboard']]
+                [
+                    ['text' => '🇺🇿 O‘zbekcha (Yangi lotin)', 'callback_data' => 'set_lang:uz'],
+                    ['text' => '🇬🇧 English', 'callback_data' => 'set_lang:en']
+                ]
             ]
-        ]);
+        ];
+        telegram_send_message($chatId, $msg, $keyboard, 'HTML', $lang);
         return;
     }
 
-    // 8. Command: /unlink
+    // 9. Command: Open Site
+    if (in_array($text, ['🚀 LingoUz Sayti', '🚀 Open LingoUz', '/site'], true)) {
+        $msg = $lang === 'en'
+            ? "Tap the button below to launch the LingoUz learning platform directly:\n\n👉 https://lingo.vexa.uz/dashboard"
+            : "Platformaga tezkor o‘tish uchun quyidagi havolani bosing:\n\n👉 https://lingo.vexa.uz/dashboard";
+        telegram_send_message($chatId, $msg, [
+            'inline_keyboard' => [
+                [['text' => $lang === 'en' ? '🚀 Launch LingoUz Web App' : '🚀 LingoUz Platformasini Ochish', 'url' => 'https://lingo.vexa.uz/dashboard']]
+            ]
+        ], 'HTML', $lang);
+        return;
+    }
+
+    // 10. Command: /unlink
     if ($text === '/unlink') {
         $pdo->prepare('UPDATE users SET telegram_chat_id = NULL, telegram_username = NULL, telegram_linked_at = NULL WHERE telegram_chat_id = ?')
             ->execute([(string) $chatId]);
-        telegram_send_message($chatId, "Telegram hisobingiz LingoUz platformasidan uzildi. Qayta ulash uchun saytdagi Boshqaruv paneliga kiring.", ['remove_keyboard' => true]);
+        $unlinkedMsg = $lang === 'en'
+            ? "Your Telegram account has been unlinked from LingoUz. You can reconnect anytime from your Dashboard."
+            : "Telegram hisobingiz LingoUz platformasidan uzildi. Qayta ulash uchun Boshqaruv paneliga kiring.";
+        telegram_send_message($chatId, $unlinkedMsg, ['remove_keyboard' => true], 'HTML', $lang);
         return;
     }
 
-    // Default response for unhandled text
-    $helpMsg = "Assalomu alaykum! Men sizga o‘zbek tilini o‘rganishda yordam beraman.\n\nPastdagi menyu tugmalaridan birini tanlang yoki /word (yangi so‘z), /quiz (test), /streak (ketma-ketlik) buyruqlarini yuboring.";
-    telegram_send_message($chatId, $helpMsg, telegram_main_keyboard());
+    // Default Fallback Help Message
+    if ($lang === 'en') {
+        $help = "Hello! 👋 I am your friendly Lingo mascot assistant.\n\n" .
+            "Available commands:\n" .
+            "• 📖 <b>Word of the day</b> (/word)\n" .
+            "• 🎯 <b>Mini-quiz</b> (/quiz)\n" .
+            "• 🔥 <b>Streak status</b> (/streak)\n" .
+            "• 📊 <b>My profile & stats</b> (/profile)\n" .
+            "• 🌐 <b>Change language</b> (/lang)\n" .
+            "• 🚀 <b>Open website</b> (/site)";
+    } else {
+        $help = "Assalomu alaykum! 👋 Men sizning Lingo qushcha yordamchingizman.\n\n" .
+            "Mavjud buyruqlar:\n" .
+            "• 📖 <b>Bugungi so‘z</b> (/word)\n" .
+            "• 🎯 <b>Mini-test</b> (/quiz)\n" .
+            "• 🔥 <b>Streak holati</b> (/streak)\n" .
+            "• 📊 <b>Mening hisobim</b> (/profile)\n" .
+            "• 🌐 <b>Tilni almashtirish</b> (/lang)\n" .
+            "• 🚀 <b>Saytga kirish</b> (/site)";
+    }
+    telegram_send_message($chatId, $help, telegram_main_keyboard($lang), 'HTML', $lang);
 }
 
 /**
- * Sends the daily educational notification and streak reminder to all connected subscribers.
+ * Sends daily broadcast notifications in the subscriber's preferred language.
  */
 function telegram_send_daily_broadcast(): array
 {
     $pdo = db();
     $stmt = $pdo->query('
-        SELECT id, display_name, streak_days, telegram_chat_id, xp, coins 
+        SELECT id, display_name, streak_days, telegram_chat_id, xp, coins, telegram_lang 
         FROM users 
         WHERE telegram_chat_id IS NOT NULL AND telegram_notifications = 1
     ');
@@ -445,46 +694,78 @@ function telegram_send_daily_broadcast(): array
             continue;
         }
 
+        $lang = ($sub['telegram_lang'] ?? 'uz') === 'en' ? 'en' : 'uz';
         $streak = (int) $sub['streak_days'];
-        $streakText = $streak > 0 
-            ? "🔥 <b>Streakingiz: {$streak} kun!</b> Bugungi darsingizni yakunlab, ketma-ketlikni saqlab qoling."
-            : "🔥 Bugun 1 ta dars yakunlab, o‘z streakingizni boshlang!";
 
-        $msg = "🌅 <b>Xayrli kun, " . e($sub['display_name']) . "!</b>\n\n" .
-            $streakText . "\n\n";
+        if ($lang === 'en') {
+            $streakText = $streak > 0 
+                ? "🔥 <b>Streak Alert: {$streak} days!</b> Complete today's 5-minute lesson to keep your streak burning."
+                : "🔥 Start your Uzbek learning streak today with just 1 quick lesson!";
 
-        if ($word) {
-            $msg .= "📖 <b>Bugungi yangi so‘z:</b>\n" .
-                "🇺🇿 <b>" . e($word['word_uz']) . "</b>" . ($word['pronunciation'] ? " [<i>" . e($word['pronunciation']) . "</i>]" : "") . " — " . e($word['word_en']) . "\n";
-            if (!empty($word['example'])) {
-                $msg .= "💡 <i>«" . e($word['example']) . "»</i>\n";
+            $msg = "🌅 <b>Good morning, " . e($sub['display_name']) . "!</b>\n\n" .
+                $streakText . "\n\n";
+
+            if ($word) {
+                $msg .= "📖 <b>Word of the Day:</b>\n" .
+                    "🇺🇿 <b>" . e($word['word_uz']) . "</b>" . ($word['pronunciation'] ? " [<i>" . e($word['pronunciation']) . "</i>]" : "") . " — " . e($word['word_en']) . "\n";
+                if (!empty($word['example'])) {
+                    $msg .= "💡 <i>«" . e($word['example']) . "»</i>\n";
+                }
+                $msg .= "\n";
             }
-            $msg .= "\n";
-        }
+            $msg .= "Take today's mini-quiz below and continue your lesson! 👇";
+            $btnLesson = "🚀 Continue Lesson";
+            $btnTrain = "🎴 Flashcards Trainer";
+        } else {
+            $streakText = $streak > 0 
+                ? "🔥 <b>Streakingiz: {$streak} kun!</b> Bugungi darsingizni yakunlab, ketma-ketlikni saqlab qoling."
+                : "🔥 Bugun 1 ta dars yakunlab, o‘z streakingizni boshlang!";
 
-        $msg .= "Pastdagi mini-test orqali bilimingizni sinab ko‘ring va darsga o‘ting! 👇";
+            $msg = "🌅 <b>Xayrli kun, " . e($sub['display_name']) . "!</b>\n\n" .
+                $streakText . "\n\n";
+
+            if ($word) {
+                $msg .= "📖 <b>Bugungi yangi so‘z:</b>\n" .
+                    "🇺🇿 <b>" . e($word['word_uz']) . "</b>" . ($word['pronunciation'] ? " [<i>" . e($word['pronunciation']) . "</i>]" : "") . " — " . e($word['word_en']) . "\n";
+                if (!empty($word['example'])) {
+                    $msg .= "💡 <i>«" . e($word['example']) . "»</i>\n";
+                }
+                $msg .= "\n";
+            }
+            $msg .= "Pastdagi mini-test orqali bilimingizni sinab ko‘ring va darsga o‘ting! 👇";
+            $btnLesson = "🚀 Darsni davom ettirish";
+            $btnTrain = "🎴 Flashcards trenajyori";
+        }
 
         $keyboard = [
             'inline_keyboard' => [
-                [['text' => '🚀 Darsni davom ettirish', 'url' => 'https://lingo.vexa.uz/dashboard']],
-                [['text' => '🎴 Flashcards trenajyori', 'url' => 'https://lingo.vexa.uz/flashcards']]
+                [['text' => $btnLesson, 'url' => 'https://lingo.vexa.uz/dashboard']],
+                [['text' => $btnTrain, 'url' => 'https://lingo.vexa.uz/flashcards']]
             ]
         ];
 
-        $res = telegram_send_message($chatId, $msg, $keyboard);
+        // Send with OG word card image if available
+        if ($word) {
+            $ogWordPath = generate_og_word_image((int) $word['id']);
+            $res = telegram_send_photo($chatId, $ogWordPath, $msg, $keyboard, 'HTML', $lang);
+        } else {
+            $res = telegram_send_message($chatId, $msg, $keyboard, 'HTML', $lang);
+        }
+
         if ($res && !empty($res['ok'])) {
             $sentCount++;
             // Send quiz poll
             if ($quiz) {
+                $prompt = ($lang === 'en' && !empty($quiz['prompt_en'])) ? $quiz['prompt_en'] : $quiz['prompt'];
                 telegram_send_poll(
                     $chatId,
-                    $quiz['prompt'],
+                    $prompt,
                     $quiz['parsed_options'],
                     (int) $quiz['correct_index'],
-                    (string) ($quiz['explanation'] ?? '')
+                    (string) ($quiz['explanation'] ?? ''),
+                    $lang
                 );
             }
-            // Log to database
             try {
                 $log = $pdo->prepare('INSERT INTO telegram_daily_logs (user_id, chat_id, word_id, question_id, message_type) VALUES (?, ?, ?, ?, "daily")');
                 $log->execute([$sub['id'], (string) $chatId, $word['id'] ?? null, $quiz['id'] ?? null]);
@@ -522,4 +803,34 @@ function telegram_set_webhook(): array
     ]);
 
     return $res ?: ['ok' => false, 'description' => 'Telegram API ga ulanishda xatolik yuz berdi.'];
+}
+
+/**
+ * Registers commands in Telegram so they appear in the bot's "/" menu.
+ */
+function telegram_set_commands(): array
+{
+    $uzCommands = [
+        ['command' => 'start', 'description' => 'Botni ishga tushirish va hisobni ulash'],
+        ['command' => 'word', 'description' => 'Bugungi yangi so‘z kartochkasi'],
+        ['command' => 'quiz', 'description' => 'Interaktiv mini-viktorina'],
+        ['command' => 'streak', 'description' => 'Streak (ketma-ketlik) holati'],
+        ['command' => 'profile', 'description' => 'O‘quvchi profili va natijalar'],
+        ['command' => 'lang', 'description' => 'Tilni o‘zgartirish (UZ/EN)'],
+        ['command' => 'site', 'description' => 'LingoUz veb-saytiga o‘tish'],
+    ];
+
+    $enCommands = [
+        ['command' => 'start', 'description' => 'Start bot & link account'],
+        ['command' => 'word', 'description' => 'Word of the day with audio'],
+        ['command' => 'quiz', 'description' => 'Interactive mini-quiz'],
+        ['command' => 'streak', 'description' => 'Check current streak status'],
+        ['command' => 'profile', 'description' => 'My learner profile & stats'],
+        ['command' => 'lang', 'description' => 'Switch language (EN/UZ)'],
+        ['command' => 'site', 'description' => 'Open LingoUz platform'],
+    ];
+
+    telegram_api('setMyCommands', ['commands' => $uzCommands]);
+    telegram_api('setMyCommands', ['commands' => $enCommands, 'language_code' => 'en']);
+    return ['ok' => true];
 }

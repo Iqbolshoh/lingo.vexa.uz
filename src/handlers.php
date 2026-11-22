@@ -187,17 +187,35 @@ function action_register(): void
 
 function page_profile(): void
 {
-    $user = require_login();
-    $stats = db()->prepare('
+    $pdo = db();
+    $targetId = isset($_GET['u']) ? (int) $_GET['u'] : 0;
+    $targetUser = null;
+    if ($targetId > 0) {
+        $stmt = $pdo->prepare('SELECT * FROM users WHERE id = ?');
+        $stmt->execute([$targetId]);
+        $targetUser = $stmt->fetch() ?: null;
+    }
+
+    if (!$targetUser) {
+        $targetUser = require_login();
+    }
+    $currentUser = auth_user();
+
+    $stats = $pdo->prepare('
         SELECT count(*) AS attempts, sum(CASE WHEN passed = 1 THEN 1 ELSE 0 END) AS passed_count, max(percent) AS best_percent
         FROM quiz_attempts WHERE user_id = ?
     ');
-    $stats->execute([$user['id']]);
+    $stats->execute([$targetUser['id']]);
 
     render('profile', [
-        'title' => t('Mening Profilim — ') . $user['display_name'],
-        'user' => $user,
+        'title' => t('Mening Profilim — ') . $targetUser['display_name'],
+        'user' => $targetUser,
+        'currentUser' => $currentUser,
         'stats' => $stats->fetch(),
+        'ogTitle' => $targetUser['display_name'] . ' — LingoUz O‘quvchi Profili',
+        'ogDescription' => "⭐ {$targetUser['xp']} XP  |  🔥 {$targetUser['streak_days']} kunlik streak. LingoUz orqali o‘zbek tilini o‘rganing!",
+        'ogImage' => "https://lingo.vexa.uz/og/profile/{$targetUser['id']}.png?v=" . time(),
+        'ogUrl' => "https://lingo.vexa.uz/profile?u={$targetUser['id']}",
     ]);
 }
 

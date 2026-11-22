@@ -8,6 +8,21 @@ $user = auth_user();
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?= e($title ?? 'LingoUz') ?></title>
     <meta name="description" content="<?= t('O‘zbek tilini o‘rganmoqchi bo‘lgan hamma uchun — bolalar, kattalar va sayyohlar. Ovozli lug‘at, mashqlar, madaniyat va jonli darslar. Learn Uzbek online.') ?>">
+
+    <!-- Open Graph (OG) & Social Card Metadata -->
+    <meta property="og:site_name" content="LingoUz">
+    <meta property="og:title" content="<?= e($ogTitle ?? ($title ?? 'LingoUz — O‘zbek Tilini O‘rganing')) ?>">
+    <meta property="og:description" content="<?= e($ogDescription ?? t('O‘zbek tilini interaktiv, qiziqarli va professional tarzda o‘rganish platformasi.')) ?>">
+    <meta property="og:image" content="<?= e($ogImage ?? 'https://lingo.vexa.uz/og/default.png') ?>">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta property="og:url" content="<?= e($ogUrl ?? 'https://lingo.vexa.uz') ?>">
+    <meta property="og:type" content="website">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="<?= e($ogTitle ?? ($title ?? 'LingoUz — O‘zbek Tilini O‘rganing')) ?>">
+    <meta name="twitter:description" content="<?= e($ogDescription ?? t('O‘zbek tilini interaktiv, qiziqarli va professional tarzda o‘rganish platformasi.')) ?>">
+    <meta name="twitter:image" content="<?= e($ogImage ?? 'https://lingo.vexa.uz/og/default.png') ?>">
+
     <link rel="icon" type="image/svg+xml" href="/favicon.svg?v=<?= filemtime(__DIR__ . '/../../public/favicon.svg') ?>">
     <link rel="icon" type="image/x-icon" href="/favicon.ico?v=<?= filemtime(__DIR__ . '/../../public/favicon.ico') ?>">
     <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png?v=<?= filemtime(__DIR__ . '/../../public/assets/apple-touch-icon.png') ?>">
