@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <title>Language Buttons Preview</title>
 <style>
-  * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+  * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Noto Color Emoji", sans-serif; }
   body { background: #0e1621; display: flex; justify-content: center; align-items: center; min-height: 100vh; padding: 20px; }
   .card { width: 100%; max-width: 780px; background: #17212b; border-radius: 16px; border: 1px solid #242f3d; padding: 28px; box-shadow: 0 15px 40px rgba(0,0,0,0.5); }
   .badge { display: inline-flex; align-items: center; gap: 8px; background: rgba(16, 185, 129, 0.15); color: #10b981; border: 1px solid rgba(16, 185, 129, 0.3); padding: 6px 14px; border-radius: 20px; font-size: 13px; font-weight: 600; margin-bottom: 20px; }
@@ -19,8 +19,10 @@
   .old .comp-title { color: #f87171; }
   .new .comp-title { color: #34d399; }
   
-  .btn-sample { background: #2b5278; color: #fff; padding: 12px 16px; border-radius: 8px; font-size: 14px; margin-bottom: 10px; display: flex; align-items: center; justify-content: center; font-weight: 500; }
+  .btn-sample { background: #2b5278; color: #fff; padding: 12px 16px; border-radius: 8px; font-size: 15px; margin-bottom: 10px; display: flex; align-items: center; justify-content: center; font-weight: 500; gap: 8px; }
   .old .btn-sample { text-decoration: line-through; opacity: 0.6; }
+  
+  .flag-icon { width: 22px; height: 16px; border-radius: 3px; vertical-align: middle; }
   
   .dev-group-box { background: #182533; border: 1px solid #2b5278; border-radius: 12px; padding: 18px; display: flex; align-items: center; justify-content: space-between; }
   .dev-group-info { display: flex; flex-direction: column; gap: 4px; }
@@ -39,13 +41,19 @@
   <div class="comparison">
     <div class="comp-box old">
       <div class="comp-title">❌ Eski Noto‘g‘ri Ko‘rinish</div>
-      <div class="btn-sample">🇺🇿 O‘zbekcha (Yangi lotin)</div>
+      <div class="btn-sample">
+        <svg class="flag-icon" viewBox="0 0 640 480"><g fill-rule="evenodd" stroke-width="1pt"><path fill="#0099b5" d="M0 0h640v160H0z"/><path fill="#fff" d="M0 160h640v160H0z"/><path fill="#ce1126" d="M0 155h640v10H0z"/><path fill="#ce1126" d="M0 315h640v10H0z"/><path fill="#1eb53a" d="M0 320h640v160H0z"/><circle cx="70" cy="80" r="30" fill="#fff"/><circle cx="80" cy="80" r="30" fill="#0099b5"/></g></svg>
+        O‘zbekcha (Yangi lotin)
+      </div>
       <div class="btn-sample">🌐 Change language (UZ/EN)</div>
     </div>
 
     <div class="comp-box new">
       <div class="comp-title">✅ Yangi Toza Standart</div>
-      <div class="btn-sample">🇺🇿 O‘zbekcha</div>
+      <div class="btn-sample">
+        <svg class="flag-icon" viewBox="0 0 640 480"><g fill-rule="evenodd" stroke-width="1pt"><path fill="#0099b5" d="M0 0h640v160H0z"/><path fill="#fff" d="M0 160h640v160H0z"/><path fill="#ce1126" d="M0 155h640v10H0z"/><path fill="#ce1126" d="M0 315h640v10H0z"/><path fill="#1eb53a" d="M0 320h640v160H0z"/><circle cx="70" cy="80" r="30" fill="#fff"/><circle cx="80" cy="80" r="30" fill="#0099b5"/></g></svg>
+        O‘zbekcha
+      </div>
       <div class="btn-sample">🌐 Change language</div>
     </div>
   </div>
