@@ -43,6 +43,93 @@ $goalPct = min(100, (int) round($todayXp / $goalXp * 100));
             </div>
         </section>
 
+        <?php if (!empty($telegramLinked)): ?>
+            <!-- Telegram Bot Connected Badge -->
+            <div class="tg-connected-box">
+                <div class="tg-conn-left">
+                    <span class="tg-conn-icon">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm4.64 6.8c-.15 1.58-.8 5.42-1.13 7.19-.14.75-.42 1-.68 1.03-.58.05-1.02-.38-1.58-.75-.88-.58-1.38-.94-2.23-1.5-.99-.65-.35-1.01.22-1.59.15-.15 2.71-2.48 2.76-2.69a.2.2 0 00-.05-.18c-.06-.05-.14-.03-.21-.02-.09.02-1.49.95-4.22 2.79-.4.27-.76.41-1.08.4-.36-.01-1.04-.2-1.55-.37-.63-.2-1.12-.31-1.08-.66.02-.18.27-.36.75-.55 2.92-1.27 4.86-2.11 5.83-2.51 2.78-1.16 3.35-1.36 3.73-1.36.08 0 .27.02.39.12.1.08.13.19.14.27-.01.06.01.24 0 .38z" fill="#0284c7"/></svg>
+                    </span>
+                    <div>
+                        <div class="tg-conn-status">
+                            <span class="tg-conn-dot"></span>
+                            <strong><?= t('Telegram bot ulangan') ?>:</strong> <span class="tg-conn-handle">@<?= e($telegramUsername ?: $telegramFirstName) ?></span>
+                        </div>
+                        <div class="tg-conn-desc"><?= t('Har kuni 1 ta yangi so‘z, mini-viktorina va streak eslatmalari avtomatik yuboriladi.') ?></div>
+                    </div>
+                </div>
+                <div class="tg-conn-actions">
+                    <a href="https://t.me/<?= telegram_bot_username() ?>" target="_blank" rel="noopener noreferrer" class="btn btn-outline-tg btn-sm">
+                        <?= t('Botni ochish') ?> ↗
+                    </a>
+                    <form method="POST" action="/api/telegram/unlink" style="display:inline" onsubmit="return confirm('<?= t('Rostdan ham Telegram botni hisobingizdan uzmoqchimisiz?') ?>')">
+                        <?= csrf_field() ?>
+                        <button type="submit" class="btn btn-ghost btn-sm tg-unlink-btn"><?= t('Uzish') ?></button>
+                    </form>
+                </div>
+            </div>
+        <?php else: ?>
+            <!-- Algor.uz style 1-Click Telegram Bot Connection Banner -->
+            <div class="tg-banner" id="tgBanner">
+                <div class="tg-banner-glow"></div>
+                <div class="tg-banner-inner">
+                    <div class="tg-banner-badge-row">
+                        <span class="tg-chip-bot">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm4.64 6.8c-.15 1.58-.8 5.42-1.13 7.19-.14.75-.42 1-.68 1.03-.58.05-1.02-.38-1.58-.75-.88-.58-1.38-.94-2.23-1.5-.99-.65-.35-1.01.22-1.59.15-.15 2.71-2.48 2.76-2.69a.2.2 0 00-.05-.18c-.06-.05-.14-.03-.21-.02-.09.02-1.49.95-4.22 2.79-.4.27-.76.41-1.08.4-.36-.01-1.04-.2-1.55-.37-.63-.2-1.12-.31-1.08-.66.02-.18.27-.36.75-.55 2.92-1.27 4.86-2.11 5.83-2.51 2.78-1.16 3.35-1.36 3.73-1.36.08 0 .27.02.39.12.1.08.13.19.14.27-.01.06.01.24 0 .38z" fill="#ffffff"/></svg>
+                            <span><?= t('Rasmiy Telegram Bot') ?></span>
+                        </span>
+                        <span class="tg-chip-bonus">🎁 <?= t('+20 XP va 5 tanga sovg‘a!') ?></span>
+                    </div>
+                    <div class="tg-banner-body">
+                        <div class="tg-banner-text">
+                            <h2><?= t('Telegram botimizga ulaning va har kuni 1 ta yangi so‘z o‘rganing!') ?></h2>
+                            <p><?= t('Darslarni tashlab qo‘ymaslik uchun kundalik streak eslatmalari, mini-viktorinalar va ovozli yangi so‘zlar to‘g‘ridan-to‘g‘ri Telegramingizga keladi.') ?></p>
+                            <div class="tg-features">
+                                <span class="tg-feat-item">🔥 <strong><?= t('Streak eslatmasi') ?></strong></span>
+                                <span class="tg-feat-item">📖 <strong><?= t('Kunlik 1 ta yangi so‘z') ?></strong></span>
+                                <span class="tg-feat-item">🎯 <strong><?= t('Interaktiv mini-testlar') ?></strong></span>
+                                <span class="tg-feat-item">⚡ <strong><?= t('1 bosishda ulanish') ?></strong></span>
+                            </div>
+                        </div>
+                        <div class="tg-banner-action">
+                            <a href="<?= e($telegramLinkUrl) ?>" target="_blank" rel="noopener noreferrer" class="btn btn-telegram-cta" id="btnTgConnect">
+                                <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm4.64 6.8c-.15 1.58-.8 5.42-1.13 7.19-.14.75-.42 1-.68 1.03-.58.05-1.02-.38-1.58-.75-.88-.58-1.38-.94-2.23-1.5-.99-.65-.35-1.01.22-1.59.15-.15 2.71-2.48 2.76-2.69a.2.2 0 00-.05-.18c-.06-.05-.14-.03-.21-.02-.09.02-1.49.95-4.22 2.79-.4.27-.76.41-1.08.4-.36-.01-1.04-.2-1.55-.37-.63-.2-1.12-.31-1.08-.66.02-.18.27-.36.75-.55 2.92-1.27 4.86-2.11 5.83-2.51 2.78-1.16 3.35-1.36 3.73-1.36.08 0 .27.02.39.12.1.08.13.19.14.27-.01.06.01.24 0 .38z" fill="#0284c7"/></svg>
+                                <span><?= t('Botni ulash (1 bosishda)') ?> ↗</span>
+                            </a>
+                            <div class="tg-btn-subtext"><?= t('Telegram ochiladi va «Start»ni bosish kifoya') ?></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <script>
+            (function() {
+                var btn = document.getElementById('btnTgConnect');
+                if (!btn) return;
+                var pollTimer = setInterval(function() {
+                    fetch('/api/telegram/status', { credentials: 'same-origin', headers: { 'Accept': 'application/json' } })
+                    .then(function(res) { return res.json(); })
+                    .then(function(data) {
+                        if (data && data.linked) {
+                            clearInterval(pollTimer);
+                            var banner = document.getElementById('tgBanner');
+                            if (banner) {
+                                banner.innerHTML = '<div style="padding:28px 24px;text-align:center;background:linear-gradient(135deg,#059669,#10b981);color:#fff;border-radius:18px;box-shadow:0 12px 30px rgba(5,150,105,0.3);">' +
+                                    '<div style="font-size:36px;line-height:1;margin-bottom:10px">🎉</div>' +
+                                    '<h3 style="font-size:22px;font-weight:800;margin:0 0 6px">Tabriklaymiz! Telegram botingiz ulandi!</h3>' +
+                                    '<p style="margin:0 0 16px;opacity:.95;font-size:15px">Hisobingizga <b>+20 XP</b> va <b>5 ta tanga</b> qo‘shildi. (@' + (data.username || data.first_name || 'foydalanuvchi') + ')</p>' +
+                                    '<a href="/dashboard" class="btn btn-gold btn-sm" style="font-weight:700">Sahifani yangilash</a>' +
+                                '</div>';
+                                setTimeout(function() { window.location.reload(); }, 2200);
+                            }
+                        }
+                    })
+                    .catch(function() {});
+                }, 3000);
+            })();
+            </script>
+        <?php endif; ?>
+
         <div class="stat-grid">
             <div class="stat-tile tone-lapis">
                 <span class="stat-ico"><?= icon('check-circle', '', 22) ?></span>

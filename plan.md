@@ -101,10 +101,15 @@ MVP ni mukammal startap holatiga yetkazish uchun quyidagi qadamlar rejalashtiril
 - [x] «Yana takrorlash» (Left arrow `←`) va «Bilib oldim! (+2 XP)» (Right arrow `→`) trenajyor mexanikasi.
 - [x] Bosqich yakunlanganda konfetti, bayramona tabrik va API orqali o‘quvchi balansiga real XP qo‘shilishi.
 
-### 2.6. Telegram Bot bilan integratsiya (Retenshn va Eslatmalar)
-- [ ] O‘quvchi har kuni o‘rganishni to‘xtatib qo‘ymasligi uchun (Streak saqlash) Telegram bot orqali kunlik eslatmalar.
-- [ ] Kuniga 1 ta yangi so‘z kartochkasi va mini-viktorina.
-- [ ] Bot orqali bitta tugma bilan tizimga kirish (Telegram Login Widget).
+### 2.6. Telegram Bot bilan integratsiya (Retenshn va Eslatmalar) [BAJARILDI ✅ 2026-11-22]
+- [x] **Algor.uz uslubidagi 1-bosishda ulanish:** O‘quvchi dashboardidagi yorqin bannerdagi «Botni ulash ↗» tugmasini bosishi bilan bot ochiladi (`/start link_<token>`).
+- [x] **Real-time status tekshirish:** Dashboard brauzer oynasida polling orqali foydalanuvchi botni ulanishi bilan sahifani yangilamasdan avtomatik muvaffaqiyat kartasiga aylanadi va +20 XP hamda 5 ta tanga taqdim etiladi.
+- [x] **Kunlik o‘quv kartochkasi (`/word`):** Har kuni yangi o‘zbekcha so‘z, talaffuz transkripsiyasi, inglizcha ma’nosi, namunaviy gap va Flashcards trenajyoriga havola.
+- [x] **Interaktiv mini-testlar (`/quiz`):** Telegramning rasmiy `sendPoll` (Quiz rejimi) orqali to‘g‘ri javob va tushuntirish bilan mini-viktorina.
+- [x] **Streak xavfsizligi va eslatmalar:** Kun davomida dars qilmagan o‘quvchilarga streakni saqlab qolish va darsni davom ettirish bo‘yicha eslatmalar.
+- [x] **Admin panel boshqaruvi:** `/admin/settings` bo‘limida Bot Token, Bot Username, Webhook sozlash (Set Webhook) va sinov xabari yuborish (Broadcast) funksiyalari.
+- [x] **Cron avtomatizatsiyasi:** `php artisan lingo:telegram-daily` konsol buyrug‘i.
+- [x] **Yangi o‘zbek lotin alifbosi:** Bot yuboradigan barcha xabarlar va savollarda qat’iy yangi alifbo (`Ö/ö`, `Ş/ş`, `Ç/ç`, `Ğ/ğ`).
 
 ### 2.4. Ota-onalar va murabbiylar monitoringi
 - [ ] Ota-onalar uchun alohida ko‘rinish: farzandining kunlik dars vaqti, qaysi so‘zlarni qiynalib o‘rgangani, test natijalari.

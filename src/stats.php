@@ -253,10 +253,21 @@ function action_admin_export_gradebook(): void
 function page_admin_settings(): void
 {
     $me = require_admin();
+    $pdo = db();
+    $linkedCount = (int) $pdo->query("SELECT count(*) FROM users WHERE telegram_chat_id IS NOT NULL")->fetchColumn();
+    $logsCount = 0;
+    try {
+        $logsCount = (int) $pdo->query("SELECT count(*) FROM telegram_daily_logs")->fetchColumn();
+    } catch (\Throwable $e) {}
+
     render_admin('settings', 'settings', [
         'title' => 'Admin — Sozlamalar',
         'me' => $me,
-        'admins' => db()->query("SELECT id, display_name, email, created_at FROM users WHERE role = 'admin' ORDER BY id")->fetchAll(),
+        'admins' => $pdo->query("SELECT id, display_name, email, created_at FROM users WHERE role = 'admin' ORDER BY id")->fetchAll(),
+        'tgToken' => telegram_bot_token(),
+        'tgUsername' => telegram_bot_username(),
+        'tgLinkedCount' => $linkedCount,
+        'tgLogsCount' => $logsCount,
     ]);
 }
 
@@ -288,9 +299,49 @@ function action_admin_create_admin(): void
     } elseif (email_taken($email)) {
         flash('error', 'Bu email bilan foydalanuvchi allaqachon bor.');
     } else {
-        db()->prepare("INSERT INTO users (role, display_name, email, password_hash, onboarded_at) VALUES ('admin', ?, ?, ?, datetime('now'))")
+        db()->prepare("INSERT INTO users (role, display_name, email, password_hash, onboarded_at) VALUES ('admin', ?, ?, ?, NOW())")
             ->execute([$name, $email, password_hash($password, PASSWORD_DEFAULT)]);
         flash('success', 'Yangi administrator qo‘shildi.');
     }
+    app_redirect('/admin/settings');
+}
+
+function action_admin_telegram_save(): void
+{
+    require_admin();
+    verify_csrf();
+
+    $token = trim((string) ($_POST['telegram_bot_token'] ?? ''));
+    $username = ltrim(trim((string) ($_POST['telegram_bot_username'] ?? '')), '@');
+
+    $pdo = db();
+    $pdo->prepare("REPLACE INTO startup_meta (`key`, `value`) VALUES ('telegram_bot_token', ?)")->execute([$token]);
+    $pdo->prepare("REPLACE INTO startup_meta (`key`, `value`) VALUES ('telegram_bot_username', ?)")->execute([$username]);
+
+    flash('success', 'Telegram bot sozlamalari muvaffaqiyatli saqlandi.');
+    app_redirect('/admin/settings');
+}
+
+function action_admin_telegram_webhook_set(): void
+{
+    require_admin();
+    verify_csrf();
+
+    $res = telegram_set_webhook();
+    if (!empty($res['ok'])) {
+        flash('success', 'Telegram Webhook muvaffaqiyatli o‘rnatildi!');
+    } else {
+        flash('error', 'Webhook o‘rnatishda xatolik: ' . ($res['description'] ?? 'Noma’lum xato'));
+    }
+    app_redirect('/admin/settings');
+}
+
+function action_admin_telegram_test_broadcast(): void
+{
+    require_admin();
+    verify_csrf();
+
+    $res = telegram_send_daily_broadcast();
+    flash('success', "Kunlik xabar yuborildi: Jami obunachilar: {$res['total']}, Yuborildi: {$res['sent']}, Xato: {$res['failed']}.");
     app_redirect('/admin/settings');
 }

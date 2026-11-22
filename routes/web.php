@@ -9,6 +9,7 @@ require_once base_path('src/handlers.php');
 require_once base_path('src/admin.php');
 require_once base_path('src/onboarding.php');
 require_once base_path('src/stats.php');
+require_once base_path('src/telegram.php');
 
 // Helper wrapper for request handling
 function run_action(callable $fn, ...$args) {
@@ -54,6 +55,12 @@ Route::get('/certificate', function () { run_action('page_certificate'); });
 Route::get('/leaderboard', function () { run_action('page_leaderboard'); });
 Route::get('/flashcards', function () { run_action('page_flashcards'); });
 Route::post('/flashcards/done', function () { run_action('action_flashcards_done'); });
+
+// Telegram Bot
+Route::post('/api/telegram/webhook', function () { run_action('action_telegram_webhook'); });
+Route::get('/api/telegram/status', function () { run_action('action_telegram_status'); });
+Route::post('/api/telegram/unlink', function () { run_action('action_telegram_unlink'); });
+Route::get('/telegram/connect', function () { run_action('page_telegram_connect'); });
 
 // Static Pages
 Route::get('/privacy', function () { run_action('page_privacy'); });
@@ -106,6 +113,9 @@ Route::prefix('admin')->group(function () {
     Route::get('/settings', function () { run_action('page_admin_settings'); });
     Route::post('/settings/password', function () { run_action('action_admin_password'); });
     Route::post('/settings/admins', function () { run_action('action_admin_create_admin'); });
+    Route::post('/settings/telegram', function () { run_action('action_admin_telegram_save'); });
+    Route::post('/settings/telegram/webhook', function () { run_action('action_admin_telegram_webhook_set'); });
+    Route::post('/settings/telegram/broadcast', function () { run_action('action_admin_telegram_test_broadcast'); });
 
     Route::get('/enrollments', function () { run_action('page_admin_enrollments'); });
     Route::post('/enrollments/status', function () { run_action('action_admin_enrollment_status'); });

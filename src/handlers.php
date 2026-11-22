@@ -307,6 +307,10 @@ function page_dashboard(): void
         'interests' => decode_list($user['interests_json'], ONB_INTERESTS),
         'topLeaders' => $topLeaders,
         'myRank' => $myRank,
+        'telegramLinked' => !empty($user['telegram_chat_id']),
+        'telegramLinkUrl' => get_telegram_link_url($user),
+        'telegramUsername' => (string) ($user['telegram_username'] ?? ''),
+        'telegramFirstName' => (string) ($user['telegram_first_name'] ?? ''),
     ]);
 }
 
@@ -688,4 +692,79 @@ function action_flashcards_done(): void
         'total_xp' => $res['xp'],
         'streak' => $res['streak'],
     ]);
+}
+
+function action_telegram_webhook(): void
+{
+    // Check webhook secret header if provided
+    $secretHeader = $_SERVER['HTTP_X_TELEGRAM_BOT_API_SECRET_TOKEN'] ?? '';
+    $expectedSecret = telegram_webhook_secret();
+    if ($secretHeader !== '' && $secretHeader !== $expectedSecret) {
+        json_response(['ok' => false, 'error' => 'Unauthorized webhook token'], 403);
+    }
+
+    $raw = file_get_contents('php://input');
+    if (!$raw) {
+        json_response(['ok' => false, 'error' => 'No payload received'], 400);
+    }
+
+    $update = json_decode($raw, true);
+    if (!is_array($update)) {
+        json_response(['ok' => false, 'error' => 'Invalid JSON'], 400);
+    }
+
+    try {
+        handle_telegram_webhook($update);
+    } catch (\Throwable $e) {
+        error_log('[Telegram Webhook Error] ' . $e->getMessage());
+    }
+
+    json_response(['ok' => true]);
+}
+
+function action_telegram_status(): void
+{
+    $user = auth_user();
+    if (!$user) {
+        json_response(['linked' => false, 'error' => 'Unauthenticated'], 401);
+    }
+
+    // Refresh directly from DB to get real-time status after user clicks /start in Telegram
+    $stmt = db()->prepare('SELECT telegram_chat_id, telegram_username, telegram_first_name, telegram_linked_at FROM users WHERE id = ?');
+    $stmt->execute([(int) $user['id']]);
+    $row = $stmt->fetch();
+
+    $linked = !empty($row['telegram_chat_id']);
+    json_response([
+        'linked' => $linked,
+        'username' => (string) ($row['telegram_username'] ?? ''),
+        'first_name' => (string) ($row['telegram_first_name'] ?? ''),
+        'linked_at' => (string) ($row['telegram_linked_at'] ?? ''),
+    ]);
+}
+
+function action_telegram_unlink(): void
+{
+    $user = require_login();
+    verify_csrf();
+
+    $stmt = db()->prepare('
+        UPDATE users 
+        SET telegram_chat_id = NULL, 
+            telegram_username = NULL, 
+            telegram_first_name = NULL, 
+            telegram_linked_at = NULL 
+        WHERE id = ?
+    ');
+    $stmt->execute([(int) $user['id']]);
+
+    set_flash('success', t('Telegram hisobingiz muvaffaqiyatli uzildi.'));
+    app_redirect('/dashboard');
+}
+
+function page_telegram_connect(): void
+{
+    $user = require_login();
+    $url = get_telegram_link_url($user);
+    app_redirect($url);
 }

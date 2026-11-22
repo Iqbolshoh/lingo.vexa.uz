@@ -353,3 +353,4 @@ function render(string $view, array $data = []): void
 
 require_once __DIR__ . '/learning.php';
 require_once __DIR__ . '/onboarding.php';
+require_once __DIR__ . '/telegram.php';
