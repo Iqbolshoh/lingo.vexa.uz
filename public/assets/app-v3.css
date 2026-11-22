@@ -1795,3 +1795,366 @@ button.btn-header-logout { cursor: pointer; font: inherit; }
 .mascot-hero-wrap.is-bouncing {
     animation: mascotHop 0.6s cubic-bezier(0.2, 0.8, 0.2, 1);
 }
+
+/* ==========================================================================
+   Modern Polished Header & Responsive Navigation (Duolingo / Algor.uz style)
+   ========================================================================== */
+
+.site-header {
+    position: sticky;
+    top: 0;
+    z-index: 999;
+    background: rgba(255, 255, 255, 0.96);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border-bottom: 1px solid rgba(226, 232, 240, 0.9);
+    box-shadow: 0 1px 10px rgba(15, 23, 42, 0.03);
+    transition: all 0.2s ease;
+}
+
+.site-header .container.header-inner {
+    max-width: 1360px !important;
+    padding-left: 24px;
+    padding-right: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 72px;
+    gap: 16px;
+}
+
+/* Brand Logo */
+.brand-logo {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    text-decoration: none;
+    flex-shrink: 0;
+}
+
+.brand-mascot-img {
+    width: 38px;
+    height: 44px;
+    filter: drop-shadow(0 2px 6px rgba(0, 0, 0, 0.12));
+    transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.brand-logo:hover .brand-mascot-img {
+    transform: scale(1.08) rotate(-4deg);
+}
+
+.brand-name {
+    font-family: var(--font-heading, 'Fredoka', sans-serif);
+    font-size: 24px;
+    font-weight: 800;
+    letter-spacing: -0.3px;
+    color: #0f172a;
+    line-height: 1;
+}
+
+.brand-name .highlight {
+    color: #0284c7;
+}
+
+/* Desktop Navigation Segmented Pill */
+.main-nav.desktop-nav {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    background: #f8fafc;
+    padding: 4px 6px;
+    border-radius: 999px;
+    border: 1px solid #e2e8f0;
+    box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.02);
+}
+
+.main-nav.desktop-nav a {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 14px;
+    font-size: 13.5px;
+    font-weight: 600;
+    color: #475569;
+    border-radius: 999px;
+    text-decoration: none;
+    white-space: nowrap;
+    transition: all 0.18s ease;
+}
+
+.main-nav.desktop-nav a svg {
+    color: #64748b;
+    transition: color 0.18s ease;
+}
+
+.main-nav.desktop-nav a:hover {
+    color: #0284c7;
+    background: #ffffff;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
+}
+
+.main-nav.desktop-nav a:hover svg {
+    color: #0284c7;
+}
+
+.main-nav.desktop-nav a.is-active,
+.main-nav.desktop-nav a.active {
+    color: #0369a1;
+    background: #ffffff;
+    font-weight: 700;
+    box-shadow: 0 2px 8px rgba(2, 132, 199, 0.14);
+}
+
+.main-nav.desktop-nav a.is-active svg,
+.main-nav.desktop-nav a.active svg {
+    color: #0284c7;
+}
+
+/* Header Actions Layout */
+.header-actions {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-shrink: 0;
+}
+
+.header-tools {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.sound-toggle-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    border-radius: 10px;
+    border: 1px solid #e2e8f0;
+    background: #ffffff;
+    cursor: pointer;
+    font-size: 16px;
+    line-height: 1;
+    transition: all 0.2s ease;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.03);
+}
+
+.sound-toggle-btn:hover {
+    background: #f8fafc;
+    border-color: #cbd5e1;
+    transform: scale(1.05);
+}
+
+.lang-switch {
+    display: inline-flex;
+    align-items: center;
+    padding: 3px;
+    border-radius: 999px;
+    background: #f1f5f9;
+    border: 1px solid #e2e8f0;
+}
+
+.lang-switch a {
+    display: inline-block;
+    padding: 4px 10px;
+    border-radius: 999px;
+    font-size: 11.5px;
+    font-weight: 800;
+    color: #64748b;
+    text-decoration: none;
+    letter-spacing: 0.5px;
+    line-height: 1;
+    transition: all 0.18s ease;
+}
+
+.lang-switch a:hover {
+    color: #0f172a;
+}
+
+.lang-switch a.is-active {
+    background: #0284c7;
+    color: #ffffff;
+    box-shadow: 0 2px 6px rgba(2, 132, 199, 0.25);
+}
+
+.pwa-install-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%);
+    color: #ffffff !important;
+    border: none;
+    border-radius: 999px;
+    padding: 6px 12px;
+    font-size: 12.5px;
+    font-weight: 700;
+    cursor: pointer;
+    box-shadow: 0 2px 6px rgba(2, 132, 199, 0.25);
+    transition: all 0.18s ease;
+    text-decoration: none;
+}
+
+.pwa-install-pill:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 10px rgba(2, 132, 199, 0.35);
+}
+
+.header-divider {
+    width: 1px;
+    height: 24px;
+    background: #e2e8f0;
+    margin: 0 2px;
+}
+
+.header-auth {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.auth-buttons {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.btn-login-link {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 7px 14px;
+    border-radius: 10px;
+    font-size: 13.5px;
+    font-weight: 700;
+    color: #334155;
+    text-decoration: none;
+    transition: all 0.18s ease;
+}
+
+.btn-login-link:hover {
+    color: #0284c7;
+    background: #f1f5f9;
+}
+
+.btn-register-cta {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 8px 18px;
+    border-radius: 10px;
+    font-size: 13.5px;
+    font-weight: 700;
+    color: #ffffff !important;
+    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+    box-shadow: 0 2px 8px rgba(16, 185, 129, 0.3);
+    text-decoration: none;
+    transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.btn-register-cta:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 14px rgba(16, 185, 129, 0.42);
+    filter: brightness(1.03);
+}
+
+/* Menu Toggle Button */
+.menu-toggle {
+    display: none;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    border-radius: 10px;
+    border: 1px solid #e2e8f0;
+    background: #ffffff;
+    color: #0f172a;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.menu-toggle:hover {
+    background: #f8fafc;
+    border-color: #cbd5e1;
+    color: #0284c7;
+}
+
+/* ==========================================================================
+   Responsive Header Breakpoints
+   ========================================================================== */
+
+/* 1. Large Laptops / Desktops (1081px - 1240px): Compact Nav */
+@media (min-width: 1081px) and (max-width: 1240px) {
+    .main-nav.desktop-nav a {
+        padding: 5px 10px;
+        font-size: 13px;
+        gap: 5px;
+    }
+    .pwa-install-pill .pwa-pill-text {
+        display: none;
+    }
+    .pwa-install-pill {
+        padding: 6px 9px;
+    }
+    .btn-register-cta {
+        padding: 7px 14px;
+        font-size: 13px;
+    }
+}
+
+/* 2. Tablets & Compact Screens (<= 1080px): Switch to Clean Drawer Navigation */
+@media (max-width: 1080px) {
+    .desktop-nav,
+    .desktop-only {
+        display: none !important;
+    }
+    .menu-toggle {
+        display: inline-flex !important;
+    }
+    .site-header .container.header-inner {
+        height: 64px;
+        padding-left: 16px;
+        padding-right: 16px;
+    }
+}
+
+/* 3. Small Mobile Devices (<= 520px) */
+@media (max-width: 520px) {
+    .site-header .container.header-inner {
+        height: 58px;
+        padding-left: 12px;
+        padding-right: 12px;
+        gap: 8px;
+    }
+    .brand-mascot-img {
+        width: 32px;
+        height: 38px;
+    }
+    .brand-name {
+        font-size: 20px;
+    }
+    .header-actions {
+        gap: 6px;
+    }
+    .header-tools {
+        gap: 5px;
+    }
+    .sound-toggle-btn {
+        width: 32px;
+        height: 32px;
+        font-size: 14px;
+        border-radius: 8px;
+    }
+    .lang-switch a {
+        padding: 3px 6px;
+        font-size: 10.5px;
+    }
+    .pwa-install-pill {
+        padding: 4px 8px;
+        font-size: 11.5px;
+    }
+    .menu-toggle {
+        width: 34px;
+        height: 34px;
+    }
+}

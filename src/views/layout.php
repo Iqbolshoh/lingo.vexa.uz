@@ -46,7 +46,7 @@ $user = auth_user();
     <!-- Site Header -->
     <header class="site-header">
         <div class="container header-inner">
-            <a href="/" class="brand-logo">
+            <a href="/" class="brand-logo" title="LingoUz">
                 <span class="logo-mark"><img src="/assets/mascot-owl.svg" alt="Lingo" width="40" height="46" class="brand-mascot-img"></span>
                 <span class="logo-text">
                     <span class="brand-name">Lingo<span class="highlight">Uz</span></span>
@@ -56,62 +56,72 @@ $user = auth_user();
             <!-- Desktop Navigation -->
             <nav class="main-nav desktop-nav">
                 <?php if ($user): ?>
-                    <!-- Logged in Student: Priority learning navigation (5 core tabs) -->
-                    <a href="/dashboard" class="<?= is_nav_active('/dashboard') ? 'is-active' : '' ?>"><?= icon('layers', '', 16) ?> <?= t('Mening sahifam') ?></a>
-                    <a href="/courses" class="<?= is_nav_active(['/courses', '/lessons']) ? 'is-active' : '' ?>"><?= icon('book-open', '', 16) ?> <?= t('Kurslar') ?></a>
-                    <a href="/flashcards" class="<?= is_nav_active('/flashcards') ? 'is-active' : '' ?>"><?= icon('layers', '', 16) ?> <?= t('Flashcards') ?></a>
-                    <a href="/stories" class="<?= is_nav_active('/stories') ? 'is-active' : '' ?>"><?= icon('book-open', '', 16) ?> <?= t('Ertaklar') ?></a>
-                    <a href="/leaderboard" class="<?= is_nav_active('/leaderboard') ? 'is-active' : '' ?>"><?= icon('trophy', '', 16) ?> <?= t('Reyting') ?></a>
-                    <a href="/live" class="<?= is_nav_active('/live') ? 'is-active' : '' ?>"><?= icon('video', '', 16) ?> <?= t('Jonli Muloqot') ?></a>
+                    <!-- Logged in Student: Priority learning navigation -->
+                    <a href="/dashboard" class="<?= is_nav_active('/dashboard') ? 'is-active' : '' ?>"><?= icon('layers', '', 15) ?> <span><?= t('Mening sahifam') ?></span></a>
+                    <a href="/courses" class="<?= is_nav_active(['/courses', '/lessons']) ? 'is-active' : '' ?>"><?= icon('book-open', '', 15) ?> <span><?= t('Kurslar') ?></span></a>
+                    <a href="/flashcards" class="<?= is_nav_active('/flashcards') ? 'is-active' : '' ?>"><?= icon('layers', '', 15) ?> <span><?= t('Flashcards') ?></span></a>
+                    <a href="/stories" class="<?= is_nav_active('/stories') ? 'is-active' : '' ?>"><?= icon('book-open', '', 15) ?> <span><?= t('Ertaklar') ?></span></a>
+                    <a href="/leaderboard" class="<?= is_nav_active('/leaderboard') ? 'is-active' : '' ?>"><?= icon('trophy', '', 15) ?> <span><?= t('Reyting') ?></span></a>
+                    <a href="/live" class="<?= is_nav_active('/live') ? 'is-active' : '' ?>"><?= icon('video', '', 15) ?> <span><?= t('Jonli Dars') ?></span></a>
                 <?php else: ?>
-                    <!-- Guest Navigation: streamlined core links without duplicates -->
-                    <a href="/" class="<?= is_nav_active('/') ? 'is-active' : '' ?>"><?= icon('registon', '', 16) ?> <?= t('Bosh sahifa') ?></a>
-                    <a href="/courses" class="<?= is_nav_active(['/courses', '/lessons']) ? 'is-active' : '' ?>"><?= icon('book-open', '', 16) ?> <?= t('Darslar') ?></a>
-                    <a href="/flashcards" class="<?= is_nav_active('/flashcards') ? 'is-active' : '' ?>"><?= icon('layers', '', 16) ?> <?= t('Flashcards') ?></a>
-                    <a href="/stories" class="<?= is_nav_active('/stories') ? 'is-active' : '' ?>"><?= icon('book-open', '', 16) ?> <?= t('Ertaklar') ?></a>
-                    <a href="/leaderboard" class="<?= is_nav_active('/leaderboard') ? 'is-active' : '' ?>"><?= icon('trophy', '', 16) ?> <?= t('Reyting') ?></a>
-                    <a href="/parent-tips" class="<?= is_nav_active('/parent-tips') ? 'is-active' : '' ?>"><?= icon('users', '', 16) ?> <?= t('Qo‘llanma') ?></a>
+                    <!-- Guest Navigation: streamlined core links -->
+                    <a href="/courses" class="<?= is_nav_active(['/courses', '/lessons']) ? 'is-active' : '' ?>"><?= icon('book-open', '', 15) ?> <span><?= t('Darslar') ?></span></a>
+                    <a href="/flashcards" class="<?= is_nav_active('/flashcards') ? 'is-active' : '' ?>"><?= icon('layers', '', 15) ?> <span><?= t('Flashcards') ?></span></a>
+                    <a href="/stories" class="<?= is_nav_active('/stories') ? 'is-active' : '' ?>"><?= icon('book-open', '', 15) ?> <span><?= t('Ertaklar') ?></span></a>
+                    <a href="/leaderboard" class="<?= is_nav_active('/leaderboard') ? 'is-active' : '' ?>"><?= icon('trophy', '', 15) ?> <span><?= t('Reyting') ?></span></a>
+                    <a href="/parent-tips" class="<?= is_nav_active('/parent-tips') ? 'is-active' : '' ?>"><?= icon('users', '', 15) ?> <span><?= t('Qo‘llanma') ?></span></a>
                 <?php endif; ?>
             </nav>
 
             <!-- Header Actions -->
             <div class="header-actions">
-                <button class="sound-toggle-btn" id="soundToggleBtn" type="button" title="<?= t('Ovoz effektlarini yoqish/o‘chirish') ?>" aria-label="<?= t('Ovoz effektlari') ?>">
-                    <span class="sound-icon-on">🔊</span>
-                    <span class="sound-icon-off" style="display:none">🔇</span>
-                </button>
-                <button class="pwa-install-pill" id="pwaHeaderInstallBtn" type="button" title="<?= t('LingoUz mobil ilovasini yuklash') ?>">
-                    <span class="pwa-pill-icon">📥</span> <span><?= t('Yuklash') ?></span>
-                </button>
-                <div class="lang-switch" role="group" aria-label="Language">
-                    <?php foreach (LOCALES as $code => $name): ?><a href="<?= e(lang_url($code)) ?>" class="<?= locale() === $code ? 'is-active' : '' ?>" hreflang="<?= $code ?>" title="<?= $name ?>"><?= strtoupper($code) ?></a><?php endforeach; ?>
-                </div>
-                <?php if ($user): ?>
-                    <div class="user-chip desktop-only">
-                        <?php if (is_admin()): ?>
-                            <a href="/admin" class="btn-chip-admin <?= is_nav_active('/admin') ? 'is-active' : '' ?>" title="<?= t('Admin Boshqaruv Markazi') ?>">
-                                <?= icon('shield-check', '', 14) ?> <span>Admin</span>
-                            </a>
-                        <?php endif; ?>
-                        <a href="/profile" class="user-profile-link" title="<?= t('Profil sozlamalari') ?>">
-                            <span class="user-avatar-icon"><?= icon('user', '', 16) ?></span>
-                            <span class="user-name"><?= e($user['display_name']) ?></span>
-                        </a>
-                        <form action="/logout" method="POST" class="inline-form">
-                            <?= csrf_field() ?>
-                            <button type="submit" class="btn-header-logout" title="<?= t('Tizimdan chiqish') ?>">
-                                <?= icon('log-out', '', 13) ?> <span><?= t('Chiqish') ?></span>
-                            </button>
-                        </form>
+                <!-- Utility tools: Sound, Language & PWA -->
+                <div class="header-tools">
+                    <button class="sound-toggle-btn" id="soundToggleBtn" type="button" title="<?= t('Ovoz effektlarini yoqish/o‘chirish') ?>" aria-label="<?= t('Ovoz effektlari') ?>">
+                        <span class="sound-icon-on">🔊</span>
+                        <span class="sound-icon-off" style="display:none">🔇</span>
+                    </button>
+                    <div class="lang-switch" role="group" aria-label="Language">
+                        <?php foreach (LOCALES as $code => $name): ?><a href="<?= e(lang_url($code)) ?>" class="<?= locale() === $code ? 'is-active' : '' ?>" hreflang="<?= $code ?>" title="<?= $name ?>"><?= strtoupper($code) ?></a><?php endforeach; ?>
                     </div>
-                <?php else: ?>
-                    <a href="/login" class="btn btn-outline btn-sm desktop-only"><?= t('Kirish') ?></a>
-                    <a href="/register" class="btn btn-primary btn-sm desktop-only"><?= t('Ro‘yxatdan o‘tish') ?></a>
-                <?php endif; ?>
+                    <button class="pwa-install-pill" id="pwaHeaderInstallBtn" type="button" title="<?= t('LingoUz mobil ilovasini yuklash') ?>">
+                        <span class="pwa-pill-icon">📥</span> <span class="pwa-pill-text"><?= t('Yuklash') ?></span>
+                    </button>
+                </div>
+
+                <div class="header-divider desktop-only"></div>
+
+                <!-- User profile / Auth buttons -->
+                <div class="header-auth">
+                    <?php if ($user): ?>
+                        <div class="user-chip desktop-only">
+                            <?php if (is_admin()): ?>
+                                <a href="/admin" class="btn-chip-admin <?= is_nav_active('/admin') ? 'is-active' : '' ?>" title="<?= t('Admin Boshqaruv Markazi') ?>">
+                                    <?= icon('shield-check', '', 14) ?> <span>Admin</span>
+                                </a>
+                            <?php endif; ?>
+                            <a href="/profile" class="user-profile-link" title="<?= t('Profil sozlamalari') ?>">
+                                <span class="user-avatar-icon"><?= icon('user', '', 16) ?></span>
+                                <span class="user-name"><?= e($user['display_name']) ?></span>
+                            </a>
+                            <form action="/logout" method="POST" class="inline-form">
+                                <?= csrf_field() ?>
+                                <button type="submit" class="btn-header-logout" title="<?= t('Tizimdan chiqish') ?>">
+                                    <?= icon('log-out', '', 13) ?> <span><?= t('Chiqish') ?></span>
+                                </button>
+                            </form>
+                        </div>
+                    <?php else: ?>
+                        <div class="auth-buttons desktop-only">
+                            <a href="/login" class="btn-login-link"><?= t('Kirish') ?></a>
+                            <a href="/register" class="btn-register-cta"><?= t('Ro‘yxatdan o‘tish') ?></a>
+                        </div>
+                    <?php endif; ?>
+                </div>
 
                 <!-- Responsive Menu Toggle Button -->
                 <button class="menu-toggle" id="menuToggle" aria-label="<?= t('Menyuni ochish') ?>" type="button">
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
                         <line x1="3" y1="12" x2="21" y2="12"></line>
                         <line x1="3" y1="6" x2="21" y2="6"></line>
                         <line x1="3" y1="18" x2="21" y2="18"></line>
