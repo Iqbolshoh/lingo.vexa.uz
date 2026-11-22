@@ -1,5 +1,5 @@
-// LingoUz Progressive Web App (PWA) Service Worker - v2
-const CACHE_NAME = 'lingouz-pwa-v2';
+// LingoUz Progressive Web App (PWA) Service Worker - v3
+const CACHE_NAME = 'lingouz-pwa-v3';
 const PRECACHE_ASSETS = [
     '/',
     '/assets/style.css',
