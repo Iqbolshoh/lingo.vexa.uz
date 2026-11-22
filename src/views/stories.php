@@ -1,7 +1,7 @@
 <div class="pg">
     <div class="container">
         <!-- Hero Header -->
-        <section class="pg-hero" style="margin-bottom: 32px;">
+        <section class="pg-hero theme-teal" style="margin-bottom: 32px;">
             <div class="hero-split">
                 <div>
                     <span class="hero-chip"><?= icon('book-open', '', 14) ?> <?= t('O‘zbek Xalq Ertaklari') ?></span>
@@ -22,38 +22,38 @@
         </section>
 
         <!-- Stories Grid -->
-        <div class="stories-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 24px; margin-bottom: 40px;">
+        <div class="stories-grid">
             <?php foreach ($stories as $story): ?>
-                <div class="card story-card" style="display: flex; flex-direction: column; justify-content: space-between; border-radius: 18px; overflow: hidden; padding: 0; box-shadow: var(--shadow-md); transition: transform 0.2s ease, box-shadow 0.2s ease;">
-                    <div class="story-card-top" style="background: <?= $story['gradient'] ?>; padding: 24px; color: #ffffff; position: relative;">
-                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
-                            <span style="background: rgba(255,255,255,0.22); backdrop-filter: blur(6px); color: #fff; font-size: 12px; font-weight: 800; padding: 4px 10px; border-radius: 999px;">
+                <div class="card story-card">
+                    <div class="story-card-top" style="background: <?= $story['gradient'] ?>;">
+                        <div class="story-badge-bar">
+                            <span class="story-level-pill">
                                 <?= e(is_en() ? $story['level_en'] : $story['level']) ?>
                             </span>
-                            <span style="font-size: 12px; color: rgba(255,255,255,0.9); font-weight: 600;">
+                            <span class="story-read-time">
                                 ⏱ <?= e(is_en() ? $story['read_time_en'] : $story['read_time']) ?>
                             </span>
                         </div>
-                        <h3 style="font-family: var(--font-heading); font-size: 24px; font-weight: 800; color: #ffffff; margin: 0 0 6px;">
+                        <h3 class="story-title">
                             <?= e(is_en() ? $story['title_en'] : $story['title_uz']) ?>
                         </h3>
-                        <p style="font-size: 13.5px; opacity: 0.95; margin: 0; line-height: 1.4;">
+                        <p class="story-subtitle">
                             <?= e(is_en() ? $story['subtitle_en'] : $story['subtitle_uz']) ?>
                         </p>
                     </div>
 
-                    <div class="story-card-body" style="padding: 20px 24px; flex: 1; display: flex; flex-direction: column; justify-content: space-between;">
-                        <div style="margin-bottom: 16px;">
-                            <div style="font-size: 13px; color: #64748b; margin-bottom: 8px;">
+                    <div class="story-card-body">
+                        <div class="story-meta-box">
+                            <div class="story-meta-text">
                                 📖 <?= count($story['paragraphs']) ?> <?= t('ta matn qismi va audio talaffuz') ?>
                             </div>
-                            <div style="display: flex; gap: 6px; flex-wrap: wrap;">
-                                <span class="tag tag-gold" style="font-size: 11.5px;">🏆 <?= e($story['badge']) ?></span>
-                                <span class="tag tag-emerald" style="font-size: 11.5px;">+20 XP</span>
+                            <div class="story-tags-row">
+                                <span class="tag tag-gold">🏆 <?= e($story['badge']) ?></span>
+                                <span class="tag tag-emerald">+20 XP</span>
                             </div>
                         </div>
 
-                        <a href="/stories/<?= e($story['id']) ?>" class="btn btn-primary" style="width: 100%; justify-content: center; font-weight: 700;">
+                        <a href="/stories/<?= e($story['id']) ?>" class="btn btn-primary btn-block" style="justify-content: center; font-weight: 700;">
                             <?= icon('play', '', 16) ?> <?= t('Ertakni o‘qish va tinglash') ?> ↗
                         </a>
                     </div>

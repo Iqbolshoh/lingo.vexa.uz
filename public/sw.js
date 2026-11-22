@@ -1,5 +1,5 @@
-// LingoUz Progressive Web App (PWA) Service Worker - v8 (Instant Fresh Icons)
-const CACHE_NAME = 'lingouz-pwa-v9';
+// LingoUz Progressive Web App (PWA) Service Worker - v10 (Design & UI Polish)
+const CACHE_NAME = 'lingouz-pwa-v10';
 const PRECACHE_ASSETS = [
     '/',
     '/assets/style.css',
