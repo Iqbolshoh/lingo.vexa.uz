@@ -52,6 +52,20 @@ function telegram_webhook_secret(): string
 }
 
 /**
+ * Logs Telegram debug/error events into storage/logs/telegram.log without polluting FastCGI stderr.
+ */
+function telegram_log(string $message): void
+{
+    $dir = __DIR__ . '/../storage/logs';
+    if (!is_dir($dir)) {
+        @mkdir($dir, 0775, true);
+    }
+    $logFile = $dir . '/telegram.log';
+    $time = date('Y-m-d H:i:s');
+    @file_put_contents($logFile, "[{$time}] {$message}\n", FILE_APPEND | LOCK_EX);
+}
+
+/**
  * Returns the developer / system updates Telegram chat ID (group or supergroup).
  */
 function telegram_dev_chat_id(): string
@@ -107,13 +121,13 @@ function telegram_api(string $method, array $params = [], bool $isMultipart = fa
     curl_close($ch);
 
     if ($err || !$response) {
-        error_log("[Telegram API Error] Method {$method} failed: " . ($err ?: 'No response'));
+        telegram_log("[Telegram API Error] Method {$method} failed: " . ($err ?: 'No response'));
         return null;
     }
 
     $decoded = json_decode($response, true);
     if (!is_array($decoded) || empty($decoded['ok'])) {
-        error_log("[Telegram API Error] Method {$method} response: " . $response);
+        telegram_log("[Telegram API Error] Method {$method} response: " . $response);
     }
     return $decoded;
 }
@@ -1115,7 +1129,7 @@ function telegram_notify_dev(string $text, ?array $replyMarkup = null, ?string $
         }
         return !empty($res['ok']);
     } catch (\Throwable $e) {
-        error_log('[Telegram Dev Notify Error] ' . $e->getMessage());
+        telegram_log('[Telegram Dev Notify Error] ' . $e->getMessage());
         return false;
     }
 }

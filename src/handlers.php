@@ -771,7 +771,7 @@ function action_telegram_webhook(): void
     try {
         handle_telegram_webhook($update);
     } catch (\Throwable $e) {
-        error_log('[Telegram Webhook Error] ' . $e->getMessage());
+        telegram_log('[Telegram Webhook Error] ' . $e->getMessage());
     }
 
     json_response(['ok' => true]);
