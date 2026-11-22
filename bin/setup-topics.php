@@ -9,12 +9,12 @@ $chatId = telegram_dev_chat_id();
 $pdo = db();
 
 $topics = [
-    'releases' => ['name' => '🚀 Yangilanishlar & Relizlar', 'color' => 0x6FB9F0, 'thread_id' => 18],
-    'new_users' => ['name' => '👥 Yangi O‘quvchilar', 'color' => 0x8EEE98],
-    'enrollments' => ['name' => '📝 Kursga Arizalar', 'color' => 0xFFD67E],
-    'milestones' => ['name' => '🏆 Yutuqlar & Sertifikatlar', 'color' => 0xCB86DB],
-    'daily_stats' => ['name' => '📊 Kunlik Hisobotlar', 'color' => 0xFF93B2],
-    'alerts' => ['name' => '⚠️ Tizim & Monitoring', 'color' => 0xFB6F5F],
+    'releases' => ['name' => '🚀 Releases', 'color' => 0x6FB9F0, 'thread_id' => 18],
+    'new_users' => ['name' => '👥 Students', 'color' => 0x8EEE98, 'thread_id' => 23],
+    'enrollments' => ['name' => '📝 Leads', 'color' => 0xFFD67E, 'thread_id' => 24],
+    'milestones' => ['name' => '🏆 Milestones', 'color' => 0xCB86DB, 'thread_id' => 26],
+    'daily_stats' => ['name' => '📊 Reports', 'color' => 0xFF93B2, 'thread_id' => 28],
+    'alerts' => ['name' => '⚠️ Alerts', 'color' => 0xFB6F5F, 'thread_id' => 29],
 ];
 
 $results = [];
