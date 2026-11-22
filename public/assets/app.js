@@ -4,7 +4,13 @@
 
 // Global Audio Context for zero-latency Sound FX
 let audioCtx = null;
-let soundEnabled = true;
+let soundEnabled = (function() {
+    try {
+        return localStorage.getItem('lingo_sound_muted') !== 'true';
+    } catch (e) {
+        return true;
+    }
+})();
 
 function getAudioContext() {
     if (!audioCtx) {
@@ -21,6 +27,35 @@ function getAudioContext() {
 
 // Sound Synthesizer via Web Audio API (Zero external assets, instant 100% reliable)
 const SoundFX = {
+    isEnabled() {
+        return soundEnabled;
+    },
+
+    toggle() {
+        soundEnabled = !soundEnabled;
+        try {
+            localStorage.setItem('lingo_sound_muted', soundEnabled ? 'false' : 'true');
+        } catch (e) {}
+        this.updateUi();
+        if (soundEnabled) {
+            this.correct();
+        }
+        return soundEnabled;
+    },
+
+    updateUi() {
+        const btn = document.getElementById('soundToggleBtn');
+        if (!btn) return;
+        const iconOn = btn.querySelector('.sound-icon-on');
+        const iconOff = btn.querySelector('.sound-icon-off');
+        if (iconOn && iconOff) {
+            iconOn.style.display = soundEnabled ? 'inline-block' : 'none';
+            iconOff.style.display = soundEnabled ? 'none' : 'inline-block';
+        }
+        btn.classList.toggle('is-muted', !soundEnabled);
+        btn.setAttribute('aria-pressed', soundEnabled ? 'true' : 'false');
+    },
+
     playTone(freq, type = 'sine', duration = 0.15, delay = 0, gainLevel = 0.15) {
         if (!soundEnabled) return;
         try {
@@ -34,7 +69,7 @@ const SoundFX = {
             osc.frequency.setValueAtTime(freq, ctx.currentTime + delay);
 
             gain.gain.setValueAtTime(gainLevel, ctx.currentTime + delay);
-            gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + delay + duration);
+            gain.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + delay + duration);
 
             osc.connect(gain);
             gain.connect(ctx.destination);
@@ -51,6 +86,41 @@ const SoundFX = {
         this.playTone(600, 'triangle', 0.05, 0, 0.1);
     },
 
+    // Card flip swoosh / pop sound
+    flip() {
+        if (!soundEnabled) return;
+        try {
+            const ctx = getAudioContext();
+            if (!ctx) return;
+            const osc = ctx.createOscillator();
+            const gain = ctx.createGain();
+            osc.type = 'sine';
+            osc.frequency.setValueAtTime(580, ctx.currentTime);
+            osc.frequency.exponentialRampToValueAtTime(220, ctx.currentTime + 0.08);
+            gain.gain.setValueAtTime(0.12, ctx.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.08);
+            osc.connect(gain);
+            gain.connect(ctx.destination);
+            osc.start(ctx.currentTime);
+            osc.stop(ctx.currentTime + 0.08);
+        } catch (e) {}
+    },
+
+    // Bright, cheerful correct chime (Algor.uz / Duolingo style arpeggio) ✨
+    correct() {
+        // G5 (784Hz) -> C6 (1046Hz) -> E6 (1318Hz)
+        this.playTone(783.99, 'sine', 0.12, 0, 0.18);
+        this.playTone(1046.50, 'sine', 0.14, 0.08, 0.22);
+        this.playTone(1318.51, 'sine', 0.32, 0.16, 0.25);
+    },
+
+    // Gentle 2-tone low wobble for mistakes 🤔
+    wrong() {
+        // Eb3 (155Hz) -> C3 (130Hz)
+        this.playTone(155.56, 'triangle', 0.13, 0, 0.22);
+        this.playTone(130.81, 'triangle', 0.22, 0.11, 0.20);
+    },
+
     // Coin Pickup Sound 🪙
     coin() {
         this.playTone(987.77, 'sine', 0.08, 0, 0.2); // B5
@@ -65,15 +135,24 @@ const SoundFX = {
         this.playTone(1046.50, 'sine', 0.3, 0.24, 0.2); // C6
     },
 
-    // Fanfare for Quiz 80%+ Victory 🎺
+    // Streak / Power-up sound 🔥
+    streak() {
+        const notes = [440, 554.37, 659.25, 880];
+        notes.forEach((freq, idx) => {
+            this.playTone(freq, 'triangle', 0.15, idx * 0.07, 0.2);
+        });
+    },
+
+    // Fanfare for Quiz 80%+ / Lesson / Story Victory 🎺🎉
     fanfare() {
         const notes = [523.25, 659.25, 783.99, 1046.50];
         notes.forEach((freq, idx) => {
-            this.playTone(freq, 'triangle', 0.25, idx * 0.12, 0.25);
+            this.playTone(freq, 'triangle', 0.22, idx * 0.11, 0.22);
         });
         setTimeout(() => {
-            this.playTone(1046.50, 'square', 0.6, 0.5, 0.15);
-            this.playTone(1318.51, 'sine', 0.6, 0.5, 0.2);
+            this.playTone(1046.50, 'square', 0.5, 0.45, 0.12);
+            this.playTone(1318.51, 'sine', 0.55, 0.45, 0.2);
+            this.playTone(1567.98, 'sine', 0.6, 0.45, 0.18);
         }, 100);
     },
 
@@ -82,6 +161,50 @@ const SoundFX = {
         this.playTone(440, 'sine', 0.15, 0, 0.15);
         this.playTone(392, 'sine', 0.25, 0.15, 0.15);
     }
+};
+window.SoundFX = SoundFX;
+
+// Visual Animation Helpers
+window.showFloatingXP = function(targetEl, text = '+10 XP') {
+    try {
+        const badge = document.createElement('div');
+        badge.className = 'floating-xp';
+        badge.innerHTML = `<span class="fx-star">⭐</span><span>${text}</span>`;
+
+        let x = window.innerWidth / 2;
+        let y = window.innerHeight / 2;
+
+        if (targetEl && targetEl.getBoundingClientRect) {
+            const rect = targetEl.getBoundingClientRect();
+            x = rect.left + rect.width / 2;
+            y = rect.top + window.scrollY - 10;
+        } else {
+            y += window.scrollY;
+        }
+
+        badge.style.left = `${x}px`;
+        badge.style.top = `${y}px`;
+
+        document.body.appendChild(badge);
+
+        setTimeout(() => {
+            if (badge.parentNode) badge.parentNode.removeChild(badge);
+        }, 1250);
+    } catch (e) {
+        console.warn('Floating XP error:', e);
+    }
+};
+
+window.shakeElement = function(targetEl) {
+    if (!targetEl) return;
+    try {
+        targetEl.classList.remove('shake-error');
+        void targetEl.offsetWidth; // Force reflow
+        targetEl.classList.add('shake-error');
+        setTimeout(() => {
+            targetEl.classList.remove('shake-error');
+        }, 500);
+    } catch (e) {}
 };
 
 /**
@@ -323,6 +446,16 @@ function speakUzbek(text, slow = false) {
 window.speakUzbek = speakUzbek;
 
 document.addEventListener('DOMContentLoaded', () => {
+    // 0. Sound Effects Toggle Button in Header
+    SoundFX.updateUi();
+    const soundToggleBtn = document.getElementById('soundToggleBtn');
+    if (soundToggleBtn) {
+        soundToggleBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            SoundFX.toggle();
+        });
+    }
+
     // 1. Mobile Menu Toggle
     const menuToggle = document.getElementById('menuToggle');
     const mainNav = document.getElementById('mainNav');
@@ -515,6 +648,9 @@ function handleCardClick(card) {
         scoreCoins += 10;
 
         SoundFX.coin();
+        if (typeof window.showFloatingXP === 'function') {
+            window.showFloatingXP(card, '+10 🪙');
+        }
 
         const matchedEl = document.getElementById('matchedPairsCount');
         const coinEl = document.getElementById('gameCoinCount');
@@ -525,7 +661,8 @@ function handleCardClick(card) {
 
         if (matchedCount === totalPairs) {
             setTimeout(() => {
-                SoundFX.match();
+                SoundFX.fanfare();
+                triggerConfetti();
                 const winBanner = document.getElementById('gameWinBanner');
                 if (winBanner) winBanner.style.display = 'block';
                 document.dispatchEvent(new CustomEvent('lingo:game-won'));
@@ -533,13 +670,17 @@ function handleCardClick(card) {
         }
     } else {
         lockBoard = true;
-        SoundFX.encourage();
+        SoundFX.wrong();
+        if (typeof window.shakeElement === 'function') {
+            window.shakeElement(firstCard);
+            window.shakeElement(card);
+        }
         setTimeout(() => {
             firstCard.classList.remove('selected');
             card.classList.remove('selected');
             firstCard = null;
             lockBoard = false;
-        }, 800);
+        }, 700);
     }
 }
 
@@ -574,61 +715,96 @@ function togglePasswordField() {
 }
 
 /**
- * Lightweight Celebration Confetti
+ * High Performance Pure Canvas Celebration Confetti (Zero external CDN)
  */
-function triggerConfetti() {
-    const canvas = document.createElement('canvas');
-    canvas.style.position = 'fixed';
-    canvas.style.top = '0';
-    canvas.style.left = '0';
-    canvas.style.width = '100vw';
-    canvas.style.height = '100vh';
-    canvas.style.pointerEvents = 'none';
-    canvas.style.zIndex = '9999';
-    document.body.appendChild(canvas);
+function triggerConfetti(options = {}) {
+    const particleCount = options.particleCount || 85;
+    const colors = options.colors || ['#059669', '#2563eb', '#f59e0b', '#ec4899', '#8b5cf6', '#10b981', '#f43f5e', '#06b6d4'];
+
+    let canvas = document.getElementById('lingoConfettiCanvas');
+    if (!canvas) {
+        canvas = document.createElement('canvas');
+        canvas.id = 'lingoConfettiCanvas';
+        canvas.style.position = 'fixed';
+        canvas.style.top = '0';
+        canvas.style.left = '0';
+        canvas.style.width = '100vw';
+        canvas.style.height = '100vh';
+        canvas.style.pointerEvents = 'none';
+        canvas.style.zIndex = '99999';
+        document.body.appendChild(canvas);
+    }
 
     const ctx = canvas.getContext('2d');
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight;
 
     const pieces = [];
-    const colors = ['#059669', '#2563eb', '#f59e0b', '#ec4899', '#8b5cf6', '#10b981'];
+    const originX = (options.origin && options.origin.x != null) ? options.origin.x * canvas.width : canvas.width / 2;
+    const originY = (options.origin && options.origin.y != null) ? options.origin.y * canvas.height : canvas.height * 0.45;
 
-    for (let i = 0; i < 80; i++) {
+    for (let i = 0; i < particleCount; i++) {
+        const angle = (Math.PI * 2 * i) / particleCount + (Math.random() - 0.5) * 0.8;
+        const speed = 4 + Math.random() * 9;
         pieces.push({
-            x: Math.random() * canvas.width,
-            y: Math.random() * canvas.height - canvas.height,
-            size: Math.random() * 10 + 6,
+            x: originX,
+            y: originY,
+            vx: Math.cos(angle) * speed * (0.8 + Math.random() * 0.6),
+            vy: Math.sin(angle) * speed - (3 + Math.random() * 4),
+            size: 7 + Math.random() * 7,
             color: colors[Math.floor(Math.random() * colors.length)],
-            speed: Math.random() * 4 + 3,
             rotation: Math.random() * 360,
-            rotationSpeed: Math.random() * 6 - 3
+            rotationSpeed: (Math.random() - 0.5) * 14,
+            opacity: 1,
+            shape: Math.random() > 0.4 ? 'rect' : 'circle'
         });
     }
 
-    let frame = 0;
-    function render() {
+    let startTime = null;
+    const duration = 2200; // ms
+
+    function render(timestamp) {
+        if (!startTime) startTime = timestamp;
+        const elapsed = timestamp - startTime;
+        const progress = elapsed / duration;
+
         ctx.clearRect(0, 0, canvas.width, canvas.height);
+
         pieces.forEach(p => {
-            p.y += p.speed;
+            p.x += p.vx;
+            p.y += p.vy;
+            p.vy += 0.24; // gravity
+            p.vx *= 0.985; // drag
             p.rotation += p.rotationSpeed;
+            p.opacity = Math.max(0, 1 - progress * 1.15);
+
             ctx.save();
             ctx.translate(p.x, p.y);
             ctx.rotate((p.rotation * Math.PI) / 180);
+            ctx.globalAlpha = p.opacity;
             ctx.fillStyle = p.color;
-            ctx.fillRect(-p.size / 2, -p.size / 2, p.size, p.size);
+
+            if (p.shape === 'rect') {
+                ctx.fillRect(-p.size / 2, -p.size / 3, p.size, p.size / 1.5);
+            } else {
+                ctx.beginPath();
+                ctx.arc(0, 0, p.size / 2.4, 0, Math.PI * 2);
+                ctx.fill();
+            }
+
             ctx.restore();
         });
 
-        frame++;
-        if (frame < 180) {
+        if (progress < 1) {
             requestAnimationFrame(render);
         } else {
-            canvas.remove();
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
         }
     }
-    render();
+    requestAnimationFrame(render);
 }
+window.triggerConfetti = triggerConfetti;
+window.confetti = triggerConfetti;
 
 /**
  * Responsive Mobile Drawer Navigation
@@ -912,12 +1088,14 @@ document.addEventListener('click', (e) => {
             const res = evaluateSpeech(targetWord, primary, alternatives);
             if (res.ok) {
                 showSpeechToast(`🎉 <strong>${res.score}% moslik!</strong> Ajoyib talaffuz: «${res.recognized}»`, 'success', 3500);
-                if (typeof SoundFX !== 'undefined') SoundFX.coin();
+                if (typeof SoundFX !== 'undefined') SoundFX.correct();
+                if (typeof window.showFloatingXP === 'function') window.showFloatingXP(btn, '+10 XP');
                 const owl = document.querySelector('[data-owl]');
                 if (window.Owl && owl) Owl.play(owl, 'celebrate', 1500);
             } else {
                 showSpeechToast(`🤔 <strong>${res.score}%</strong>. Eshitildi: «${res.recognized}». Qayta urinib ko‘ring!`, 'retry', 3500);
-                if (typeof SoundFX !== 'undefined') SoundFX.encourage();
+                if (typeof SoundFX !== 'undefined') SoundFX.wrong();
+                if (typeof window.shakeElement === 'function') window.shakeElement(btn);
                 const owl = document.querySelector('[data-owl]');
                 if (window.Owl && owl) Owl.play(owl, 'encourage', 1500);
             }

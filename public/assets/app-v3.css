@@ -1626,3 +1626,93 @@ button.btn-header-logout { cursor: pointer; font: inherit; }
 .tg-unlink-btn:hover {
     color: #ef4444 !important;
 }
+
+/* ==========================================================================
+   Gamified Audio & Visual FX (Floating XP, Shake, Confetti, Sound Toggle)
+   ========================================================================== */
+
+/* Floating XP / Coins */
+@keyframes floatUpFade {
+    0% {
+        opacity: 0;
+        transform: translate(-50%, 15px) scale(0.65);
+    }
+    20% {
+        opacity: 1;
+        transform: translate(-50%, -10px) scale(1.15);
+    }
+    40% {
+        transform: translate(-50%, -20px) scale(1);
+    }
+    100% {
+        opacity: 0;
+        transform: translate(-50%, -65px) scale(0.9);
+    }
+}
+
+.floating-xp {
+    position: absolute;
+    z-index: 99999;
+    pointer-events: none;
+    font-family: var(--font-heading, inherit);
+    font-weight: 800;
+    font-size: 19px;
+    color: #b45309;
+    background: linear-gradient(135deg, #fef3c7, #fde68a);
+    border: 2px solid #f59e0b;
+    padding: 5px 14px;
+    border-radius: 999px;
+    box-shadow: 0 6px 18px rgba(245, 158, 11, 0.4);
+    animation: floatUpFade 1.25s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    white-space: nowrap;
+    text-shadow: 0 1px 0 rgba(255, 255, 255, 0.8);
+}
+
+.floating-xp .fx-star {
+    font-size: 18px;
+    filter: drop-shadow(0 2px 4px rgba(245, 158, 11, 0.5));
+}
+
+/* Shake Animation on Wrong Answers */
+@keyframes shakeError {
+    0%, 100% { transform: translateX(0); }
+    15%, 55%, 85% { transform: translateX(-8px); }
+    30%, 70% { transform: translateX(8px); }
+}
+
+.shake-error {
+    animation: shakeError 0.45s cubic-bezier(0.36, 0.07, 0.19, 0.97) both !important;
+    border-color: #ef4444 !important;
+    box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.25) !important;
+}
+
+/* Sound Toggle Button in Header */
+.sound-toggle-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 38px;
+    height: 38px;
+    border-radius: 12px;
+    border: 1px solid var(--line, #e2e8f0);
+    background: #ffffff;
+    cursor: pointer;
+    font-size: 16px;
+    line-height: 1;
+    transition: all 0.2s ease;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+}
+
+.sound-toggle-btn:hover {
+    background: #f8fafc;
+    border-color: #cbd5e1;
+    transform: scale(1.05);
+}
+
+.sound-toggle-btn.is-muted {
+    opacity: 0.65;
+    background: #f1f5f9;
+}

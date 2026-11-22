@@ -152,6 +152,14 @@ function checkStoryAnswer(chosen, correct, explanation) {
         resBox.style.color = '#065f46';
         resBox.innerHTML = '🎉 <b>To‘g‘ri javob! +20 XP qo‘shildi!</b><br><small style="opacity:.9">' + explanation + '</small>';
 
+        if (typeof window.SoundFX !== 'undefined') window.SoundFX.correct();
+        if (typeof window.showFloatingXP === 'function' && btns[chosen]) {
+            window.showFloatingXP(btns[chosen], '+20 XP');
+        }
+        if (typeof window.triggerConfetti === 'function') {
+            window.triggerConfetti();
+        }
+
         // Award XP via API
         fetch('/stories/<?= e($story['id']) ?>/complete', {
             method: 'POST',
@@ -161,6 +169,10 @@ function checkStoryAnswer(chosen, correct, explanation) {
             }
         }).catch(function() {});
     } else {
+        if (typeof window.SoundFX !== 'undefined') window.SoundFX.wrong();
+        if (typeof window.shakeElement === 'function' && btns[chosen]) {
+            window.shakeElement(btns[chosen]);
+        }
         resBox.style.background = '#fee2e2';
         resBox.style.color = '#991b1b';
         resBox.innerHTML = '❌ <b>Xato javob.</b> To‘g‘ri javob yashil rang bilan belgilandi.<br><small style="opacity:.9">' + explanation + '</small>';

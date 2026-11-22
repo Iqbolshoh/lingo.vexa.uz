@@ -74,6 +74,10 @@ $user = auth_user();
 
             <!-- Header Actions -->
             <div class="header-actions">
+                <button class="sound-toggle-btn" id="soundToggleBtn" type="button" title="<?= t('Ovoz effektlarini yoqish/o‘chirish') ?>" aria-label="<?= t('Ovoz effektlari') ?>">
+                    <span class="sound-icon-on">🔊</span>
+                    <span class="sound-icon-off" style="display:none">🔇</span>
+                </button>
                 <button class="pwa-install-pill" id="pwaHeaderInstallBtn" type="button" title="<?= t('LingoUz mobil ilovasini yuklash') ?>">
                     <span class="pwa-pill-icon">📥</span> <span><?= t('Yuklash') ?></span>
                 </button>

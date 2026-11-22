@@ -283,6 +283,7 @@ $wordListJson = json_encode(array_values(array_map(function ($w) {
     function toggleFlip() {
         isFlipped = !isFlipped;
         flipCard.classList.toggle('is-flipped', isFlipped);
+        if (typeof window.SoundFX !== 'undefined') window.SoundFX.flip();
     }
 
     function speakCurrentWord() {
@@ -376,6 +377,9 @@ $wordListJson = json_encode(array_values(array_map(function ($w) {
         cardMasteredCount.textContent = masteredCount;
         cardXpEarned.textContent = earnedXp;
 
+        if (typeof window.SoundFX !== 'undefined') window.SoundFX.correct();
+        if (typeof window.showFloatingXP === 'function') window.showFloatingXP(btnMastered, '+2 XP');
+
         flipCard.classList.add('anim-mastered');
         setTimeout(() => {
             flipCard.classList.remove('anim-mastered');
@@ -389,6 +393,8 @@ $wordListJson = json_encode(array_values(array_map(function ($w) {
         // Push this word towards the end of deck so it repeats
         const item = deck[currentIndex];
         deck.push(item);
+
+        if (typeof window.SoundFX !== 'undefined') window.SoundFX.click();
 
         flipCard.classList.add('anim-review');
         setTimeout(() => {
@@ -405,6 +411,9 @@ $wordListJson = json_encode(array_values(array_map(function ($w) {
         finMasteredNum.textContent = masteredCount;
         finXpNum.textContent = '+' + earnedXp + ' XP';
         finReviewNum.textContent = reviewCount;
+
+        if (typeof window.SoundFX !== 'undefined') window.SoundFX.fanfare();
+        if (typeof window.triggerConfetti === 'function') window.triggerConfetti();
 
         // Save progress & award XP to user account
         if (earnedXp > 0) {

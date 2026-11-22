@@ -9,8 +9,8 @@
     // UI strings: Uzbek source text, English from window.I18N (set by the layout).
     const L = (s) => (window.I18N && window.I18N[s]) || s;
     const csrf = document.querySelector('meta[name="csrf-token"]')?.content || '';
-    // SoundFX is a top-level const in app.js, so it is not a window property.
-    const fx = (typeof SoundFX !== 'undefined') ? SoundFX : { click() {}, coin() {}, match() {}, encourage() {}, fanfare() {} };
+    // SoundFX global instance with fallback
+    const fx = (typeof window.SoundFX !== 'undefined') ? window.SoundFX : (typeof SoundFX !== 'undefined' ? SoundFX : { click() {}, coin() {}, correct() {}, wrong() {}, match() {}, flip() {}, encourage() {}, fanfare() {} });
 
     function speak(text, slow) {
         if (typeof window.speakUzbek === 'function') {
@@ -375,7 +375,12 @@
                 window.Owl && Owl.set(big, pct >= 80 ? 'celebrate' : 'encourage');
                 body.querySelector('.ex-done-owl').appendChild(big);
             }
-            if (pct >= 80) fx.fanfare(); else fx.encourage();
+            if (pct >= 80) {
+                fx.fanfare();
+                if (typeof window.triggerConfetti === 'function') window.triggerConfetti();
+            } else {
+                fx.encourage();
+            }
             foot.classList.remove('is-right', 'is-wrong');
             feedback.innerHTML = '';
             btn.textContent = L('Yana maşq qiliş');
@@ -400,7 +405,18 @@
             feedback.innerHTML = ok
                 ? `<span>${L('Barakalla! Töğri.')} ${evalResult ? '<small>(' + evalResult.score + '% ' + L('moslik') + ')</small>' : ''}</span>`
                 : `<span>${L('Töğri javob:')} ${esc(t.answer)}<small>${esc(t.item.word_uz)} — ${esc(t.item.word_en)}</small></span>`;
-            ok ? fx.coin() : fx.encourage();
+            if (ok) {
+                if (typeof fx.correct === 'function') fx.correct(); else fx.coin();
+                if (typeof window.showFloatingXP === 'function') {
+                    window.showFloatingXP(btn, '+10 XP');
+                }
+            } else {
+                if (typeof fx.wrong === 'function') fx.wrong(); else fx.encourage();
+                if (typeof window.shakeElement === 'function') {
+                    const wrongTarget = body.querySelector('.is-wrong') || body.querySelector('.fill-input') || body;
+                    window.shakeElement(wrongTarget);
+                }
+            }
             window.Owl && Owl.play(practiceOwl, ok ? 'success' : 'mistake', 1800);
             speak(t.item.word_uz);
             btn.textContent = L('Davom etiş');
