@@ -495,7 +495,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const owl = document.getElementById('heroOwlMascot') || heroMascotWrap.querySelector('.owl');
             if (window.Owl && owl) Owl.play(owl, 'celebrate', 2200);
             if (typeof SoundFX !== 'undefined') SoundFX.click();
-            speakUzbek('Assalomu alaykum! Men Lingoman — sizning o‘zbek tili do‘stingiz. Birga o‘rganamiz!');
+            speakUzbek('Assalomu alaykum! Men Lingo — sizning o‘zbek tili do‘stingiz. Birga o‘rganamiz!');
         });
     }
 

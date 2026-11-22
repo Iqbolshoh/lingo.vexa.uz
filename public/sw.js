@@ -1,5 +1,5 @@
-// LingoUz Progressive Web App (PWA) Service Worker - v5
-const CACHE_NAME = 'lingouz-pwa-v5';
+// LingoUz Progressive Web App (PWA) Service Worker - v8 (Instant Fresh Icons)
+const CACHE_NAME = 'lingouz-pwa-v8';
 const PRECACHE_ASSETS = [
     '/',
     '/assets/style.css',
@@ -10,7 +10,10 @@ const PRECACHE_ASSETS = [
     '/assets/mascot-owl.svg',
     '/assets/icon-192.png',
     '/assets/icon-512.png',
+    '/assets/icon-maskable-512.png',
+    '/assets/apple-touch-icon.png',
     '/favicon.svg',
+    '/favicon.ico',
     '/manifest.webmanifest'
 ];
 

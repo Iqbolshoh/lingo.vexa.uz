@@ -24,8 +24,10 @@ $user = auth_user();
     <meta name="twitter:image" content="<?= e($ogImage ?? 'https://lingo.vexa.uz/og/default.png') ?>">
 
     <link rel="icon" type="image/svg+xml" href="/favicon.svg?v=<?= filemtime(__DIR__ . '/../../public/favicon.svg') ?>">
+    <link rel="icon" type="image/png" sizes="192x192" href="/assets/icon-192.png?v=<?= filemtime(__DIR__ . '/../../public/assets/icon-192.png') ?>">
+    <link rel="icon" type="image/png" sizes="512x512" href="/assets/icon-512.png?v=<?= filemtime(__DIR__ . '/../../public/assets/icon-512.png') ?>">
     <link rel="icon" type="image/x-icon" href="/favicon.ico?v=<?= filemtime(__DIR__ . '/../../public/favicon.ico') ?>">
-    <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png?v=<?= filemtime(__DIR__ . '/../../public/assets/apple-touch-icon.png') ?>">
+    <link rel="apple-touch-icon" sizes="180x180" href="/assets/apple-touch-icon.png?v=<?= filemtime(__DIR__ . '/../../public/assets/apple-touch-icon.png') ?>">
     <link rel="manifest" href="/manifest.webmanifest?v=<?= filemtime(__DIR__ . '/../../public/manifest.webmanifest') ?>">
     <meta name="theme-color" content="#0284c7">
     <meta name="mobile-web-app-capable" content="yes">
@@ -363,7 +365,9 @@ $user = auth_user();
     // PWA Service Worker & Install Prompt Flow
     if ('serviceWorker' in navigator) {
         window.addEventListener('load', () => {
-            navigator.serviceWorker.register('/sw.js').catch(err => {
+            navigator.serviceWorker.register('/sw.js').then(reg => {
+                reg.update();
+            }).catch(err => {
                 console.warn('[LingoUz PWA] SW registration failed:', err);
             });
         });

@@ -725,7 +725,7 @@ function handle_telegram_webhook(array $update): void
 
     // Default Fallback Help Message
     if ($lang === 'en') {
-        $help = "Hello! 👋 I am your friendly Lingo mascot assistant.\n\n" .
+        $help = "Hello! 👋 I am Lingo — your friendly Uzbek learning companion.\n\n" .
             "Available commands:\n" .
             "• 📖 <b>Word of the day</b> (/word)\n" .
             "• 🎯 <b>Mini-quiz</b> (/quiz)\n" .
@@ -734,7 +734,7 @@ function handle_telegram_webhook(array $update): void
             "• 🌐 <b>Change language</b> (/lang)\n" .
             "• 🚀 <b>Open website</b> (/site)";
     } else {
-        $help = "Assalomu alaykum! 👋 Men sizning Lingo qushcha yordamchingizman.\n\n" .
+        $help = "Assalomu alaykum! 👋 Men Lingo — sizning o‘zbek tili do‘stingiz va yordamchingizman.\n\n" .
             "Mavjud buyruqlar:\n" .
             "• 📖 <b>Bugungi so‘z</b> (/word)\n" .
             "• 🎯 <b>Mini-test</b> (/quiz)\n" .

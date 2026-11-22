@@ -1,4 +1,7 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" width="200" height="200">
+  <!-- Solid Pure White Background -->
+  <rect width="200" height="200" fill="#ffffff"/>
+
   <!-- Outer Ear Tufts -->
   <path d="M48 68 C38 46 42 26 52 16 C60 30 70 42 84 50 Z" fill="#14b8a6"/>
   <path d="M48 68 C38 46 42 26 52 16 C60 30 70 42 84 50 Z" fill="none" stroke="#2dd4bf" stroke-width="3" stroke-linejoin="round"/>
