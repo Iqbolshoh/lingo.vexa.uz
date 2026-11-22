@@ -57,7 +57,7 @@ function page_admin_stats(): void
         'dau' => stat_count("SELECT count(DISTINCT a.user_id) FROM activity_days a JOIN users u ON u.id = a.user_id WHERE u.role = 'student' AND a.day = date('now')"),
         'wau' => stat_count("SELECT count(DISTINCT a.user_id) FROM activity_days a JOIN users u ON u.id = a.user_id WHERE u.role = 'student' AND a.day >= date('now', '-6 days')"),
         'mau' => stat_count("SELECT count(DISTINCT a.user_id) FROM activity_days a JOIN users u ON u.id = a.user_id WHERE u.role = 'student' AND a.day >= date('now', '-29 days')"),
-        'returning' => stat_count("SELECT count(*) FROM (SELECT a.user_id FROM activity_days a JOIN users u ON u.id = a.user_id WHERE u.role = 'student' GROUP BY a.user_id HAVING count(*) >= 2)"),
+        'returning' => stat_count("SELECT count(*) FROM (SELECT a.user_id FROM activity_days a JOIN users u ON u.id = a.user_id WHERE u.role = 'student' GROUP BY a.user_id HAVING count(*) >= 2) sub"),
         'onboarded' => stat_count("SELECT count(*) FROM users WHERE role = 'student' AND motives_json IS NOT NULL"),
         'placement' => (int) round((float) $pdo->query("SELECT avg(placement_score) FROM users WHERE placement_score IS NOT NULL")->fetchColumn()),
         'attempts' => stat_count('SELECT count(*) FROM quiz_attempts'),

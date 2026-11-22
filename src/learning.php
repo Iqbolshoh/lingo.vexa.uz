@@ -24,40 +24,61 @@ const GAME_COINS = 20;
 
 function published_courses(): array
 {
-    return db()->query("SELECT * FROM courses WHERE status = 'published' ORDER BY sort_order, id")->fetchAll();
+    static $cache = null;
+    if ($cache !== null) {
+        return $cache;
+    }
+    return $cache = db()->query("SELECT * FROM courses WHERE status = 'published' ORDER BY sort_order, id")->fetchAll();
 }
 
 function find_course(int $id): ?array
 {
+    static $cache = [];
+    if (isset($cache[$id])) {
+        return $cache[$id];
+    }
     $stmt = db()->prepare('SELECT * FROM courses WHERE id = ?');
     $stmt->execute([$id]);
-    return $stmt->fetch() ?: null;
+    return $cache[$id] = ($stmt->fetch() ?: null);
 }
 
 function find_lesson(int $id): ?array
 {
+    static $cache = [];
+    if (isset($cache[$id])) {
+        return $cache[$id];
+    }
     $stmt = db()->prepare('SELECT * FROM lessons WHERE id = ?');
     $stmt->execute([$id]);
-    return $stmt->fetch() ?: null;
+    return $cache[$id] = ($stmt->fetch() ?: null);
 }
 
 function course_lessons(int $courseId, bool $publishedOnly = true): array
 {
+    static $cache = [];
+    $key = "{$courseId}_" . ($publishedOnly ? '1' : '0');
+    if (isset($cache[$key])) {
+        return $cache[$key];
+    }
     $sql = 'SELECT * FROM lessons WHERE course_id = ?' . ($publishedOnly ? " AND status = 'published'" : '') . ' ORDER BY position, id';
     $stmt = db()->prepare($sql);
     $stmt->execute([$courseId]);
-    return $stmt->fetchAll();
+    return $cache[$key] = $stmt->fetchAll();
 }
 
 function user_progress_map(int $userId): array
 {
+    static $cache = [];
+    if (isset($cache[$userId])) {
+        return $cache[$userId];
+    }
     $stmt = db()->prepare('SELECT * FROM lesson_progress WHERE user_id = ?');
     $stmt->execute([$userId]);
     $map = [];
     foreach ($stmt->fetchAll() as $row) {
         $map[(int) $row['lesson_id']] = $row;
     }
-    return $map;
+    return $cache[$userId] = $map;
 }
 
 /**

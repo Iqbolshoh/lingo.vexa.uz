@@ -57,8 +57,8 @@ $user = auth_user();
 
             <!-- Header Actions -->
             <div class="header-actions">
-                <button class="pwa-install-pill" id="pwaHeaderInstallBtn" type="button" style="display:none;" title="<?= t('LingoUz mobil ilovasini o‘rnatish') ?>">
-                    📱 <span><?= t('Ilova') ?></span>
+                <button class="pwa-install-pill" id="pwaHeaderInstallBtn" type="button" title="<?= t('LingoUz mobil ilovasini yuklash') ?>">
+                    <span class="pwa-pill-icon">📥</span> <span><?= t('Yuklash') ?></span>
                 </button>
                 <div class="lang-switch" role="group" aria-label="Language">
                     <?php foreach (LOCALES as $code => $name): ?><a href="<?= e(lang_url($code)) ?>" class="<?= locale() === $code ? 'is-active' : '' ?>" hreflang="<?= $code ?>" title="<?= $name ?>"><?= strtoupper($code) ?></a><?php endforeach; ?>
@@ -97,6 +97,23 @@ $user = auth_user();
             </div>
         </div>
     </header>
+
+    <!-- Smart Mobile App Install Banner -->
+    <div class="mobile-app-banner" id="mobileAppBanner">
+        <div class="app-banner-left">
+            <img src="/assets/mascot-owl.svg" alt="LingoUz" width="34" height="39" class="app-banner-icon">
+            <div class="app-banner-text">
+                <div class="app-banner-title"><?= t('LingoUz Ilovasi') ?></div>
+                <div class="app-banner-sub"><?= t('Tez va qulay mobil ilova') ?></div>
+            </div>
+        </div>
+        <div class="app-banner-right">
+            <button type="button" class="btn-app-banner-install" id="pwaBannerInstallBtn">
+                <?= icon('download', '', 13) ?> <span><?= t('Yuklash') ?></span>
+            </button>
+            <button type="button" class="btn-app-banner-close" id="pwaBannerClose" aria-label="<?= t('Yopish') ?>" title="<?= t('Yopish') ?>">&times;</button>
+        </div>
+    </div>
 
     <!-- Mobile Slide-out Drawer Navigation Backdrop -->
     <div class="nav-drawer-backdrop" id="drawerBackdrop"></div>
@@ -204,9 +221,9 @@ $user = auth_user();
             <?php endif; ?>
 
             <!-- PWA Install Button inside Drawer -->
-            <div class="drawer-pwa-wrap" id="drawerPwaWrap" style="margin-top:18px;padding-top:14px;border-top:1px solid rgba(0,0,0,.08);display:none;">
+            <div class="drawer-pwa-wrap" id="drawerPwaWrap" style="margin-top:18px;padding-top:14px;border-top:1px solid rgba(0,0,0,.08);">
                 <button type="button" class="btn btn-primary btn-block pwa-drawer-install-btn" id="pwaDrawerBtn">
-                    📱 <?= t('Ilovani o‘rnatish (PWA)') ?>
+                    📥 <?= t('LingoUz ilovasini yuklash (PWA)') ?>
                 </button>
             </div>
         </div>
@@ -223,6 +240,22 @@ $user = auth_user();
                     <a href="/register" class="btn btn-primary btn-block"><?= t('Ro‘yxatdan o‘tish') ?></a>
                 </div>
             <?php endif; ?>
+        </div>
+    </div>
+
+    <!-- PWA Install Guide Modal (iOS & Android) -->
+    <div class="pwa-guide-backdrop" id="pwaGuideBackdrop" style="display:none;"></div>
+    <div class="pwa-guide-modal" id="pwaGuideModal" style="display:none;" role="dialog" aria-modal="true" aria-labelledby="pwaModalTitle">
+        <div class="pwa-guide-header">
+            <div class="pwa-guide-title-box">
+                <span class="pwa-guide-icon">📱</span>
+                <h3 class="pwa-guide-title" id="pwaModalTitle"><?= t('LingoUz ilovasini o‘rnatish') ?></h3>
+            </div>
+            <button class="pwa-guide-close" id="pwaGuideClose" type="button" aria-label="<?= t('Yopish') ?>">&times;</button>
+        </div>
+        <div class="pwa-guide-body" id="pwaGuideBody"></div>
+        <div class="pwa-guide-footer">
+            <button type="button" class="btn btn-primary btn-block" id="pwaGuideOkBtn"><?= t('Tushunarli') ?></button>
         </div>
     </div>
 
@@ -298,7 +331,7 @@ $user = auth_user();
     <?php if (is_en()): ?><script>window.I18N = <?= json_encode(js_translations(), JSON_UNESCAPED_UNICODE | JSON_HEX_TAG | JSON_HEX_AMP) ?>;</script><?php endif; ?>
     <script src="/assets/app.js?v=<?= filemtime(__DIR__ . '/../../public/assets/app.js') ?>"></script>
     <script>
-    // PWA Service Worker & Install Prompt Registration
+    // PWA Service Worker & Install Prompt Flow
     if ('serviceWorker' in navigator) {
         window.addEventListener('load', () => {
             navigator.serviceWorker.register('/sw.js').catch(err => {
@@ -308,32 +341,141 @@ $user = auth_user();
     }
 
     let deferredPrompt = null;
-    const showPwaButtons = () => {
+    const isStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
+
+    // Standalone ilova rejimida ishlayotgan bo'lsa, o'rnatish tugmalarini yashiramiz
+    if (isStandalone) {
         const headerBtn = document.getElementById('pwaHeaderInstallBtn');
-        if (headerBtn) headerBtn.style.display = 'inline-flex';
+        if (headerBtn) headerBtn.style.display = 'none';
         const drawerWrap = document.getElementById('drawerPwaWrap');
-        if (drawerWrap) drawerWrap.style.display = 'block';
-    };
+        if (drawerWrap) drawerWrap.style.display = 'none';
+        const banner = document.getElementById('mobileAppBanner');
+        if (banner) banner.style.display = 'none';
+    }
+
+    // Mobil banner yopilgan bo'lsa sessiyada eslab qolish
+    try {
+        if (sessionStorage.getItem('pwa_banner_dismissed') === '1') {
+            const banner = document.getElementById('mobileAppBanner');
+            if (banner) banner.style.display = 'none';
+        }
+    } catch (e) {}
 
     window.addEventListener('beforeinstallprompt', (e) => {
         e.preventDefault();
         deferredPrompt = e;
-        showPwaButtons();
     });
 
-    const triggerPwaInstall = async () => {
-        if (!deferredPrompt) return;
-        deferredPrompt.prompt();
-        try {
-            const choice = await deferredPrompt.userChoice;
-            if (choice && choice.outcome === 'accepted') {
-                const headerBtn = document.getElementById('pwaHeaderInstallBtn');
-                if (headerBtn) headerBtn.style.display = 'none';
-                const drawerWrap = document.getElementById('drawerPwaWrap');
-                if (drawerWrap) drawerWrap.style.display = 'none';
-            }
-        } catch (err) {}
+    window.addEventListener('appinstalled', () => {
         deferredPrompt = null;
+        const headerBtn = document.getElementById('pwaHeaderInstallBtn');
+        if (headerBtn) headerBtn.style.display = 'none';
+        const drawerWrap = document.getElementById('drawerPwaWrap');
+        if (drawerWrap) drawerWrap.style.display = 'none';
+        hidePwaModal();
+    });
+
+    const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+    const isInApp = /Telegram|FBAN|FBAV|Instagram|WhatsApp|Line/i.test(navigator.userAgent);
+
+    function showPwaModal() {
+        const modal = document.getElementById('pwaGuideModal');
+        const backdrop = document.getElementById('pwaGuideBackdrop');
+        const body = document.getElementById('pwaGuideBody');
+        const title = document.getElementById('pwaModalTitle');
+        if (!modal || !backdrop || !body) return;
+
+        const isEn = document.documentElement.lang === 'en';
+
+        if (isIOS) {
+            if (title) title.textContent = isEn ? 'Install LingoUz App (iPhone / iPad)' : 'LingoUz ilovasini o‘rnatish (iPhone / iPad)';
+            body.innerHTML = isEn ? `
+                <div class="pwa-step-item">
+                    <span class="pwa-step-num">1</span>
+                    <span class="pwa-step-text">Tap the <strong>Share</strong> button <span class="pwa-step-badge">⎋ / 📤</span> at the bottom of Safari.</span>
+                </div>
+                <div class="pwa-step-item">
+                    <span class="pwa-step-num">2</span>
+                    <span class="pwa-step-text">Scroll down and select <strong>"Add to Home Screen"</strong> <span class="pwa-step-badge">➕</span>.</span>
+                </div>
+                <div class="pwa-step-item">
+                    <span class="pwa-step-num">3</span>
+                    <span class="pwa-step-text">Tap <strong>"Add"</strong> in the top right corner.</span>
+                </div>
+                <div class="pwa-guide-note">
+                    ✨ The LingoUz app icon will appear on your home screen and work smoothly even on slow internet!
+                </div>
+            ` : `
+                <div class="pwa-step-item">
+                    <span class="pwa-step-num">1</span>
+                    <span class="pwa-step-text">Safari brauzerining pastki panelidagi <strong>Ulashish ("Share")</strong> tugmasini bosing: <span class="pwa-step-badge">⎋ / 📤</span></span>
+                </div>
+                <div class="pwa-step-item">
+                    <span class="pwa-step-num">2</span>
+                    <span class="pwa-step-text">Menyuni pastga surib, <strong>"Bosh ekranga qo‘shish" (Add to Home Screen)</strong> tugmasini bosing: <span class="pwa-step-badge">➕</span></span>
+                </div>
+                <div class="pwa-step-item">
+                    <span class="pwa-step-num">3</span>
+                    <span class="pwa-step-text">Yuqori o‘ng burchakdagi <strong>"Qo‘shish" (Add)</strong> tugmasini bosing.</span>
+                </div>
+                <div class="pwa-guide-note">
+                    ✨ LingoUz belgisi telefoningiz bosh ekranida paydo bo‘ladi va internet sekin bo‘lganda ham tez ishlaydi!
+                </div>
+            `;
+        } else {
+            if (title) title.textContent = isEn ? 'Install LingoUz App' : 'LingoUz mobil ilovasini o‘rnatish';
+            let inAppWarning = '';
+            if (isInApp) {
+                inAppWarning = isEn
+                    ? '<div class="pwa-guide-note" style="margin-top:0;margin-bottom:12px;">⚠️ Opened inside an in-app browser. Tap the <strong>3 dots (⋮)</strong> at the top right and select <strong>"Open in Chrome / Browser"</strong> first.</div>'
+                    : '<div class="pwa-guide-note" style="margin-top:0;margin-bottom:12px;">⚠️ Ilova ichida ochilgan. Avval yuqori o‘ngdagi <strong>3 nuqta (⋮)</strong> ni bosib, <strong>"Brauzerda ochish" (Open in Chrome)</strong> ni tanlang.</div>';
+            }
+            body.innerHTML = `
+                ${inAppWarning}
+                <div class="pwa-step-item">
+                    <span class="pwa-step-num">1</span>
+                    <span class="pwa-step-text">${isEn ? 'Tap the <strong>3 dots (⋮)</strong> menu in your browser at the top right.' : 'Brauzeringizning (Chrome) yuqori o‘ng burchagidagi <strong>3 nuqta (⋮)</strong> menyusini bosing.'}</span>
+                </div>
+                <div class="pwa-step-item">
+                    <span class="pwa-step-num">2</span>
+                    <span class="pwa-step-text">${isEn ? 'Choose <strong>"Install app"</strong> or <strong>"Add to Home screen"</strong>.' : 'Menyudan <strong>"Ilovani o‘rnatish" (Установить приложение)</strong> yoki <strong>"Bosh ekranga qo‘shish"</strong> ni tanlang.'}</span>
+                </div>
+                <div class="pwa-step-item">
+                    <span class="pwa-step-num">3</span>
+                    <span class="pwa-step-text">${isEn ? 'Confirm the prompt by tapping <strong>Install</strong>.' : 'Tasdiqlash oynasida <strong>O‘rnatish</strong> tugmasini bosing.'}</span>
+                </div>
+            `;
+        }
+
+        backdrop.style.display = 'block';
+        modal.style.display = 'block';
+    }
+
+    function hidePwaModal() {
+        const modal = document.getElementById('pwaGuideModal');
+        const backdrop = document.getElementById('pwaGuideBackdrop');
+        if (modal) modal.style.display = 'none';
+        if (backdrop) backdrop.style.display = 'none';
+    }
+
+    const triggerPwaInstall = async () => {
+        if (deferredPrompt) {
+            deferredPrompt.prompt();
+            try {
+                const choice = await deferredPrompt.userChoice;
+                if (choice && choice.outcome === 'accepted') {
+                    const headerBtn = document.getElementById('pwaHeaderInstallBtn');
+                    if (headerBtn) headerBtn.style.display = 'none';
+                    const drawerWrap = document.getElementById('drawerPwaWrap');
+                    if (drawerWrap) drawerWrap.style.display = 'none';
+                    const banner = document.getElementById('mobileAppBanner');
+                    if (banner) banner.style.display = 'none';
+                }
+            } catch (err) {}
+            deferredPrompt = null;
+        } else {
+            showPwaModal();
+        }
     };
 
     const pwaHBtn = document.getElementById('pwaHeaderInstallBtn');
@@ -342,13 +484,26 @@ $user = auth_user();
     const pwaDBtn = document.getElementById('pwaDrawerBtn');
     if (pwaDBtn) pwaDBtn.addEventListener('click', triggerPwaInstall);
 
-    window.addEventListener('appinstalled', () => {
-        deferredPrompt = null;
-        const headerBtn = document.getElementById('pwaHeaderInstallBtn');
-        if (headerBtn) headerBtn.style.display = 'none';
-        const drawerWrap = document.getElementById('drawerPwaWrap');
-        if (drawerWrap) drawerWrap.style.display = 'none';
-    });
+    const pwaBannerBtn = document.getElementById('pwaBannerInstallBtn');
+    if (pwaBannerBtn) pwaBannerBtn.addEventListener('click', triggerPwaInstall);
+
+    const pwaBannerCloseBtn = document.getElementById('pwaBannerClose');
+    if (pwaBannerCloseBtn) {
+        pwaBannerCloseBtn.addEventListener('click', () => {
+            const banner = document.getElementById('mobileAppBanner');
+            if (banner) banner.style.display = 'none';
+            try { sessionStorage.setItem('pwa_banner_dismissed', '1'); } catch (e) {}
+        });
+    }
+
+    const pwaCloseBtn = document.getElementById('pwaGuideClose');
+    if (pwaCloseBtn) pwaCloseBtn.addEventListener('click', hidePwaModal);
+
+    const pwaOkBtn = document.getElementById('pwaGuideOkBtn');
+    if (pwaOkBtn) pwaOkBtn.addEventListener('click', hidePwaModal);
+
+    const pwaBackdrop = document.getElementById('pwaGuideBackdrop');
+    if (pwaBackdrop) pwaBackdrop.addEventListener('click', hidePwaModal);
     </script>
 </body>
 </html>

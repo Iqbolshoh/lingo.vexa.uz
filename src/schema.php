@@ -6,8 +6,14 @@ const SCHEMA_VERSION = 5;
 
 function migrate(PDO $pdo): void
 {
-    $pdo->exec('CREATE TABLE IF NOT EXISTS startup_meta (key TEXT PRIMARY KEY, value TEXT)');
-    $version = (int) ($pdo->query("SELECT value FROM startup_meta WHERE key = 'schema_version'")->fetchColumn() ?: 0);
+    $driver = $pdo->getAttribute(PDO::ATTR_DRIVER_NAME);
+    if ($driver === 'mysql') {
+        $pdo->exec('CREATE TABLE IF NOT EXISTS `startup_meta` (`key` VARCHAR(191) PRIMARY KEY, `value` TEXT)');
+        $version = (int) ($pdo->query("SELECT `value` FROM `startup_meta` WHERE `key` = 'schema_version'")->fetchColumn() ?: 0);
+    } else {
+        $pdo->exec('CREATE TABLE IF NOT EXISTS startup_meta (key TEXT PRIMARY KEY, value TEXT)');
+        $version = (int) ($pdo->query("SELECT value FROM startup_meta WHERE key = 'schema_version'")->fetchColumn() ?: 0);
+    }
     if ($version >= SCHEMA_VERSION) {
         return;
     }

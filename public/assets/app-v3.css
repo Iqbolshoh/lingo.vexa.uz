@@ -1103,3 +1103,313 @@ button.btn-header-logout { cursor: pointer; font: inherit; }
     transform: translateY(-1px);
     box-shadow: 0 4px 10px rgba(2, 132, 199, 0.35);
 }
+
+/* Smart Mobile App Install Banner */
+.mobile-app-banner {
+    display: none;
+    align-items: center;
+    justify-content: space-between;
+    background: linear-gradient(135deg, #072c46 0%, #0c4a6e 100%);
+    color: #ffffff;
+    padding: 10px 14px;
+    border-bottom: 1px solid rgba(251, 191, 36, 0.3);
+    position: relative;
+    z-index: 99;
+}
+@media (max-width: 860px) {
+    .mobile-app-banner {
+        display: flex;
+    }
+}
+.app-banner-left {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    min-width: 0;
+}
+.app-banner-icon {
+    width: 32px;
+    height: 37px;
+    flex-shrink: 0;
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.25));
+}
+.app-banner-text {
+    min-width: 0;
+}
+.app-banner-title {
+    font-size: 13.5px;
+    font-weight: 700;
+    color: #ffffff;
+    line-height: 1.25;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.app-banner-sub {
+    font-size: 11px;
+    color: #bae6fd;
+    line-height: 1.2;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.app-banner-right {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-shrink: 0;
+}
+.btn-app-banner-install {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    background: #0284c7;
+    color: #ffffff;
+    border: none;
+    border-radius: 999px;
+    padding: 6px 13px;
+    font-size: 12px;
+    font-weight: 700;
+    cursor: pointer;
+    box-shadow: 0 2px 6px rgba(2, 132, 199, 0.4);
+    transition: background 0.15s ease, transform 0.15s ease;
+}
+.btn-app-banner-install:hover {
+    background: #0369a1;
+    transform: translateY(-1px);
+}
+.btn-app-banner-close {
+    background: transparent;
+    border: none;
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 20px;
+    line-height: 1;
+    cursor: pointer;
+    padding: 2px 6px;
+    border-radius: 4px;
+}
+.btn-app-banner-close:hover {
+    color: #ffffff;
+}
+
+/* Header Responsive Enhancements */
+@media (max-width: 860px) {
+    .site-header .container {
+        padding-left: 12px;
+        padding-right: 12px;
+    }
+    .header-inner {
+        height: 60px;
+        gap: 8px;
+    }
+    .header-actions {
+        gap: 6px;
+    }
+    .pwa-install-pill {
+        padding: 5px 10px;
+        font-size: 12px;
+        gap: 4px;
+    }
+}
+
+@media (max-width: 480px) {
+    .site-header .container {
+        padding-left: 10px;
+        padding-right: 10px;
+    }
+    .header-inner {
+        height: 56px;
+        gap: 6px;
+    }
+    .brand-logo {
+        gap: 6px;
+    }
+    .brand-mascot-img {
+        width: 30px;
+        height: 35px;
+    }
+    .brand-name {
+        font-size: 19px;
+    }
+    .header-actions {
+        gap: 5px;
+    }
+    .pwa-install-pill {
+        padding: 4px 8px;
+        font-size: 11.5px;
+        gap: 3px;
+        border-radius: 999px;
+    }
+    .pwa-install-pill .pwa-pill-icon {
+        font-size: 13px;
+    }
+    .lang-switch {
+        padding: 2px;
+        border-radius: 8px;
+    }
+    .lang-switch a {
+        padding: 3px 6px;
+        font-size: 10.5px;
+    }
+    .menu-toggle {
+        width: 34px;
+        height: 34px;
+        border-radius: 8px;
+        padding: 5px;
+    }
+    .menu-toggle svg {
+        width: 20px;
+        height: 20px;
+    }
+}
+
+@media (max-width: 360px) {
+    .site-header .container {
+        padding-left: 8px;
+        padding-right: 8px;
+    }
+    .brand-name {
+        font-size: 17px;
+    }
+    .brand-mascot-img {
+        width: 26px;
+        height: 30px;
+    }
+    .pwa-install-pill {
+        padding: 4px 7px;
+        font-size: 11px;
+    }
+    .lang-switch a {
+        padding: 2px 5px;
+        font-size: 10px;
+    }
+    .menu-toggle {
+        width: 32px;
+        height: 32px;
+    }
+}
+
+/* PWA Guide Modal */
+.pwa-guide-backdrop {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(15, 23, 42, 0.65);
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+    z-index: 10000;
+}
+.pwa-guide-modal {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 92%;
+    max-width: 440px;
+    background: #ffffff;
+    border-radius: 20px;
+    box-shadow: 0 20px 40px rgba(15, 23, 42, 0.25);
+    z-index: 10001;
+    overflow: hidden;
+    animation: pwaModalPop 0.25s ease-out;
+}
+@keyframes pwaModalPop {
+    from { opacity: 0; transform: translate(-50%, -46%) scale(0.96); }
+    to { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+}
+.pwa-guide-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px 20px;
+    background: linear-gradient(135deg, #0c4a6e, #0369a1);
+    color: #ffffff;
+}
+.pwa-guide-title-box {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+.pwa-guide-icon {
+    font-size: 22px;
+}
+.pwa-guide-title {
+    margin: 0;
+    font-size: 16.5px;
+    font-weight: 700;
+    color: #ffffff;
+}
+.pwa-guide-close {
+    background: none;
+    border: none;
+    color: #ffffff;
+    font-size: 26px;
+    line-height: 1;
+    cursor: pointer;
+    opacity: 0.85;
+    padding: 0 4px;
+}
+.pwa-guide-close:hover {
+    opacity: 1;
+}
+.pwa-guide-body {
+    padding: 18px 20px;
+    font-size: 14px;
+    color: #334155;
+    line-height: 1.55;
+    max-height: 70vh;
+    overflow-y: auto;
+}
+.pwa-step-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    margin-bottom: 12px;
+    padding: 10px 12px;
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+}
+.pwa-step-item:last-child {
+    margin-bottom: 0;
+}
+.pwa-step-num {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background: #0284c7;
+    color: #ffffff;
+    font-weight: 800;
+    font-size: 12px;
+    flex-shrink: 0;
+}
+.pwa-step-text {
+    flex: 1;
+}
+.pwa-step-badge {
+    display: inline-block;
+    background: #e0f2fe;
+    color: #0369a1;
+    font-weight: 700;
+    padding: 1px 6px;
+    border-radius: 6px;
+    font-size: 12.5px;
+}
+.pwa-guide-note {
+    margin-top: 14px;
+    padding: 10px 12px;
+    background: #fef3c7;
+    border-left: 4px solid #f59e0b;
+    border-radius: 8px;
+    font-size: 12.5px;
+    color: #92400e;
+}
+.pwa-guide-footer {
+    padding: 12px 20px 16px;
+    border-top: 1px solid #f1f5f9;
+}
