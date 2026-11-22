@@ -112,8 +112,13 @@ $goalPct = min(100, (int) round($todayXp / $goalXp * 100));
                     .then(function(data) {
                         if (data && data.linked) {
                             clearInterval(pollTimer);
+                            if (typeof window.SoundFX !== 'undefined') window.SoundFX.fanfare();
+                            if (typeof window.triggerConfetti === 'function') window.triggerConfetti();
                             var banner = document.getElementById('tgBanner');
                             if (banner) {
+                                if (typeof window.showFloatingXP === 'function') {
+                                    window.showFloatingXP(banner, '+20 XP 🎁');
+                                }
                                 banner.innerHTML = '<div style="padding:28px 24px;text-align:center;background:linear-gradient(135deg,#059669,#10b981);color:#fff;border-radius:18px;box-shadow:0 12px 30px rgba(5,150,105,0.3);">' +
                                     '<div style="font-size:36px;line-height:1;margin-bottom:10px">🎉</div>' +
                                     '<h3 style="font-size:22px;font-weight:800;margin:0 0 6px">Tabriklaymiz! Telegram botingiz ulandi!</h3>' +
@@ -146,8 +151,8 @@ $goalPct = min(100, (int) round($todayXp / $goalXp * 100));
                     <div class="bar bar-gold"><i style="width: <?= $level['percent'] ?>%"></i></div>
                 </div>
             </div>
-            <div class="stat-tile tone-ruby">
-                <span class="stat-ico"><?= icon('flame', '', 22) ?></span>
+            <div class="stat-tile tone-ruby" id="streakStatTile" style="cursor:pointer" title="<?= t('Streak quvvatini his qilish uchun bosing!') ?>" onclick="if(typeof SoundFX!=='undefined'){SoundFX.streak();}if(typeof showFloatingXP==='function'){showFloatingXP(this, '🔥 <?= (int)$user['streak_days'] ?> kun streak!');}">
+                <span class="stat-ico flame-spark"><?= icon('flame', '', 22) ?></span>
                 <div style="flex:1">
                     <strong><?= $todayXp ?> / <?= $goalXp ?> XP</strong><span><?= $goalPct >= 100 ? t('Bugungi maqsad bajarildi!') : t('bugungi maqsad') ?></span>
                     <div class="bar bar-emerald"><i style="width: <?= $goalPct ?>%"></i></div>

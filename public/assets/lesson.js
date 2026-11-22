@@ -32,9 +32,16 @@
         const el = e.target.closest('[data-speak]');
         if (!el) return;
         e.stopPropagation();
-        document.querySelectorAll('.read-line.is-speaking').forEach(n => n.classList.remove('is-speaking'));
-        if (el.classList.contains('read-line')) el.classList.add('is-speaking');
-        speak(el.dataset.speak, el.dataset.slow === '1');
+        document.querySelectorAll('.read-line.is-speaking, .btn-audio-circle.is-speaking, .listen-big.is-speaking, .btn-sub-action.is-speaking').forEach(n => n.classList.remove('is-speaking'));
+        el.classList.add('is-speaking');
+        fx.click();
+        const u = speak(el.dataset.speak, el.dataset.slow === '1');
+        if (u) {
+            const clearSpeaking = () => el.classList.remove('is-speaking');
+            u.addEventListener('end', clearSpeaking);
+            u.addEventListener('error', clearSpeaking);
+        }
+        setTimeout(() => el.classList.remove('is-speaking'), 3200);
     }, true);
 
     // Reading: translation toggle + read everything in order.
@@ -140,7 +147,12 @@
                 chip.type = 'button';
                 chip.className = 'tile';
                 chip.textContent = tile.textContent;
-                chip.addEventListener('click', () => { chip.remove(); tile.classList.remove('is-used'); sync(); });
+                chip.addEventListener('click', () => {
+                    fx.click();
+                    chip.remove();
+                    tile.classList.remove('is-used');
+                    sync();
+                });
                 answer.appendChild(chip);
                 sync();
             });
@@ -180,9 +192,10 @@
             step.addEventListener('input', show);
             step.addEventListener('change', () => { fx.click(); show(); window.Owl && Owl.play(quiz.querySelector('[data-owl]'), 'encourage', 900); });
         });
-        prev.addEventListener('click', () => { if (at > 0) { at--; show(); } });
+        prev.addEventListener('click', () => { if (at > 0) { fx.click(); at--; show(); } });
         next.addEventListener('click', () => {
             if (at < steps.length - 1) {
+                fx.click();
                 at++; show();
                 const auto = steps[at].querySelector('.listen-big');
                 if (auto) setTimeout(() => speak(auto.dataset.speak), 250);

@@ -1,10 +1,22 @@
 <div class="certificate-page">
     <div class="container text-center print-hide" style="margin-bottom: 24px;">
-        <a href="/dashboard" class="btn btn-outline btn-sm"><?= t('← O‘quvchi paneliga qaytish') ?></a>
-        <button onclick="window.print()" class="btn btn-primary btn-sm" style="margin-left: 10px;">
+        <a href="/dashboard" class="btn btn-outline btn-sm" onclick="if(typeof SoundFX!=='undefined')SoundFX.click()"><?= t('← O‘quvchi paneliga qaytish') ?></a>
+        <button onclick="if(typeof SoundFX!=='undefined')SoundFX.click();window.print()" class="btn btn-primary btn-sm" style="margin-left: 10px;">
             <?= icon('download', '', 16) ?> <?= t('Sertifikatni Chop Etish / PDF Saqlash') ?>
         </button>
     </div>
+
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        if (typeof window.SoundFX !== 'undefined') window.SoundFX.fanfare();
+        if (typeof window.triggerConfetti === 'function') {
+            window.triggerConfetti({
+                particleCount: 100,
+                colors: ['#f59e0b', '#fbbf24', '#10b981', '#0284c7', '#d97706', '#ffffff']
+            });
+        }
+    });
+    </script>
 
     <div class="certificate-sheet">
         <div class="cert-outer-border">

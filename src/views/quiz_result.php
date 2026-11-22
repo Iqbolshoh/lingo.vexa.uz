@@ -60,6 +60,25 @@ $passed = $result['passed'];
         <?php endif; ?>
     </div>
 </div>
+
+<?php if ($passed): ?>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    if (typeof window.SoundFX !== 'undefined') window.SoundFX.fanfare();
+    if (typeof window.triggerConfetti === 'function') window.triggerConfetti({ particleCount: 90 });
+    var xpChip = document.querySelector('.xp-chip');
+    if (typeof window.showFloatingXP === 'function' && xpChip) {
+        setTimeout(function() { window.showFloatingXP(xpChip, '+<?= (int)$result['xp'] ?> XP'); }, 400);
+    }
+});
+</script>
+<?php else: ?>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    if (typeof window.SoundFX !== 'undefined') window.SoundFX.encourage();
+});
+</script>
+<?php endif; ?>
 <?php if ($passed): ?>
 <script>document.addEventListener('DOMContentLoaded', () => { if (typeof triggerConfetti === 'function') triggerConfetti(); if (typeof SoundFX !== 'undefined') SoundFX.fanfare(); });</script>
 <?php endif; ?>

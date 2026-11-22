@@ -43,7 +43,7 @@
                 <div class="mascot-hero-wrap" id="heroMascotWrap" style="cursor:pointer;" title="<?= t('Lingo bilan gaplashish uchun bosing!') ?>">
                     <?= mascot('welcome', 120, 'hero-owl', ['id' => 'heroOwlMascot']) ?>
                     <div class="mascot-speech-bubble" id="heroSpeechBubble">
-                        <?= t('«Assalomu alaykum! Men <strong>Lingo</strong>man — sizning o‘zbek tili do‘stingiz. Birga o‘rganamiz!»') ?>
+                        <?= t('«Assalomu alaykum! Men <strong>Lingo</strong> — sizning o‘zbek tili do‘stingizman. Birga o‘rganamiz!»') ?>
                     </div>
                 </div>
 

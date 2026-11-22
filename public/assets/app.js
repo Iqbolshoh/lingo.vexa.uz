@@ -493,9 +493,12 @@ document.addEventListener('DOMContentLoaded', () => {
     if (heroMascotWrap) {
         heroMascotWrap.addEventListener('click', () => {
             const owl = document.getElementById('heroOwlMascot') || heroMascotWrap.querySelector('.owl');
+            heroMascotWrap.classList.remove('is-bouncing');
+            void heroMascotWrap.offsetWidth;
+            heroMascotWrap.classList.add('is-bouncing');
             if (window.Owl && owl) Owl.play(owl, 'celebrate', 2200);
-            if (typeof SoundFX !== 'undefined') SoundFX.click();
-            speakUzbek('Assalomu alaykum! Men Lingo — sizning o‘zbek tili do‘stingiz. Birga o‘rganamiz!');
+            if (typeof SoundFX !== 'undefined') SoundFX.correct();
+            speakUzbek('Assalomu alaykum! Men Lingo — sizning o‘zbek tili do‘stingizman. Birga o‘rganamiz!');
         });
     }
 

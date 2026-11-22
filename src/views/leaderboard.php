@@ -164,3 +164,12 @@ $rest = array_slice($leaders, 3);
         </div>
     </div>
 </div>
+
+<?php if ($currentUser && $myRank !== null && $myRank <= 3): ?>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    if (typeof window.SoundFX !== 'undefined') window.SoundFX.match();
+    if (typeof window.triggerConfetti === 'function') window.triggerConfetti({ particleCount: 60 });
+});
+</script>
+<?php endif; ?>
