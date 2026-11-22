@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+<meta charset="UTF-8">
+<title>Group Chatter Filter Preview</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+  body { background: #0b0f19; display: flex; justify-content: center; align-items: center; min-height: 100vh; padding: 20px; }
+  .card { width: 100%; max-width: 820px; background: #131b2e; border-radius: 16px; border: 1px solid #23334d; padding: 26px; box-shadow: 0 15px 40px rgba(0,0,0,0.6); }
+  .badge { display: inline-flex; align-items: center; gap: 8px; background: rgba(239, 68, 68, 0.15); color: #f87171; border: 1px solid rgba(239, 68, 68, 0.3); padding: 6px 14px; border-radius: 20px; font-size: 13px; font-weight: 600; margin-bottom: 16px; }
+  h2 { color: #ffffff; font-size: 20px; margin-bottom: 8px; }
+  p { color: #94a3b8; font-size: 14px; line-height: 1.5; margin-bottom: 22px; }
+  
+  .flow-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .flow-card { background: #182238; border: 1px solid #283856; border-radius: 12px; padding: 18px; }
+  .flow-card.group { border-top: 4px solid #ef4444; }
+  .flow-card.private { border-top: 4px solid #10b981; }
+  
+  .flow-title { font-size: 14px; font-weight: 700; margin-bottom: 12px; display: flex; align-items: center; justify-content: space-between; }
+  .group .flow-title { color: #f87171; }
+  .private .flow-title { color: #34d399; }
+  
+  .flow-rule { background: #0d1524; border-radius: 8px; padding: 12px; font-family: monospace; font-size: 12px; line-height: 1.6; color: #cbd5e1; margin-bottom: 10px; border: 1px solid #1e2d47; }
+  .flow-desc { color: #94a3b8; font-size: 12px; line-height: 1.5; }
+</style>
+</head>
+<body>
+
+<div class="card">
+  <div class="badge">🛡️ 29-Bosqich: Guruh Xabarlarini Filtrlash & Spamni To‘xtatish</div>
+  <h2>Bot Guruh Suhbatlariga Jim Turishi va Faqat Shaxsiyda Ishlashi Sozlandi</h2>
+  <p>Foydalanuvchilar va dasturchilar guruhda suhbatlashganda botning qayta-qayta «Assalomu alaykum...» salomlashuvini yuborishi butunlay to‘xtatildi:</p>
+
+  <div class="flow-grid">
+    <div class="flow-card group">
+      <div class="flow-title">
+        <span>👥 GURUH & KANALLAR</span>
+        <span>🔇 JIM TURISH</span>
+      </div>
+      <div class="flow-rule">
+        if ($chatType !== 'private') {<br>
+        &nbsp;&nbsp;return; // Guruhda jim turadi<br>
+        }<br>
+        if (!empty($from['is_bot'])) {<br>
+        &nbsp;&nbsp;return; // Botlar siklini to‘xtatadi<br>
+        }
+      </div>
+      <div class="flow-desc">
+        Dasturchilar guruhidagi gap-so‘zlar, boshqa botlarning xabarlari yoki xizmat ma’lumotlari bot tomonidan e’tiborsiz qoldiriladi. Guruhga faqat rasmiy hodisalar yo‘naltiriladi.
+      </div>
+    </div>
+
+    <div class="flow-card private">
+      <div class="flow-title">
+        <span>👤 SHAXSIY CHAT (PRIVATE)</span>
+        <span>⚡ 100% FAOL</span>
+      </div>
+      <div class="flow-rule">
+        if ($chatType === 'private') {<br>
+        &nbsp;&nbsp;send_welcome_menu();<br>
+        &nbsp;&nbsp;handle_user_quiz();<br>
+        &nbsp;&nbsp;send_daily_word();<br>
+        }
+      </div>
+      <div class="flow-desc">
+        Talabalar botga shaxsiy xabar yozganda bot barcha 8 ta menyu buyruqlarini, testlarni, kunlik so‘z va hisob ma’lumotlarini to‘liq xizmat sifatida taqdim etadi.
+      </div>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>
