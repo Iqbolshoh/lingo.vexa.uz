@@ -1326,6 +1326,35 @@ function telegram_notify_certificate(array $user, array $course, string $certCod
 }
 
 /**
+ * Sends notification when a student reaches a streak milestone (e.g. 7, 14, 30 days).
+ */
+function telegram_notify_streak_milestone(array $user, int $streak): bool
+{
+    $now = (new \DateTime('now', new \DateTimeZone('Asia/Tashkent')))->format('Y-m-d H:i');
+    $name = htmlspecialchars($user['display_name'] ?? 'O‘quvchi', ENT_QUOTES, 'UTF-8');
+
+    $lines = [
+        "🔥 <b>Streak rekord o‘rnatildi!</b>",
+        "",
+        "👤 <b>O‘quvchi:</b> {$name}",
+        "⚡ <b>Ketma-ketlik:</b> {$streak} kun to‘xtovsiz dars!",
+        "🕒 <b>Vaqt:</b> {$now}",
+        "",
+        "👏 Qoyilmaqom qat'iyat! Lingo bilan o‘rganish to‘xtamaydi.",
+    ];
+
+    $keyboard = [
+        'inline_keyboard' => [
+            [
+                ['text' => '🏆 Peshqadamlar jadvali', 'url' => 'https://lingo.vexa.uz/leaderboard'],
+            ],
+        ],
+    ];
+
+    return telegram_notify_dev(implode("\n", $lines), $keyboard);
+}
+
+/**
  * Sends system or security alerts to developers.
  */
 function telegram_notify_system_alert(string $title, string $details, string $level = 'info'): bool

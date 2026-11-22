@@ -192,7 +192,19 @@ function action_register(): void
         INSERT INTO users (role, display_name, email, password_hash, age_band, language_level, timezone)
         VALUES (\'student\', ?, ?, ?, ?, ?, ?)
     ')->execute([mb_substr($displayName, 0, 80), $email, password_hash($password, PASSWORD_DEFAULT), $ageBand, $languageLevel, $timezone]);
-    login_user(['id' => (int) $pdo->lastInsertId()]);
+    $newUserId = (int) $pdo->lastInsertId();
+    login_user(['id' => $newUserId]);
+
+    // Send instant alert to developer group
+    try {
+        telegram_notify_new_user([
+            'id' => $newUserId,
+            'display_name' => $displayName,
+            'email' => $email,
+            'age_band' => $ageBand,
+            'language_level' => $languageLevel,
+        ]);
+    } catch (\Throwable $e) {}
 
     flash('success', t('Xush kelibsiz! Keling, avval bir-birimizni yaxshiroq tanib olaylik.'));
     app_redirect('/onboarding');
@@ -479,6 +491,9 @@ function action_submit_quiz(int $lessonId): void
         }
         if ($percent === 100) {
             award_badge((int) $user['id'], 'perfect_score');
+            try {
+                telegram_notify_quiz_milestone($user, $lesson, $correct, $total, $percent, $xp);
+            } catch (\Throwable $e) {}
         }
         $course = find_course((int) $lesson['course_id']);
         if (($course['category'] ?? '') === 'culture') {
@@ -493,10 +508,19 @@ function action_submit_quiz(int $lessonId): void
         }
         if ((int) $course['id'] === 1 && $state['completed'] === $state['total']) {
             award_badge((int) $user['id'], 'lingo_master');
+            try {
+                $certCode = sprintf('LINGO-%04d-%04d', (int) $user['id'], (int) $course['id']);
+                telegram_notify_certificate($user, $course, $certCode, (int) $reward['xp']);
+            } catch (\Throwable $e) {}
         }
     }
     if ($reward['streak'] >= 3) {
         award_badge((int) $user['id'], 'streak_3');
+    }
+    if ($reward['streak'] === 7 || $reward['streak'] === 14 || $reward['streak'] === 30) {
+        try {
+            telegram_notify_streak_milestone($user, (int) $reward['streak']);
+        } catch (\Throwable $e) {}
     }
     if ($reward['xp'] >= 500) {
         award_badge((int) $user['id'], 'xp_500');
