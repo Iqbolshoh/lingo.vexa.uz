@@ -450,7 +450,9 @@ function action_submit_quiz(int $lessonId): void
             award_badge((int) $user['id'], 'culture_explorer');
         }
         $state = course_state($course, (int) $user['id']);
-        $allDone = (int) $pdo->query("SELECT count(*) FROM lesson_progress WHERE user_id = {$user['id']} AND status = 'completed'")->fetchColumn();
+        $allDoneStmt = $pdo->prepare("SELECT count(*) FROM lesson_progress WHERE user_id = ? AND status = 'completed'");
+        $allDoneStmt->execute([(int) $user['id']]);
+        $allDone = (int) $allDoneStmt->fetchColumn();
         if ($allDone >= 3) {
             award_badge((int) $user['id'], 'halfway_hero');
         }
@@ -483,7 +485,10 @@ function action_game_complete(int $lessonId): void
     if ($awarded) {
         reward_user((int) $user['id'], 5, $awarded);
     }
-    json_response(['ok' => true, 'coins_awarded' => $awarded, 'coins' => (int) $pdo->query("SELECT coins FROM users WHERE id = {$user['id']}")->fetchColumn()]);
+    $coinStmt = $pdo->prepare("SELECT coins FROM users WHERE id = ?");
+    $coinStmt->execute([(int) $user['id']]);
+    $currentCoins = (int) $coinStmt->fetchColumn();
+    json_response(['ok' => true, 'coins_awarded' => $awarded, 'coins' => $currentCoins]);
 }
 
 function page_quiz_result(int $lessonId): void

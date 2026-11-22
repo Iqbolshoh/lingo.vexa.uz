@@ -319,7 +319,9 @@ function action_admin_lesson_store(int $courseId): void
     $d['video_url'] = clean_video_url($d['video_url']);
     $pdo = db();
     $seq = (int) $pdo->query('SELECT COALESCE(MAX(sequence_number), 0) + 1 FROM lessons')->fetchColumn();
-    $pos = (int) $pdo->query("SELECT COALESCE(MAX(position), 0) + 1 FROM lessons WHERE course_id = {$courseId}")->fetchColumn();
+    $posStmt = $pdo->prepare("SELECT COALESCE(MAX(position), 0) + 1 FROM lessons WHERE course_id = ?");
+    $posStmt->execute([(int) $courseId]);
+    $pos = (int) $posStmt->fetchColumn();
     $pdo->prepare('
         INSERT INTO lessons (sequence_number, course_id, position, title, title_en, objective, objective_en, summary, duration_min, video_url,
                              reading_uz, reading_en, culture_title, culture_note, culture_title_en, culture_note_en, icon, passing_score, status)
@@ -493,7 +495,9 @@ function action_admin_question_move(int $lessonId, int $questionId): void
     require_admin();
     $quiz = lesson_quiz($lessonId);
     $pdo = db();
-    $ids = $pdo->query("SELECT id FROM questions WHERE quiz_id = {$quiz['id']} ORDER BY order_num, id")->fetchAll(PDO::FETCH_COLUMN);
+    $idsStmt = $pdo->prepare("SELECT id FROM questions WHERE quiz_id = ? ORDER BY order_num, id");
+    $idsStmt->execute([(int) $quiz['id']]);
+    $ids = $idsStmt->fetchAll(PDO::FETCH_COLUMN);
     $i = array_search($questionId, array_map('intval', $ids), true);
     $j = $i === false ? false : $i + (($_POST['dir'] ?? '') === 'up' ? -1 : 1);
     if ($i !== false && isset($ids[$j])) {

@@ -226,7 +226,9 @@ function grade_question(array $q, mixed $submitted): array
 function reward_user(int $userId, int $xp, int $coins = 0): array
 {
     $pdo = db();
-    $user = $pdo->query("SELECT xp, coins, streak_days, last_active_date, timezone FROM users WHERE id = {$userId}")->fetch();
+    $stmt = $pdo->prepare("SELECT xp, coins, streak_days, last_active_date, timezone FROM users WHERE id = ?");
+    $stmt->execute([(int) $userId]);
+    $user = $stmt->fetch();
     $tz = @timezone_open(explode(' ', (string) ($user['timezone'] ?? ''))[0]) ?: new DateTimeZone('America/New_York');
     $today = (new DateTimeImmutable('now', $tz))->format('Y-m-d');
     $yesterday = (new DateTimeImmutable('yesterday', $tz))->format('Y-m-d');
