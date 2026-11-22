@@ -148,8 +148,14 @@ function telegram_answer_callback(string $callbackQueryId, string $text = '', bo
 /**
  * Sends a text message with automatic formatting and New Latin conversion for Uzbek.
  */
-function telegram_send_message(string|int $chatId, string $text, ?array $replyMarkup = null, string $parseMode = 'HTML', string $lang = 'uz'): ?array
-{
+function telegram_send_message(
+    string|int $chatId,
+    string $text,
+    ?array $replyMarkup = null,
+    string $parseMode = 'HTML',
+    string $lang = 'uz',
+    ?int $messageThreadId = null
+): ?array {
     $formattedText = $lang === 'uz' ? to_new_latin($text) : $text;
     $params = [
         'chat_id' => $chatId,
@@ -157,6 +163,9 @@ function telegram_send_message(string|int $chatId, string $text, ?array $replyMa
         'parse_mode' => $parseMode,
         'disable_web_page_preview' => false,
     ];
+    if ($messageThreadId !== null && $messageThreadId > 0) {
+        $params['message_thread_id'] = $messageThreadId;
+    }
     if ($replyMarkup !== null) {
         $params['reply_markup'] = $replyMarkup;
     }
@@ -166,14 +175,24 @@ function telegram_send_message(string|int $chatId, string $text, ?array $replyMa
 /**
  * Sends a photo message (e.g. dynamic OG share card) with caption and buttons.
  */
-function telegram_send_photo(string|int $chatId, string $photoPathOrUrl, string $caption = '', ?array $replyMarkup = null, string $parseMode = 'HTML', string $lang = 'uz'): ?array
-{
+function telegram_send_photo(
+    string|int $chatId,
+    string $photoPathOrUrl,
+    string $caption = '',
+    ?array $replyMarkup = null,
+    string $parseMode = 'HTML',
+    string $lang = 'uz',
+    ?int $messageThreadId = null
+): ?array {
     $formattedCaption = $lang === 'uz' ? to_new_latin($caption) : $caption;
     $params = [
         'chat_id' => $chatId,
         'caption' => $formattedCaption,
         'parse_mode' => $parseMode,
     ];
+    if ($messageThreadId !== null && $messageThreadId > 0) {
+        $params['message_thread_id'] = $messageThreadId;
+    }
 
     if (file_exists($photoPathOrUrl)) {
         $params['photo'] = new CURLFile($photoPathOrUrl);
@@ -1112,20 +1131,51 @@ function telegram_sync_full_bot_profile(): array
 // ============================================================================
 
 /**
- * Sends a message or photo card to the developer/updates supergroup.
+ * Returns the forum topic thread ID for a given category in the developer supergroup.
  */
-function telegram_notify_dev(string $text, ?array $replyMarkup = null, ?string $photo = null): bool
+function telegram_dev_topic_id(string $category): ?int
+{
+    static $cache = [];
+    if (isset($cache[$category])) {
+        return $cache[$category];
+    }
+    $defaults = [
+        'releases' => 18,
+        'new_users' => 23,
+        'enrollments' => 24,
+        'milestones' => 26,
+        'daily_stats' => 28,
+        'alerts' => 29,
+    ];
+    try {
+        $val = db()->query("SELECT `value` FROM startup_meta WHERE `key` = 'tg_topic_" . addslashes($category) . "'")->fetchColumn();
+        if ($val) {
+            $cache[$category] = (int) $val;
+            return $cache[$category];
+        }
+    } catch (\Throwable $e) {}
+
+    $cache[$category] = $defaults[$category] ?? null;
+    return $cache[$category];
+}
+
+/**
+ * Sends a message or photo card to the developer/updates supergroup, optionally targeting a topic.
+ */
+function telegram_notify_dev(string $text, ?array $replyMarkup = null, ?string $photo = null, ?string $topic = null): bool
 {
     $devChatId = telegram_dev_chat_id();
     if ($devChatId === '') {
         return false;
     }
 
+    $threadId = $topic ? telegram_dev_topic_id($topic) : null;
+
     try {
         if ($photo !== null && file_exists($photo)) {
-            $res = telegram_send_photo($devChatId, $photo, $text, $replyMarkup);
+            $res = telegram_send_photo($devChatId, $photo, $text, $replyMarkup, 'HTML', 'uz', $threadId);
         } else {
-            $res = telegram_send_message($devChatId, $text, $replyMarkup);
+            $res = telegram_send_message($devChatId, $text, $replyMarkup, 'HTML', 'uz', $threadId);
         }
         return !empty($res['ok']);
     } catch (\Throwable $e) {
@@ -1184,7 +1234,7 @@ function telegram_notify_release(
         ],
     ];
 
-    return telegram_notify_dev(implode("\n", $lines), $keyboard);
+    return telegram_notify_dev(implode("\n", $lines), $keyboard, null, 'releases');
 }
 
 /**
@@ -1227,7 +1277,7 @@ function telegram_notify_new_user(array $user): bool
         ];
     }
 
-    return telegram_notify_dev(implode("\n", $lines), $keyboard);
+    return telegram_notify_dev(implode("\n", $lines), $keyboard, null, 'new_users');
 }
 
 /**
@@ -1268,7 +1318,7 @@ function telegram_notify_new_enrollment(array $enrollment): bool
         ],
     ];
 
-    return telegram_notify_dev(implode("\n", $lines), $keyboard);
+    return telegram_notify_dev(implode("\n", $lines), $keyboard, null, 'enrollments');
 }
 
 /**
@@ -1303,7 +1353,7 @@ function telegram_notify_quiz_milestone(array $user, array $lesson, int $score, 
         ],
     ];
 
-    return telegram_notify_dev(implode("\n", $lines), $keyboard);
+    return telegram_notify_dev(implode("\n", $lines), $keyboard, null, 'milestones');
 }
 
 /**
@@ -1336,7 +1386,7 @@ function telegram_notify_certificate(array $user, array $course, string $certCod
         ],
     ];
 
-    return telegram_notify_dev(implode("\n", $lines), $keyboard);
+    return telegram_notify_dev(implode("\n", $lines), $keyboard, null, 'milestones');
 }
 
 /**
@@ -1365,7 +1415,7 @@ function telegram_notify_streak_milestone(array $user, int $streak): bool
         ],
     ];
 
-    return telegram_notify_dev(implode("\n", $lines), $keyboard);
+    return telegram_notify_dev(implode("\n", $lines), $keyboard, null, 'milestones');
 }
 
 /**
@@ -1389,7 +1439,7 @@ function telegram_notify_system_alert(string $title, string $details, string $le
         "💻 <b>Server:</b> lingo.vexa.uz (PHP " . PHP_VERSION . ")",
     ];
 
-    return telegram_notify_dev(implode("\n", $lines));
+    return telegram_notify_dev(implode("\n", $lines), null, null, 'alerts');
 }
 
 /**
@@ -1462,5 +1512,5 @@ function telegram_notify_dev_daily_summary(string $period = 'evening'): bool
         ],
     ];
 
-    return telegram_notify_dev(implode("\n", $lines), $keyboard);
+    return telegram_notify_dev(implode("\n", $lines), $keyboard, null, 'daily_stats');
 }
