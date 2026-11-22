@@ -160,6 +160,11 @@ function db(): PDO
 function start_session(): void
 {
     if (session_status() === PHP_SESSION_NONE) {
+        $sessionDir = __DIR__ . '/../storage/framework/sessions';
+        if (!is_dir($sessionDir)) {
+            @mkdir($sessionDir, 0775, true);
+        }
+        session_save_path($sessionDir);
         session_set_cookie_params([
             'lifetime' => 86400 * 30,
             'path' => '/',
