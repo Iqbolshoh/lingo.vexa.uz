@@ -596,6 +596,7 @@ function handle_telegram_webhook(array $update): void
                 'inline_keyboard' => [
                     [['text' => $btnDash, 'url' => 'https://lingo.vexa.uz/dashboard']],
                     [['text' => $btnLeader, 'url' => 'https://lingo.vexa.uz/leaderboard']],
+                    [['text' => $lang === 'en' ? '🎓 My Certificate' : '🎓 Mening sertifikatim', 'url' => 'https://lingo.vexa.uz/verify/LU-1-' . str_pad((string)$user['id'], 4, '0', STR_PAD_LEFT)]],
                     [['text' => '📤 Natijani ulashish (Share)', 'url' => 'https://t.me/share/url?url=https://lingo.vexa.uz/profile&text=' . urlencode($shareText)]]
                 ]
             ];
@@ -603,6 +604,82 @@ function handle_telegram_webhook(array $update): void
         } else {
             telegram_send_message($chatId, $lang === 'en' ? "Please link your account at https://lingo.vexa.uz/dashboard" : "Iltimos, hisobingizni ulang: https://lingo.vexa.uz/dashboard", null, 'HTML', $lang);
         }
+        return;
+    }
+
+    // Command: Certificate / Sertifikat
+    if (in_array($text, ['🎓 Sertifikat', '🎓 Certificate', '/cert', '/certificate'], true)) {
+        if ($user) {
+            $certCode = 'LU-1-' . str_pad((string)$user['id'], 4, '0', STR_PAD_LEFT);
+            $verifyLink = "https://lingo.vexa.uz/verify/" . $certCode;
+            $fullCertLink = "https://lingo.vexa.uz/certificate?course=1";
+
+            if ($lang === 'en') {
+                $certMsg = "🎓 <b>LingoUz Academy Certificate:</b>\n\n" .
+                    "Student: <b>" . e($user['display_name']) . "</b>\n" .
+                    "Certificate ID: <code>" . $certCode . "</code>\n\n" .
+                    "View and verify your official course completion certificate below:";
+                $btnView = "🖨 View & Print Diploma";
+                $btnVerify = "🔍 Official Verification Link";
+            } else {
+                $certMsg = "🎓 <b>LingoUz Akademiyasi Sertifikati:</b>\n\n" .
+                    "O‘quvchi: <b>" . e($user['display_name']) . "</b>\n" .
+                    "Sertifikat ID: <code>" . $certCode . "</code>\n\n" .
+                    "Diplomingizni ko‘rish va haqiqiyligini tekshirish uchun quyidagi tugmalardan foydalaning:";
+                $btnView = "🖨 Diplomni ko‘rish va chop etish";
+                $btnVerify = "🔍 Rasmiy tekshirish havolasi";
+            }
+
+            telegram_send_message($chatId, $certMsg, [
+                'inline_keyboard' => [
+                    [['text' => $btnView, 'url' => $fullCertLink]],
+                    [['text' => $btnVerify, 'url' => $verifyLink]]
+                ]
+            ], 'HTML', $lang);
+        } else {
+            telegram_send_message($chatId, $lang === 'en' ? "Please link your account at https://lingo.vexa.uz/dashboard" : "Hisobingiz ulanmagan: https://lingo.vexa.uz/dashboard", null, 'HTML', $lang);
+        }
+        return;
+    }
+
+    // Command: Stories / Ertaklar
+    if (in_array($text, ['📖 Ertaklar', '📖 Stories', '/stories', '/story', '/ertak'], true)) {
+        if ($lang === 'en') {
+            $storyMsg = "📚 <b>Interactive Uzbek Folk Stories & Audio Tales:</b>\n\n" .
+                "Experience the rich culture of Uzbekistan through beloved folk tales with sentence-by-sentence audio, clickable glossary, and comprehension mini-quizzes:\n\n" .
+                "1. <b>Zumrad and Qimmat</b> — Tale of kindness and good deeds\n" .
+                "2. <b>The Kingdom of Susambil</b> — Fable of unity & friendship\n" .
+                "3. <b>The Golden Watermelon</b> — Honesty & generous heart\n" .
+                "4. <b>Afandi and the Scholar</b> — Humor & sharp wit\n\n" .
+                "Select a story to read & listen:";
+            $keyboard = [
+                'inline_keyboard' => [
+                    [['text' => '✨ Zumrad & Qimmat', 'url' => 'https://lingo.vexa.uz/stories/zumrad-qimmat']],
+                    [['text' => '🦁 Susambil', 'url' => 'https://lingo.vexa.uz/stories/susambil']],
+                    [['text' => '🍉 The Golden Watermelon', 'url' => 'https://lingo.vexa.uz/stories/oltin-tarvuz']],
+                    [['text' => '🧙 Afandi & Scholar', 'url' => 'https://lingo.vexa.uz/stories/afandi-donishmand']],
+                    [['text' => '📚 All Stories / Barcha Ertaklar', 'url' => 'https://lingo.vexa.uz/stories']]
+                ]
+            ];
+        } else {
+            $storyMsg = "📚 <b>Ovozli O‘zbek Xalq Ertaklari va Hikoyalar:</b>\n\n" .
+                "O‘zbek xalqining boy madaniyati, donoligi va ibratli ertaklarini gapma-gap ovozli eshitib o‘rganing:\n\n" .
+                "1. <b>Zumrad va Qimmat</b> — Mehnatsevarlik va ezgulik ertagi\n" .
+                "2. <b>Susambil</b> — Do‘stlik va birdamlik ertagi\n" .
+                "3. <b>Oltin Tarvuz</b> — Saxovat va halollik ertagi\n" .
+                "4. <b>Afandi va Donishmand</b> — O‘tkir aql va latifa\n\n" .
+                "O‘qish va tinglash uchun ertakni tanlang:";
+            $keyboard = [
+                'inline_keyboard' => [
+                    [['text' => '✨ Zumrad va Qimmat', 'url' => 'https://lingo.vexa.uz/stories/zumrad-qimmat']],
+                    [['text' => '🦁 Susambil', 'url' => 'https://lingo.vexa.uz/stories/susambil']],
+                    [['text' => '🍉 Oltin Tarvuz', 'url' => 'https://lingo.vexa.uz/stories/oltin-tarvuz']],
+                    [['text' => '🧙 Afandi va Donishmand', 'url' => 'https://lingo.vexa.uz/stories/afandi-donishmand']],
+                    [['text' => '📚 Barcha Ertaklar Katalogi', 'url' => 'https://lingo.vexa.uz/stories']]
+                ]
+            ];
+        }
+        telegram_send_message($chatId, $storyMsg, $keyboard, 'HTML', $lang);
         return;
     }
 
@@ -814,8 +891,10 @@ function telegram_set_commands(): array
         ['command' => 'start', 'description' => 'Botni ishga tushirish va hisobni ulash'],
         ['command' => 'word', 'description' => 'Bugungi yangi so‘z kartochkasi'],
         ['command' => 'quiz', 'description' => 'Interaktiv mini-viktorina'],
+        ['command' => 'stories', 'description' => 'Ovozli o‘zbek xalq ertaklari'],
         ['command' => 'streak', 'description' => 'Streak (ketma-ketlik) holati'],
         ['command' => 'profile', 'description' => 'O‘quvchi profili va natijalar'],
+        ['command' => 'cert', 'description' => 'Diplom va rasmiy sertifikat'],
         ['command' => 'lang', 'description' => 'Tilni o‘zgartirish (UZ/EN)'],
         ['command' => 'site', 'description' => 'LingoUz veb-saytiga o‘tish'],
     ];
@@ -824,8 +903,10 @@ function telegram_set_commands(): array
         ['command' => 'start', 'description' => 'Start bot & link account'],
         ['command' => 'word', 'description' => 'Word of the day with audio'],
         ['command' => 'quiz', 'description' => 'Interactive mini-quiz'],
+        ['command' => 'stories', 'description' => 'Interactive Uzbek folk tales'],
         ['command' => 'streak', 'description' => 'Check current streak status'],
         ['command' => 'profile', 'description' => 'My learner profile & stats'],
+        ['command' => 'cert', 'description' => 'Course completion certificate'],
         ['command' => 'lang', 'description' => 'Switch language (EN/UZ)'],
         ['command' => 'site', 'description' => 'Open LingoUz platform'],
     ];

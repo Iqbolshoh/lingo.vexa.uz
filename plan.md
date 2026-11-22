@@ -114,6 +114,18 @@ MVP ni mukammal startap holatiga yetkazish uchun quyidagi qadamlar rejalashtiril
 - [x] **Cron avtomatizatsiyasi:** `php artisan lingo:telegram-daily` konsol buyrug‘i.
 - [x] **Yangi o‘zbek lotin alifbosi:** Bot yuboradigan barcha xabarlar va savollarda qat’iy yangi alifbo (`Ö/ö`, `Ş/ş`, `Ç/ç`, `Ğ/ğ`).
 
+### 2.7. Sertifikatni tekshirish tizimi (QR-kod & Rasmiy Verification) [BAJARILDI ✅ 2026-11-22]
+- [x] **Rasmiy tekshirish sahifasi (`/verify/{code}`):** QR-kod yoki identifikatsiya raqami (masalan: `LU-1-0003`) orqali har qanday ish beruvchi yoki ota-ona o‘quvchining diplom haqiqiyligini tekshirishi mumkin.
+- [x] **Diplom ichida jonli QR-kod:** Chop etiladigan diplom varag‘ida (`/certificate`) tekshirish sahifasiga olib boruvchi dinamik QR-kod joylashtirildi.
+- [x] **Telegram bot integratsiyasi:** Botda `/cert` buyrug‘i orqali o‘quvchi o‘z sertifikatini bitta bosishda tekshirishi va do‘stlariga yuborishi mumkin.
+
+### 2.8. Ovozli Ertaklar va Madaniy Hikoyalar (Interactive Audio Stories) [BAJARILDI ✅ 2026-11-22]
+- [x] **4 ta mashhur o‘zbek xalq ertagi:** «Zumrad va Qimmat», «Susambil», «Oltin Tarvuz», «Afandi va Donishmand».
+- [x] **Gapma-gap audio talaffuz:** Har bir jumlani Web Speech API orqali tabiiy o‘zbek tilida ovozli tinglash.
+- [x] **Ikki tilli matn va lug‘at kartalari:** Inglizcha tarjimani bir tugma bilan yoqish/o‘chirish hamda har bir jumlada uchragan asosiy so‘zlar lug‘ati.
+- [x] **Tushunish viktorinasi va XP mukofoti:** Har bir ertak yakunida tushunishni tekshiruvchi test va o‘quvchiga +20 XP bal berish.
+- [x] **Navigatsiya:** Sayt menyusiga «Ertaklar» va Telegram botga `/stories` buyrug‘i ulandi.
+
 ### 2.4. Ota-onalar va murabbiylar monitoringi
 - [ ] Ota-onalar uchun alohida ko‘rinish: farzandining kunlik dars vaqti, qaysi so‘zlarni qiynalib o‘rgangani, test natijalari.
 - [ ] Haftalik progressni email yoki Telegram orqali avtomatik yuborish.

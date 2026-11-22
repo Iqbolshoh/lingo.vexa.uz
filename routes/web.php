@@ -11,6 +11,7 @@ require_once base_path('src/onboarding.php');
 require_once base_path('src/stats.php');
 require_once base_path('src/telegram.php');
 require_once base_path('src/og.php');
+require_once base_path('src/stories.php');
 
 // Helper wrapper for request handling
 function run_action(callable $fn, ...$args) {
@@ -51,11 +52,15 @@ Route::get('/profile', function () { run_action('page_profile'); });
 Route::post('/profile', function () { run_action('action_update_profile'); });
 Route::get('/live', function () { run_action('page_live'); });
 Route::get('/certificate', function () { run_action('page_certificate'); });
+Route::get('/verify/{code}', function ($code) { run_action('page_verify_certificate', (string) $code); });
 
-// Leaderboard & Flashcards
+// Leaderboard & Flashcards & Stories
 Route::get('/leaderboard', function () { run_action('page_leaderboard'); });
 Route::get('/flashcards', function () { run_action('page_flashcards'); });
 Route::post('/flashcards/done', function () { run_action('action_flashcards_done'); });
+Route::get('/stories', function () { run_action('page_stories'); });
+Route::get('/stories/{id}', function ($id) { run_action('page_story', (string) $id); });
+Route::post('/stories/{id}/complete', function ($id) { run_action('action_story_complete', (string) $id); });
 
 // Telegram Bot
 Route::post('/api/telegram/webhook', function () { run_action('action_telegram_webhook'); });

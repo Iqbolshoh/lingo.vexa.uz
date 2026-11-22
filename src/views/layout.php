@@ -58,6 +58,7 @@ $user = auth_user();
                     <a href="/dashboard" class="<?= is_nav_active('/dashboard') ? 'is-active' : '' ?>"><?= icon('layers', '', 16) ?> <?= t('Mening sahifam') ?></a>
                     <a href="/courses" class="<?= is_nav_active(['/courses', '/lessons']) ? 'is-active' : '' ?>"><?= icon('book-open', '', 16) ?> <?= t('Kurslar') ?></a>
                     <a href="/flashcards" class="<?= is_nav_active('/flashcards') ? 'is-active' : '' ?>"><?= icon('layers', '', 16) ?> <?= t('Flashcards') ?></a>
+                    <a href="/stories" class="<?= is_nav_active('/stories') ? 'is-active' : '' ?>"><?= icon('book-open', '', 16) ?> <?= t('Ertaklar') ?></a>
                     <a href="/leaderboard" class="<?= is_nav_active('/leaderboard') ? 'is-active' : '' ?>"><?= icon('trophy', '', 16) ?> <?= t('Reyting') ?></a>
                     <a href="/live" class="<?= is_nav_active('/live') ? 'is-active' : '' ?>"><?= icon('video', '', 16) ?> <?= t('Jonli Muloqot') ?></a>
                 <?php else: ?>
@@ -65,6 +66,7 @@ $user = auth_user();
                     <a href="/" class="<?= is_nav_active('/') ? 'is-active' : '' ?>"><?= icon('registon', '', 16) ?> <?= t('Bosh sahifa') ?></a>
                     <a href="/courses" class="<?= is_nav_active(['/courses', '/lessons']) ? 'is-active' : '' ?>"><?= icon('book-open', '', 16) ?> <?= t('Darslar') ?></a>
                     <a href="/flashcards" class="<?= is_nav_active('/flashcards') ? 'is-active' : '' ?>"><?= icon('layers', '', 16) ?> <?= t('Flashcards') ?></a>
+                    <a href="/stories" class="<?= is_nav_active('/stories') ? 'is-active' : '' ?>"><?= icon('book-open', '', 16) ?> <?= t('Ertaklar') ?></a>
                     <a href="/leaderboard" class="<?= is_nav_active('/leaderboard') ? 'is-active' : '' ?>"><?= icon('trophy', '', 16) ?> <?= t('Reyting') ?></a>
                     <a href="/parent-tips" class="<?= is_nav_active('/parent-tips') ? 'is-active' : '' ?>"><?= icon('users', '', 16) ?> <?= t('Qo‘llanma') ?></a>
                 <?php endif; ?>
@@ -175,6 +177,10 @@ $user = auth_user();
                     <span class="drawer-icon"><?= icon('layers', '', 18) ?></span>
                     <span><?= t('Aqlli Flashcards') ?></span>
                 </a>
+                <a href="/stories" class="drawer-link <?= is_nav_active('/stories') ? 'active' : '' ?>">
+                    <span class="drawer-icon"><?= icon('book-open', '', 18) ?></span>
+                    <span><?= t('Ovozli Ertaklar') ?></span>
+                </a>
                 <a href="/leaderboard" class="drawer-link <?= is_nav_active('/leaderboard') ? 'active' : '' ?>">
                     <span class="drawer-icon"><?= icon('trophy', '', 18) ?></span>
                     <span><?= t('Reyting va Liga') ?></span>
@@ -216,6 +222,10 @@ $user = auth_user();
                 <a href="/flashcards" class="drawer-link <?= is_nav_active('/flashcards') ? 'active' : '' ?>">
                     <span class="drawer-icon"><?= icon('layers', '', 18) ?></span>
                     <span><?= t('Aqlli Flashcards') ?></span>
+                </a>
+                <a href="/stories" class="drawer-link <?= is_nav_active('/stories') ? 'active' : '' ?>">
+                    <span class="drawer-icon"><?= icon('book-open', '', 18) ?></span>
+                    <span><?= t('Ovozli Ertaklar') ?></span>
                 </a>
                 <a href="/#metodika" class="drawer-link">
                     <span class="drawer-icon"><?= icon('sparkles', '', 18) ?></span>

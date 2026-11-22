@@ -780,9 +780,114 @@ function action_telegram_unlink(): void
     app_redirect('/dashboard');
 }
 
+function page_verify_certificate(string $code): void
+{
+    $code = strtoupper(trim($code));
+    $pdo = db();
+    
+    // Pattern: LU-{courseId}-{studentId}
+    if (!preg_match('/^LU-(\d+)-(\d+)$/', $code, $matches)) {
+        render('verify_certificate', [
+            'title' => t('Sertifikatni tekshirish — LingoUz'),
+            'isValid' => false,
+            'code' => $code,
+            'error' => t('Sertifikat raqami noto‘g‘ri formatda kiritildi.'),
+        ]);
+        return;
+    }
+
+    $courseId = (int) $matches[1];
+    $studentId = (int) $matches[2];
+
+    $course = find_course($courseId);
+    $stmt = $pdo->prepare('SELECT id, display_name, email, created_at, xp, coins FROM users WHERE id = ?');
+    $stmt->execute([$studentId]);
+    $student = $stmt->fetch();
+
+    if (!$course || !$student) {
+        render('verify_certificate', [
+            'title' => t('Sertifikatni tekshirish — LingoUz'),
+            'isValid' => false,
+            'code' => $code,
+            'error' => t('Bunday identifikatsiya raqamiga ega sertifikat topilmadi.'),
+        ]);
+        return;
+    }
+
+    $state = course_state($course, $studentId);
+    $completedAt = $pdo->prepare('
+        SELECT MAX(lp.completed_at) FROM lesson_progress lp JOIN lessons l ON l.id = lp.lesson_id
+        WHERE lp.user_id = ? AND l.course_id = ?
+    ');
+    $completedAt->execute([$studentId, $courseId]);
+    $date = $completedAt->fetchColumn();
+
+    $isCompleted = ($state['total'] > 0 && $state['completed'] >= $state['total']);
+
+    render('verify_certificate', [
+        'title' => t('Sertifikat tasdiqlandi: ') . $code . ' — LingoUz',
+        'isValid' => $isCompleted,
+        'code' => $code,
+        'student' => $student,
+        'course' => $course,
+        'state' => $state,
+        'completedAt' => $date ?: date('Y-m-d'),
+        'ogTitle' => '✅ Rasmiy Sertifikat: ' . $student['display_name'] . ' — LingoUz',
+        'ogDescription' => "Ushbu sertifikat «{$course['title']}» kursi muvaffaqiyatli tamomlanganligini tasdiqlaydi.",
+    ]);
+}
+
 function page_telegram_connect(): void
 {
     $user = require_login();
     $url = get_telegram_link_url($user);
     app_redirect($url);
+}
+
+function page_stories(): void
+{
+    $user = auth_user();
+    $stories = get_all_stories();
+    render('stories', [
+        'title' => t('Ovozli Ertaklar va Madaniy Hikoyalar — LingoUz'),
+        'stories' => $stories,
+        'user' => $user,
+        'ogTitle' => '📚 O‘zbek Xalq Ertaklari va Ovozli Hikoyalar — LingoUz',
+        'ogDescription' => 'Zumrad va Qimmat, Susambil, Oltin Tarvuz va Afandi latifalari. Audio talaffuz va interaktiv o‘rganish!',
+    ]);
+}
+
+function page_story(string $id): void
+{
+    $user = auth_user();
+    $story = find_story($id);
+    if (!$story) {
+        not_found(t('Ertak topilmadi'));
+        return;
+    }
+    render('story_show', [
+        'title' => (is_en() ? $story['title_en'] : $story['title_uz']) . ' — LingoUz',
+        'story' => $story,
+        'user' => $user,
+        'ogTitle' => '📖 ' . (is_en() ? $story['title_en'] : $story['title_uz']) . ' — Ovozli O‘zbek Xalq Ertagi',
+        'ogDescription' => is_en() ? $story['subtitle_en'] : $story['subtitle_uz'],
+    ]);
+}
+
+function action_story_complete(string $id): void
+{
+    $user = auth_user();
+    if (!$user) {
+        json_response(['ok' => false, 'error' => 'unauthenticated'], 401);
+    }
+    $story = find_story($id);
+    if (!$story) {
+        json_response(['ok' => false, 'error' => 'not_found'], 404);
+    }
+    $res = reward_user((int) $user['id'], 20, 2);
+    json_response([
+        'ok' => true,
+        'xp' => $res['xp'],
+        'coins' => (int) $user['coins'] + 2,
+    ]);
 }

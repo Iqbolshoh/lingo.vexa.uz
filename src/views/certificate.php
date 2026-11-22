@@ -46,6 +46,17 @@
                         </div>
                     </div>
 
+                    <div class="cert-col cert-qr-col">
+                        <?php 
+                        $certCode = 'LU-' . (int) $course['id'] . '-' . str_pad((string) $student['id'], 4, '0', STR_PAD_LEFT);
+                        $verifyUrl = 'https://lingo.vexa.uz/verify/' . $certCode;
+                        ?>
+                        <div class="cert-qr-wrap">
+                            <img src="https://api.qrserver.com/v1/create-qr-code/?size=120x120&margin=2&data=<?= urlencode($verifyUrl) ?>" alt="QR Code" width="68" height="68" class="cert-qr-img">
+                            <a href="/verify/<?= $certCode ?>" target="_blank" class="cert-qr-subtext"><?= t('Tekshirish') ?> ↗</a>
+                        </div>
+                    </div>
+
                     <div class="cert-col cert-sign">
                         <div class="cert-signature-img">Gulomov</div>
                         <div class="cert-line"><?= t('Gulomov Ustoz') ?></div>
@@ -53,7 +64,7 @@
                     </div>
                 </div>
 
-                <div class="cert-code"><?= t('Sertifikat ID: LU-') ?><?= (int) $course['id'] ?>-<?= str_pad((string) $student['id'], 4, '0', STR_PAD_LEFT) ?></div>
+                <div class="cert-code"><?= t('Sertifikat ID:') ?> <strong><?= $certCode ?></strong> · <a href="/verify/<?= $certCode ?>" target="_blank" style="color:#0284c7;text-decoration:underline"><?= $verifyUrl ?></a></div>
             </div>
         </div>
     </div>
