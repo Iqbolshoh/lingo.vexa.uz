@@ -30,14 +30,14 @@
       <stop offset="100%" stop-color="#f59e0b"/>
     </linearGradient>
     <filter id="softShadow" x="-10%" y="-10%" width="120%" height="120%">
-      <feDropShadow dx="0" dy="8" stdDeviation="10" flood-color="#0f766e" flood-opacity="0.14"/>
+      <feDropShadow dx="0" dy="6" stdDeviation="8" flood-color="#0f766e" flood-opacity="0.12"/>
     </filter>
   </defs>
 
-  <!-- Clean Pure White Background -->
-  <rect width="512" height="512" rx="112" fill="#ffffff"/>
+  <!-- 100% Pure White Solid Background (no rounded edges for perfect display everywhere) -->
+  <rect width="512" height="512" fill="#ffffff"/>
 
-  <!-- Centered Lingo Mascot Face Close-up -->
+  <!-- Centered Cute Lingo Mascot Portrait -->
   <g transform="translate(256, 256) scale(3.18) translate(-100, -85)" filter="url(#softShadow)">
     <!-- Ear tufts -->
     <path d="M52 52c-6-16-4-28 2-36 6 10 14 18 24 22z" fill="url(#s-body)"/>

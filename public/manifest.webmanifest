@@ -5,11 +5,14 @@
   "start_url": "/dashboard",
   "scope": "/",
   "display": "standalone",
-  "background_color": "#0c4a6e",
+  "background_color": "#ffffff",
   "theme_color": "#0284c7",
   "orientation": "portrait-primary",
   "lang": "uz",
-  "categories": ["education", "books"],
+  "categories": [
+    "education",
+    "books"
+  ],
   "icons": [
     {
       "src": "/assets/icon-192.png",
@@ -36,28 +39,48 @@
       "short_name": "Sahifam",
       "description": "Darslarni davom ettirish va natijalar",
       "url": "/dashboard",
-      "icons": [{ "src": "/assets/icon-192.png", "sizes": "192x192" }]
+      "icons": [
+        {
+          "src": "/assets/icon-192.png",
+          "sizes": "192x192"
+        }
+      ]
     },
     {
       "name": "Aqlli Flashcards",
       "short_name": "Flashcards",
       "description": "So‘zlarni tezkor takrorlash trenajyori",
       "url": "/flashcards",
-      "icons": [{ "src": "/assets/icon-192.png", "sizes": "192x192" }]
+      "icons": [
+        {
+          "src": "/assets/icon-192.png",
+          "sizes": "192x192"
+        }
+      ]
     },
     {
       "name": "Reyting va Liga",
       "short_name": "Reyting",
       "description": "O‘quvchilar yetakchilik jadvali",
       "url": "/leaderboard",
-      "icons": [{ "src": "/assets/icon-192.png", "sizes": "192x192" }]
+      "icons": [
+        {
+          "src": "/assets/icon-192.png",
+          "sizes": "192x192"
+        }
+      ]
     },
     {
       "name": "Kurslar",
       "short_name": "Kurslar",
       "description": "Barcha o‘quv kurslari va darslar",
       "url": "/courses",
-      "icons": [{ "src": "/assets/icon-192.png", "sizes": "192x192" }]
+      "icons": [
+        {
+          "src": "/assets/icon-192.png",
+          "sizes": "192x192"
+        }
+      ]
     }
   ]
 }
