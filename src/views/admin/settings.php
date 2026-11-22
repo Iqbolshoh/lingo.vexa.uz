@@ -61,8 +61,13 @@
                     </div>
                     <div class="field">
                         <label>Bot Username</label>
-                        <input type="text" name="telegram_bot_username" value="<?= e($tgUsername ?? 'LingoUzBot') ?>" placeholder="LingoUzBot" autocomplete="off">
-                        <div class="hint">Foydalanuvchilar bir bosishda ulanishi uchun bot username'i (masalan: LingoUzBot).</div>
+                        <input type="text" name="telegram_bot_username" value="<?= e($tgUsername ?? 'vexa_lingo_bot') ?>" placeholder="vexa_lingo_bot" autocomplete="off">
+                        <div class="hint">Foydalanuvchilar bir bosishda ulanishi uchun bot username'i (masalan: vexa_lingo_bot).</div>
+                    </div>
+                    <div class="field" style="grid-column:1 / -1">
+                        <label>Dasturchilar guruhi Chat ID (Dev & Updates Group)</label>
+                        <input type="text" name="telegram_dev_chat_id" value="<?= e($tgDevChatId ?? '-1003979299740') ?>" placeholder="-1003979299740" autocomplete="off">
+                        <div class="hint">Dastur yangilanishlari, yangi ro‘yxatdan o‘tganlar va arizalar avtomatik yuboriladigan guruh ID si.</div>
                     </div>
                     <div class="field" style="grid-column:1 / -1">
                         <label>Webhook URL (Telegramdan xabarlarni qabul qilish manzili)</label>
@@ -86,7 +91,30 @@
                             🚀 Kunlik xabarni sinab ko‘rish (Test Broadcast)
                         </button>
                     </form>
+                    <form method="POST" action="/admin/settings/telegram/dev-notify" style="display:inline">
+                        <?= csrf_field() ?>
+                        <input type="hidden" name="message" value="🔔 LingoUz test sinovi: Dasturchilar guruhi bilan aloqa to‘liq o‘rnatildi va faol!">
+                        <button type="submit" class="btn btn-ghost" style="border:1px solid #0284c7;color:#0284c7" title="Dasturchilar guruhiga test xabarini yuboradi">
+                            💬 Guruhga test yuborish
+                        </button>
+                    </form>
                     <div class="hint">Eslatma: Kunlik avtomatik yuborish uchun cron: <code>php /var/www/startups/lingo/artisan lingo:telegram-daily</code></div>
+                </div>
+
+                <div style="margin-top:20px;padding:16px;border-radius:12px;background:#f8fafc;border:1px solid #e2e8f0">
+                    <h4 style="margin:0 0 8px 0;font-size:15px;display:flex;align-items:center;gap:6px">
+                        📢 Dasturchilar guruhiga yangilanish / e'lon yuborish
+                    </h4>
+                    <form method="POST" action="/admin/settings/telegram/dev-post" style="display:flex;flex-direction:column;gap:10px">
+                        <?= csrf_field() ?>
+                        <input type="text" name="title" placeholder="Yangilanish mavzusi (masalan: Yangi viktorina va ovoz effektlari)" required style="padding:8px 12px;border:1px solid #cbd5e1;border-radius:8px;font-size:14px">
+                        <textarea name="notes" rows="3" placeholder="O‘zgarishlar va yangiliklar (har bir qator 1 ta punkt bo‘ladi)" style="padding:8px 12px;border:1px solid #cbd5e1;border-radius:8px;font-size:14px"></textarea>
+                        <div>
+                            <button type="submit" class="btn btn-primary" style="font-size:13px;padding:8px 16px">
+                                🚀 Guruhga e'lon sifatida yuborish
+                            </button>
+                        </div>
+                    </form>
                 </div>
             </div>
         </div>

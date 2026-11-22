@@ -52,6 +52,25 @@ function telegram_webhook_secret(): string
 }
 
 /**
+ * Returns the developer / system updates Telegram chat ID (group or supergroup).
+ */
+function telegram_dev_chat_id(): string
+{
+    $chatId = trim((string) (getenv('TELEGRAM_DEV_CHAT_ID') ?: ''));
+    if ($chatId !== '') {
+        return $chatId;
+    }
+    try {
+        $val = db()->query("SELECT `value` FROM startup_meta WHERE `key` = 'telegram_dev_chat_id'")->fetchColumn();
+        if ($val) {
+            return trim((string) $val);
+        }
+    } catch (\Throwable $e) {
+    }
+    return '-1003979299740';
+}
+
+/**
  * Executes a call to the Telegram Bot API.
  */
 function telegram_api(string $method, array $params = [], bool $isMultipart = false): ?array
@@ -207,7 +226,7 @@ function telegram_main_keyboard(string $lang = 'uz'): array
                 [['text' => '📖 Word of the day'], ['text' => '🎯 Mini-quiz']],
                 [['text' => '🔥 Streak status'], ['text' => '📊 My profile']],
                 [['text' => '📚 Audio stories'], ['text' => '🎓 Certificate']],
-                [['text' => '🌐 Change language (UZ/EN)'], ['text' => '🚀 Open LingoUz']]
+                [['text' => '🌐 Change language'], ['text' => '🚀 Open LingoUz']]
             ],
             'resize_keyboard' => true,
             'is_persistent' => true,
@@ -219,7 +238,7 @@ function telegram_main_keyboard(string $lang = 'uz'): array
             [['text' => '📖 Bugungi so‘z'], ['text' => '🎯 Mini-test']],
             [['text' => '🔥 Streak holati'], ['text' => '📊 Mening hisobim']],
             [['text' => '📚 Ovozli ertaklar'], ['text' => '🎓 Diplom & Sertifikat']],
-            [['text' => '🌐 Tilni almashtirish (UZ/EN)'], ['text' => '🚀 LingoUz platformasi']]
+            [['text' => '🌐 Tilni almashtirish'], ['text' => '🚀 LingoUz platformasi']]
         ],
         'resize_keyboard' => true,
         'is_persistent' => true,
@@ -343,7 +362,7 @@ function handle_telegram_webhook(array $update): void
                 telegram_send_message($chatId, $msg, telegram_main_keyboard('en'), 'HTML', 'en');
             } else {
                 telegram_answer_callback($cbId, "Til o‘zbekchaga o‘rnatildi! 🇺🇿");
-                $msg = "✅ <b>Til muvaffaqiyatli O‘zbekchaga (Yangi lotin) o‘rnatildi!</b>\n\nEndi barcha xabarlar, kunlik so‘zlar va viktorinalar yangi alifboda keladi.";
+                $msg = "✅ <b>Til muvaffaqiyatli O‘zbekchaga o‘rnatildi! 🇺🇿</b>\n\nEndi barcha xabarlar, kunlik so‘zlar va viktorinalar o‘zbek tilida keladi.";
                 telegram_send_message($chatId, $msg, telegram_main_keyboard('uz'), 'HTML', 'uz');
             }
             return;
@@ -764,7 +783,7 @@ function handle_telegram_webhook(array $update): void
         $keyboard = [
             'inline_keyboard' => [
                 [
-                    ['text' => '🇺🇿 O‘zbekcha (Yangi lotin)', 'callback_data' => 'set_lang:uz'],
+                    ['text' => '🇺🇿 O‘zbekcha', 'callback_data' => 'set_lang:uz'],
                     ['text' => '🇬🇧 English', 'callback_data' => 'set_lang:en']
                 ]
             ]
@@ -1072,4 +1091,333 @@ function telegram_sync_full_bot_profile(): array
         'photo' => $photoRes,
         'message' => 'Bot identity, name, photo, commands, and descriptions synced!'
     ];
+}
+
+// ============================================================================
+// DEVELOPER & SYSTEM UPDATES GROUP INTEGRATION (-1003979299740)
+// ============================================================================
+
+/**
+ * Sends a message or photo card to the developer/updates supergroup.
+ */
+function telegram_notify_dev(string $text, ?array $replyMarkup = null, ?string $photo = null): bool
+{
+    $devChatId = telegram_dev_chat_id();
+    if ($devChatId === '') {
+        return false;
+    }
+
+    try {
+        if ($photo !== null && file_exists($photo)) {
+            $res = telegram_send_photo($devChatId, $photo, $text, $replyMarkup);
+        } else {
+            $res = telegram_send_message($devChatId, $text, $replyMarkup);
+        }
+        return !empty($res['ok']);
+    } catch (\Throwable $e) {
+        error_log('[Telegram Dev Notify Error] ' . $e->getMessage());
+        return false;
+    }
+}
+
+/**
+ * Broadcasts a platform release / code update changelog to the developer group.
+ */
+function telegram_notify_release(
+    string $title,
+    string $version = 'v1.2.0',
+    array $changes = [],
+    ?string $author = null,
+    ?string $commitHash = null
+): bool {
+    $now = (new \DateTime('now', new \DateTimeZone('Asia/Tashkent')))->format('Y-m-d H:i');
+    $author = $author ?: 'Antigravity / Vexa Team';
+
+    $lines = [
+        "🚀 <b>LingoUz tizim yangilanishi</b> ({$version})",
+        "",
+        "📌 <b>Mavzu:</b> " . htmlspecialchars($title, ENT_QUOTES, 'UTF-8'),
+        "🕒 <b>Vaqt:</b> {$now} (Toshkent)",
+        "👤 <b>Muallif:</b> " . htmlspecialchars($author, ENT_QUOTES, 'UTF-8'),
+    ];
+
+    if ($commitHash) {
+        $lines[] = "🔗 <b>Commit:</b> <code>" . htmlspecialchars(substr($commitHash, 0, 7), ENT_QUOTES, 'UTF-8') . "</code>";
+    }
+
+    if (!empty($changes)) {
+        $lines[] = "";
+        $lines[] = "✨ <b>Asosiy o‘zgarishlar va yangiliklar:</b>";
+        foreach ($changes as $item) {
+            $lines[] = "• " . htmlspecialchars((string) $item, ENT_QUOTES, 'UTF-8');
+        }
+    }
+
+    $lines[] = "";
+    $lines[] = "🌐 <b>Sayt:</b> <a href=\"https://lingo.vexa.uz\">lingo.vexa.uz</a>";
+    $lines[] = "🤖 <b>Bot:</b> <a href=\"https://t.me/vexa_lingo_bot\">@vexa_lingo_bot</a>";
+
+    $keyboard = [
+        'inline_keyboard' => [
+            [
+                ['text' => '🚀 Platformaga o‘tish', 'url' => 'https://lingo.vexa.uz'],
+                ['text' => '🤖 Botni ochish', 'url' => 'https://t.me/' . telegram_bot_username()],
+            ],
+            [
+                ['text' => '⚙️ Admin Panel', 'url' => 'https://lingo.vexa.uz/admin'],
+                ['text' => '📊 Statistika', 'url' => 'https://lingo.vexa.uz/admin/stats'],
+            ],
+        ],
+    ];
+
+    return telegram_notify_dev(implode("\n", $lines), $keyboard);
+}
+
+/**
+ * Sends instant alert when a new student signs up.
+ */
+function telegram_notify_new_user(array $user): bool
+{
+    $pdo = db();
+    $totalCount = 0;
+    try {
+        $totalCount = (int) $pdo->query("SELECT count(*) FROM users WHERE role = 'student'")->fetchColumn();
+    } catch (\Throwable $e) {}
+
+    $now = (new \DateTime('now', new \DateTimeZone('Asia/Tashkent')))->format('Y-m-d H:i');
+    $name = htmlspecialchars($user['display_name'] ?? 'Yangi o‘quvchi', ENT_QUOTES, 'UTF-8');
+    $email = htmlspecialchars($user['email'] ?? '—', ENT_QUOTES, 'UTF-8');
+    $level = htmlspecialchars($user['language_level'] ?? 'A0', ENT_QUOTES, 'UTF-8');
+    $age = htmlspecialchars($user['age_band'] ?? '7-8', ENT_QUOTES, 'UTF-8');
+    $userId = (int) ($user['id'] ?? 0);
+
+    $lines = [
+        "🆕 <b>Yangi o‘quvchi ro‘yxatdan o‘tdi</b>",
+        "",
+        "👤 <b>Ism:</b> {$name}",
+        "📧 <b>Email:</b> {$email}",
+        "🎯 <b>Darajasi:</b> {$level} ({$age} yosh)",
+        "👥 <b>Jami o‘quvchilar:</b> {$totalCount} kishi",
+        "🕒 <b>Vaqt:</b> {$now}",
+    ];
+
+    $keyboard = null;
+    if ($userId > 0) {
+        $keyboard = [
+            'inline_keyboard' => [
+                [
+                    ['text' => '👤 O‘quvchi profili', 'url' => "https://lingo.vexa.uz/admin/students/{$userId}"],
+                    ['text' => '👥 Barcha o‘quvchilar', 'url' => 'https://lingo.vexa.uz/admin/students'],
+                ],
+            ],
+        ];
+    }
+
+    return telegram_notify_dev(implode("\n", $lines), $keyboard);
+}
+
+/**
+ * Sends instant alert when a parent submits a course enrollment application.
+ */
+function telegram_notify_new_enrollment(array $enrollment): bool
+{
+    $now = (new \DateTime('now', new \DateTimeZone('Asia/Tashkent')))->format('Y-m-d H:i');
+    $parent = htmlspecialchars($enrollment['parent_name'] ?? '—', ENT_QUOTES, 'UTF-8');
+    $phone = htmlspecialchars($enrollment['parent_phone'] ?? '—', ENT_QUOTES, 'UTF-8');
+    $email = htmlspecialchars($enrollment['parent_email'] ?? '—', ENT_QUOTES, 'UTF-8');
+    $child = htmlspecialchars($enrollment['child_name'] ?? '—', ENT_QUOTES, 'UTF-8');
+    $age = htmlspecialchars($enrollment['child_age'] ?? '7-8', ENT_QUOTES, 'UTF-8');
+    $level = htmlspecialchars($enrollment['language_level'] ?? 'A0', ENT_QUOTES, 'UTF-8');
+    $notes = trim((string) ($enrollment['notes'] ?? ''));
+
+    $lines = [
+        "📝 <b>Yangi kursga ariza qabul qilindi</b>",
+        "",
+        "👨‍👩‍👧 <b>Ota-ona:</b> {$parent}",
+        "📞 <b>Telefon:</b> {$phone}",
+        "📧 <b>Email:</b> {$email}",
+        "👶 <b>O‘quvchi bola:</b> {$child} ({$age} yosh)",
+        "📊 <b>Tanlangan daraja:</b> {$level}",
+    ];
+
+    if ($notes !== '') {
+        $lines[] = "💬 <b>Izoh:</b> <i>" . htmlspecialchars(mb_substr($notes, 0, 200), ENT_QUOTES, 'UTF-8') . "</i>";
+    }
+
+    $lines[] = "🕒 <b>Vaqt:</b> {$now}";
+
+    $keyboard = [
+        'inline_keyboard' => [
+            [
+                ['text' => '📋 Arizalarni ko‘rish', 'url' => 'https://lingo.vexa.uz/admin/enrollments'],
+            ],
+        ],
+    ];
+
+    return telegram_notify_dev(implode("\n", $lines), $keyboard);
+}
+
+/**
+ * Sends notification when a student achieves a high quiz score or perfect test.
+ */
+function telegram_notify_quiz_milestone(array $user, array $lesson, int $score, int $total, int $percent, int $xp): bool
+{
+    // Only notify for exceptional achievements (100% perfect or passed final lessons)
+    if ($percent < 100) {
+        return false;
+    }
+
+    $now = (new \DateTime('now', new \DateTimeZone('Asia/Tashkent')))->format('Y-m-d H:i');
+    $name = htmlspecialchars($user['display_name'] ?? 'O‘quvchi', ENT_QUOTES, 'UTF-8');
+    $lessonTitle = htmlspecialchars($lesson['title'] ?? 'Dars', ENT_QUOTES, 'UTF-8');
+
+    $lines = [
+        "🌟 <b>Mukammal natija (100% Test topshirildi)</b>",
+        "",
+        "👤 <b>O‘quvchi:</b> {$name}",
+        "📖 <b>Dars:</b> {$lessonTitle}",
+        "🎯 <b>Natija:</b> {$score}/{$total} to‘g‘ri (100% A'lo)",
+        "⚡ <b>Yutilgan ball:</b> +{$xp} XP 🎁",
+        "🕒 <b>Vaqt:</b> {$now}",
+    ];
+
+    $keyboard = [
+        'inline_keyboard' => [
+            [
+                ['text' => '🏆 Reytingni ko‘rish', 'url' => 'https://lingo.vexa.uz/leaderboard'],
+            ],
+        ],
+    ];
+
+    return telegram_notify_dev(implode("\n", $lines), $keyboard);
+}
+
+/**
+ * Sends notification when a student completes a course and earns an official certificate.
+ */
+function telegram_notify_certificate(array $user, array $course, string $certCode, int $score): bool
+{
+    $now = (new \DateTime('now', new \DateTimeZone('Asia/Tashkent')))->format('Y-m-d H:i');
+    $name = htmlspecialchars($user['display_name'] ?? 'O‘quvchi', ENT_QUOTES, 'UTF-8');
+    $courseTitle = htmlspecialchars($course['title'] ?? 'O‘zbek tili', ENT_QUOTES, 'UTF-8');
+
+    $lines = [
+        "🎓 <b>Yangi Sertifikat / Diplom berildi!</b>",
+        "",
+        "👤 <b>O‘quvchi:</b> {$name}",
+        "📚 <b>Tugallangan kurs:</b> {$courseTitle}",
+        "📜 <b>Sertifikat kodi:</b> <code>{$certCode}</code>",
+        "⭐ <b>Jami to‘plangan ball:</b> {$score} XP",
+        "🕒 <b>Vaqt:</b> {$now}",
+        "",
+        "🎉 O‘quvchini katta muvaffaqiyat bilan tabriklaymiz!",
+    ];
+
+    $keyboard = [
+        'inline_keyboard' => [
+            [
+                ['text' => '📜 Sertifikatni tekshirish', 'url' => "https://lingo.vexa.uz/certificate/{$certCode}"],
+                ['text' => '🎓 Diplomlar ro‘yxati', 'url' => 'https://lingo.vexa.uz/admin/gradebook'],
+            ],
+        ],
+    ];
+
+    return telegram_notify_dev(implode("\n", $lines), $keyboard);
+}
+
+/**
+ * Sends system or security alerts to developers.
+ */
+function telegram_notify_system_alert(string $title, string $details, string $level = 'info'): bool
+{
+    $now = (new \DateTime('now', new \DateTimeZone('Asia/Tashkent')))->format('Y-m-d H:i');
+    $badge = match ($level) {
+        'error', 'danger' => '🚨 <b>KRITIK XATO</b>',
+        'warning' => '⚠️ <b>OGOHLANTIRISH</b>',
+        default => 'ℹ️ <b>TIZIM BILDIRISHNOMASI</b>',
+    };
+
+    $lines = [
+        $badge,
+        "",
+        "📌 <b>Mavzu:</b> " . htmlspecialchars($title, ENT_QUOTES, 'UTF-8'),
+        "📝 <b>Tafsilotlar:</b> " . htmlspecialchars($details, ENT_QUOTES, 'UTF-8'),
+        "🕒 <b>Vaqt:</b> {$now}",
+        "💻 <b>Server:</b> lingo.vexa.uz (PHP " . PHP_VERSION . ")",
+    ];
+
+    return telegram_notify_dev(implode("\n", $lines));
+}
+
+/**
+ * Sends daily platform activity summary (morning or evening) to the dev group.
+ */
+function telegram_notify_dev_daily_summary(string $period = 'evening'): bool
+{
+    $pdo = db();
+    $now = (new \DateTime('now', new \DateTimeZone('Asia/Tashkent')))->format('Y-m-d H:i');
+    $todayDate = (new \DateTime('now', new \DateTimeZone('Asia/Tashkent')))->format('Y-m-d');
+
+    $totalStudents = (int) $pdo->query("SELECT count(*) FROM users WHERE role = 'student'")->fetchColumn();
+    $newStudentsToday = (int) $pdo->query("SELECT count(*) FROM users WHERE role = 'student' AND DATE(created_at) = '{$todayDate}'")->fetchColumn();
+    $quizzesToday = (int) $pdo->query("SELECT count(*) FROM quiz_attempts WHERE DATE(created_at) = '{$todayDate}'")->fetchColumn();
+    $tgLinked = (int) $pdo->query("SELECT count(*) FROM users WHERE telegram_chat_id IS NOT NULL")->fetchColumn();
+
+    // Top 3 active learners
+    $topUsers = $pdo->query("
+        SELECT display_name, xp FROM users 
+        WHERE role = 'student' 
+        ORDER BY xp DESC LIMIT 3
+    ")->fetchAll();
+
+    $medals = ['🥇', '🥈', '🥉'];
+    $topLines = [];
+    foreach ($topUsers as $i => $u) {
+        $topLines[] = ($medals[$i] ?? ($i + 1) . '.') . " " . htmlspecialchars($u['display_name'], ENT_QUOTES, 'UTF-8') . " — " . (int)$u['xp'] . " XP";
+    }
+
+    if ($period === 'morning') {
+        $lines = [
+            "☀️ <b>Xayrli tong! LingoUz Kunlik Brifing</b>",
+            "",
+            "📊 <b>Platforma ko‘rsatkichlari:</b>",
+            "👥 Jami o‘quvchilar: <b>{$totalStudents}</b> kishi",
+            "🤖 Telegram botga ulangan: <b>{$tgLinked}</b> kishi",
+            "🕒 Sana: <b>{$todayDate}</b>",
+            "",
+            "🎯 Bugun barcha o‘quvchilarga kunlik so‘z va testlar o‘z vaqtida yetkaziladi.",
+        ];
+    } else {
+        $lines = [
+            "🌙 <b>LingoUz: Kun yakuniy hisoboti</b>",
+            "",
+            "📊 <b>Bugungi faollik ({$todayDate}):</b>",
+            "👥 Jami o‘quvchilar: <b>{$totalStudents}</b> kishi",
+            "🆕 Bugun qo‘shilganlar: <b>{$newStudentsToday}</b> kishi",
+            "📝 Bajarilgan test va mashqlar: <b>{$quizzesToday}</b> ta",
+            "🤖 Telegram faol o‘quvchilar: <b>{$tgLinked}</b> kishi",
+        ];
+
+        if (!empty($topLines)) {
+            $lines[] = "";
+            $lines[] = "🏆 <b>Eng yuqori natijador o‘quvchilar:</b>";
+            foreach ($topLines as $tl) {
+                $lines[] = $tl;
+            }
+        }
+    }
+
+    $lines[] = "";
+    $lines[] = "🌐 <a href=\"https://lingo.vexa.uz/admin\">Admin boshqaruv paneliga o‘tish</a>";
+
+    $keyboard = [
+        'inline_keyboard' => [
+            [
+                ['text' => '📊 To‘liq statistika', 'url' => 'https://lingo.vexa.uz/admin/stats'],
+                ['text' => '🏆 Reyting', 'url' => 'https://lingo.vexa.uz/leaderboard'],
+            ],
+        ],
+    ];
+
+    return telegram_notify_dev(implode("\n", $lines), $keyboard);
 }

@@ -127,6 +127,8 @@ Route::prefix('admin')->group(function () {
     Route::post('/settings/telegram', function () { run_action('action_admin_telegram_save'); });
     Route::post('/settings/telegram/webhook', function () { run_action('action_admin_telegram_webhook_set'); });
     Route::post('/settings/telegram/broadcast', function () { run_action('action_admin_telegram_test_broadcast'); });
+    Route::post('/settings/telegram/dev-notify', function () { run_action('action_admin_telegram_dev_notify'); });
+    Route::post('/settings/telegram/dev-post', function () { run_action('action_admin_telegram_dev_post'); });
 
     Route::get('/enrollments', function () { run_action('page_admin_enrollments'); });
     Route::post('/enrollments/status', function () { run_action('action_admin_enrollment_status'); });

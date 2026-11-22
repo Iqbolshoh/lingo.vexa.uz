@@ -266,6 +266,7 @@ function page_admin_settings(): void
         'admins' => $pdo->query("SELECT id, display_name, email, created_at FROM users WHERE role = 'admin' ORDER BY id")->fetchAll(),
         'tgToken' => telegram_bot_token(),
         'tgUsername' => telegram_bot_username(),
+        'tgDevChatId' => telegram_dev_chat_id(),
         'tgLinkedCount' => $linkedCount,
         'tgLogsCount' => $logsCount,
     ]);
@@ -313,12 +314,16 @@ function action_admin_telegram_save(): void
 
     $token = trim((string) ($_POST['telegram_bot_token'] ?? ''));
     $username = ltrim(trim((string) ($_POST['telegram_bot_username'] ?? '')), '@');
+    $devChatId = trim((string) ($_POST['telegram_dev_chat_id'] ?? ''));
 
     $pdo = db();
     $pdo->prepare("REPLACE INTO startup_meta (`key`, `value`) VALUES ('telegram_bot_token', ?)")->execute([$token]);
     $pdo->prepare("REPLACE INTO startup_meta (`key`, `value`) VALUES ('telegram_bot_username', ?)")->execute([$username]);
+    if ($devChatId !== '') {
+        $pdo->prepare("REPLACE INTO startup_meta (`key`, `value`) VALUES ('telegram_dev_chat_id', ?)")->execute([$devChatId]);
+    }
 
-    flash('success', 'Telegram bot sozlamalari muvaffaqiyatli saqlandi.');
+    flash('success', 'Telegram bot va dasturchilar guruhi sozlamalari saqlandi.');
     app_redirect('/admin/settings');
 }
 
@@ -343,5 +348,47 @@ function action_admin_telegram_test_broadcast(): void
 
     $res = telegram_send_daily_broadcast();
     flash('success', "Kunlik xabar yuborildi: Jami obunachilar: {$res['total']}, Yuborildi: {$res['sent']}, Xato: {$res['failed']}.");
+    app_redirect('/admin/settings');
+}
+
+function action_admin_telegram_dev_notify(): void
+{
+    require_admin();
+    verify_csrf();
+
+    $message = trim((string) ($_POST['message'] ?? ''));
+    if ($message === '') {
+        $message = "🔔 LingoUz test sinovi: Dasturchilar guruhi bilan aloqa to‘liq o‘rnatildi va faol!";
+    }
+
+    $ok = telegram_notify_dev($message);
+    if ($ok) {
+        flash('success', 'Dasturchilar guruhiga xabar yetkazildi!');
+    } else {
+        flash('error', 'Dasturchilar guruhiga xabar yetkazishda xatolik.');
+    }
+    app_redirect('/admin/settings');
+}
+
+function action_admin_telegram_dev_post(): void
+{
+    require_admin();
+    verify_csrf();
+
+    $title = trim((string) ($_POST['title'] ?? ''));
+    $rawNotes = trim((string) ($_POST['notes'] ?? ''));
+    if ($title === '') {
+        flash('error', 'Iltimos, yangilanish mavzusini kiriting.');
+        app_redirect('/admin/settings');
+        return;
+    }
+
+    $lines = array_filter(array_map('trim', explode("\n", $rawNotes)));
+    $ok = telegram_notify_release($title, 'v1.2.6', $lines, 'Administrator');
+    if ($ok) {
+        flash('success', "Guruhga yangilanish e'loni yuborildi!");
+    } else {
+        flash('error', "Guruhga yangilanish e'lonini yuborishda xatolik yuz berdi.");
+    }
     app_redirect('/admin/settings');
 }

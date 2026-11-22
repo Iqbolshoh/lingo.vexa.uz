@@ -81,6 +81,19 @@ function action_enroll(): void
         VALUES (?, ?, ?, ?, ?, ?, ?, ?, \'pending\')
     ')->execute([mb_substr($parentName, 0, 120), $parentEmail, mb_substr($parentPhone, 0, 40), mb_substr($childName, 0, 80), $childAge, $languageLevel, $timezone, $notes]);
 
+    // Notify developer group about new enrollment
+    try {
+        telegram_notify_new_enrollment([
+            'parent_name' => $parentName,
+            'parent_email' => $parentEmail,
+            'parent_phone' => $parentPhone,
+            'child_name' => $childName,
+            'child_age' => $childAge,
+            'language_level' => $languageLevel,
+            'notes' => $notes,
+        ]);
+    } catch (\Throwable $e) {}
+
     if ($createAccount) {
         $existing = $pdo->prepare('SELECT id FROM users WHERE email = ?');
         $existing->execute([$parentEmail]);
